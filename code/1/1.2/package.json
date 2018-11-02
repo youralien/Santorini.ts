@@ -1,0 +1,24 @@
+{
+  "name": "json-parser",
+  "version": "1.0.0",
+  "description": "Simple JSON parser that reads input from stdin, waits for input to finish, then returns JSON strings in reverse order with minor modification.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d ../../../Deliverables/1/1.2/lib",
+    "compile": "node compile.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NWUSoftwareConstructionFall18/team7/tree/master/Deliverables/1/1.2"
+  },
+  "author": "['Ryan Louie', 'Kapil Garg']",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "nexe": "^2.0.0-rc.34"
+  }
+}

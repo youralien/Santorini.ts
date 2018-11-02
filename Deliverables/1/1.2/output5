@@ -1,0 +1,9 @@
+{"index":9,"value":"world"}
+{"index":8,"value":"hello"}
+{"index":7,"value":["hello","world"]}
+{"index":6,"value":{"hello":"world"}}
+{"index":5,"value":-1}
+{"index":4,"value":1}
+{"index":3,"value":null}
+{"index":2,"value":false}
+{"index":1,"value":true}

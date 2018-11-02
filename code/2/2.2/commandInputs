@@ -1,0 +1,4 @@
+{"operation-name" : "Declare"}
+{"operation-name" : "Swap", "operation-argument1": 1, "operation-argument2": 2}
+{"operation-name" : "Restart"}
+{"operation-name" : "Exit"}

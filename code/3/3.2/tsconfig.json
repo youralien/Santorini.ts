@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./src",
+    "lib": [
+      "dom",
+      "es7"
+    ]
+  },
+  "include": [
+    "ts/**/*"
+  ]
+}

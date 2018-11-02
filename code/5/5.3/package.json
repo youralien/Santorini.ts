@@ -1,0 +1,16 @@
+{
+  "name": "board-interface",
+  "version": "1.0.0",
+  "description": "Board interface for Santorini",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cp ./ts/design.ts ../../../Deliverables/4/4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NWUSoftwareConstructionFall18/team7/tree/master/Deliverables/4/4.2"
+  },
+  "author": "['Ryan Louie', 'Kapil Garg']",
+  "license": "ISC"
+}

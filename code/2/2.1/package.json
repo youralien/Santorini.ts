@@ -1,0 +1,24 @@
+{
+  "name": "player-module",
+  "version": "1.0.0",
+  "description": "Player Module for Player/Admin number card game",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d ../../../Deliverables/2/2.1/lib",
+    "compile": "node compile.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NWUSoftwareConstructionFall18/team7/tree/master/Deliverables/2/2.1"
+  },
+  "author": "['Ryan Louie', 'Kapil Garg']",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "nexe": "^2.0.0-rc.34"
+  }
+}
