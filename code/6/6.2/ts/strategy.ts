@@ -36,8 +36,13 @@ export class Strategy {
         return [[[], [], [], [], []], 'worker', ['direction1', 'direction2']];
     }
 
-    static pickNonLosingPlays(board : Board, targetPlayerColor : string, n : number) {
-        return Strategy.getNonLosingPlays(board, targetPlayerColor, n)[0];
+    static pickNonLosingPlay(board : Board, targetPlayerColor : string, n : number) {
+        let nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
+        if (nonLosingPlays.length > 0) {
+            return nonLosingPlays[0];
+        } else {
+            console.error('Could not find a non losing play, in Strategy.pickNonLosingPlay');
+        }
     }
 
     static getNonLosingPlays(board : Board, targetPlayerColor : string, n : number) {
@@ -46,22 +51,35 @@ export class Strategy {
         }
 
         let playsTarget = Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
+        console.log(`playsTarget | n = ${n} | length = ${playsTarget.length}`);
 
         let playsTargetNext = [];
         playsTarget.forEach((currPlay) => {
             let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = currPlay;
-            let otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
 
-            let otherPlayerPlays = Strategy.computeNonLosingValidBoardsPlaysWins(targetPlayerBoard, otherPlayerColor);
+            if (targetPlayerDidWin) {
+                playsTargetNext.push(currPlay);
+            } else {
+                let otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
 
-            otherPlayerPlays.forEach((otherPlay) => {
-                let [otherPlayerBoard, [otherPlayerWorker, otherPlayerDirections], otherPlayerDidWin] = otherPlay;
-                playsTargetNext.concat(Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1));
-            });
-        });
+                let otherPlayerPlays = Strategy.computeNonLosingValidBoardsPlaysWins(targetPlayerBoard, otherPlayerColor);
+                console.log('otherPlayerPlays.length', otherPlayerPlays.length);
+                if (otherPlayerPlays.length === 0) {
+                    playsTargetNext.push(currPlay);
+                    console.log('winning move for target player');
+                }
+
+                otherPlayerPlays.forEach((otherPlay) => {
+                    let [otherPlayerBoard, [otherPlayerWorker, otherPlayerDirections], otherPlayerDidWin] = otherPlay;
+                    playsTargetNext.concat(Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1));
+                });
+            }
+
+       });
+        console.log(`playsTargetNext | n = ${n} | length = ${playsTargetNext.length}`);
         return playsTargetNext;
     }
-    static computeNonLosingValidBoardsPlaysWins(board: Board, targetPlayerColor: string) {
+    static computeNonLosingValidBoardsPlaysWins(board: Board, targetPlayerColor: string) : Array<[Board, [string, [string, string]], boolean]> {
         // compute plays for target player
         let targetPlayerValidPlays = Strategy.computeValidPlays(board, targetPlayerColor);
 

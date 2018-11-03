@@ -32,27 +32,45 @@ var Strategy = /** @class */ (function () {
     Strategy.prototype.pickBestMove = function (searchTree) {
         return [[[], [], [], [], []], 'worker', ['direction1', 'direction2']];
     };
-    Strategy.pickNonLosingPlays = function (board, targetPlayerColor, n) {
-        return Strategy.getNonLosingPlays(board, targetPlayerColor, n)[0];
+    Strategy.pickNonLosingPlay = function (board, targetPlayerColor, n) {
+        var nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
+        if (nonLosingPlays.length > 0) {
+            return nonLosingPlays[0];
+        }
+        else {
+            console.error('Could not find a non losing play, in Strategy.pickNonLosingPlay');
+        }
     };
     Strategy.getNonLosingPlays = function (board, targetPlayerColor, n) {
         if (n === 1) {
-            return Strategy.computeNonLosingValidPlays(board, targetPlayerColor);
+            return Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
         }
-        var playsTarget = Strategy.computeNonLosingValidPlays(board, targetPlayerColor);
+        var playsTarget = Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
+        console.log("playsTarget | n = " + n + " | length = " + playsTarget.length);
         var playsTargetNext = [];
         playsTarget.forEach(function (currPlay) {
             var targetPlayerBoard = currPlay[0], _a = currPlay[1], targetPlayerWorker = _a[0], targetPlayerDirections = _a[1], targetPlayerDidWin = currPlay[2];
-            var otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
-            var otherPlayerPlays = Strategy.computeNonLosingValidPlays(targetPlayerBoard, otherPlayerColor);
-            otherPlayerPlays.forEach(function (otherPlay) {
-                var otherPlayerBoard = otherPlay[0], _a = otherPlay[1], otherPlayerWorker = _a[0], otherPlayerDirections = _a[1], otherPlayerDidWin = otherPlay[2];
-                playsTargetNext.concat(Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1));
-            });
+            if (targetPlayerDidWin) {
+                playsTargetNext.push(currPlay);
+            }
+            else {
+                var otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
+                var otherPlayerPlays = Strategy.computeNonLosingValidBoardsPlaysWins(targetPlayerBoard, otherPlayerColor);
+                console.log('otherPlayerPlays.length', otherPlayerPlays.length);
+                if (otherPlayerPlays.length === 0) {
+                    playsTargetNext.push(currPlay);
+                    console.log('winning move for target player');
+                }
+                otherPlayerPlays.forEach(function (otherPlay) {
+                    var otherPlayerBoard = otherPlay[0], _a = otherPlay[1], otherPlayerWorker = _a[0], otherPlayerDirections = _a[1], otherPlayerDidWin = otherPlay[2];
+                    playsTargetNext.concat(Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1));
+                });
+            }
         });
+        console.log("playsTargetNext | n = " + n + " | length = " + playsTargetNext.length);
         return playsTargetNext;
     };
-    Strategy.helper = function (board, targetPlayerColor) {
+    Strategy.computeNonLosingValidBoardsPlaysWins = function (board, targetPlayerColor) {
         // compute plays for target player
         var targetPlayerValidPlays = Strategy.computeValidPlays(board, targetPlayerColor);
         // loop through each play for target player, and see what other player could do
