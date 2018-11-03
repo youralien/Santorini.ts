@@ -1,0 +1,22 @@
+{
+  "name": "board-interface",
+  "version": "1.0.0",
+  "description": "Board, Rule Checker, and Player for Santorini",
+  "main": "main.js",
+  "scripts": {
+    "test": "tsc && mocha",
+    "start": "tsc && node src/main.js",
+    "build": "tsc && cp -R ./src/ ../../../Deliverables/6/6.2/lib && cp input* ../../../Deliverables/6/6.2/ && cp output* ../../../Deliverables/6/6.2/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NWUSoftwareConstructionFall18/team7/tree/master/Deliverables/6/6.2"
+  },
+  "author": "['Ryan Louie', 'Kapil Garg']",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^10.12.0",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
+  }
+}
