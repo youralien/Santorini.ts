@@ -96,11 +96,16 @@ export class Strategy {
         return validPlays;
     }
 
+    /**
+     *
+     * @param {string[]} directions. All Cardinal directions i.e. N, E, ... SW...
+     * @return {string[][]} list of move, build directions, i.e. [['N', 'N'], ['N', 'W'], ....]
+     */
     static computeAllPlays(directions: string[]) {
         let allPlayCombos = directions.map(direction => [direction]);
-        for (let direction1 in directions) {
-            for (let direction2 in directions) {
-                allPlayCombos.push([directions[direction1], directions[direction2]]);
+        for (let i in directions) {
+            for (let j in directions) {
+                allPlayCombos.push([directions[i], directions[j]]);
             }
         }
 
