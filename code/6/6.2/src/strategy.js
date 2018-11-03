@@ -32,6 +32,45 @@ var Strategy = /** @class */ (function () {
     Strategy.prototype.pickBestMove = function (searchTree) {
         return [[[], [], [], [], []], 'worker', ['direction1', 'direction2']];
     };
+    Strategy.pickNonLosingPlays = function (board, targetPlayerColor, n) {
+        return Strategy.getNonLosingPlays(board, targetPlayerColor, n)[0];
+    };
+    Strategy.getNonLosingPlays = function (board, targetPlayerColor, n) {
+        if (n === 1) {
+            return Strategy.computeNonLosingValidPlays(board, targetPlayerColor);
+        }
+        var playsTarget = Strategy.computeNonLosingValidPlays(board, targetPlayerColor);
+        var playsTargetNext = [];
+        playsTarget.forEach(function (currPlay) {
+            var targetPlayerBoard = currPlay[0], _a = currPlay[1], targetPlayerWorker = _a[0], targetPlayerDirections = _a[1], targetPlayerDidWin = currPlay[2];
+            var otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
+            var otherPlayerPlays = Strategy.computeNonLosingValidPlays(targetPlayerBoard, otherPlayerColor);
+            otherPlayerPlays.forEach(function (otherPlay) {
+                var otherPlayerBoard = otherPlay[0], _a = otherPlay[1], otherPlayerWorker = _a[0], otherPlayerDirections = _a[1], otherPlayerDidWin = otherPlay[2];
+                playsTargetNext.concat(Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1));
+            });
+        });
+        return playsTargetNext;
+    };
+    Strategy.helper = function (board, targetPlayerColor) {
+        // compute plays for target player
+        var targetPlayerValidPlays = Strategy.computeValidPlays(board, targetPlayerColor);
+        // loop through each play for target player, and see what other player could do
+        var otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
+        var nonLosingValidPlays = [];
+        targetPlayerValidPlays.forEach(function (currPlay) {
+            var targetPlayerBoard = currPlay[0], _a = currPlay[1], targetPlayerWorker = _a[0], targetPlayerDirections = _a[1], targetPlayerDidWin = currPlay[2];
+            // simulate other player's plays given targetPlayer's board
+            var otherPlayerValidPlays = Strategy.computeValidPlays(targetPlayerBoard, otherPlayerColor);
+            // check if any otherPlayer's plays result in win
+            var otherPlayerCouldWin = otherPlayerValidPlays.some(function (currOtherPlay) { return currOtherPlay[2] === true; });
+            // only include valid play in final output if target player already won or other player cant win on next move
+            if (targetPlayerDidWin || !otherPlayerCouldWin) {
+                nonLosingValidPlays.push(currPlay);
+            }
+        });
+        return nonLosingValidPlays;
+    };
     /**
      * Computes all valid plays that don't cause the target to lose.
      * @param board {Board} Board instance.

@@ -42,17 +42,17 @@ export class Strategy {
 
     static getNonLosingPlays(board : Board, targetPlayerColor : string, n : number) {
         if (n === 1) {
-            return Strategy.computeNonLosingValidPlays(board, targetPlayerColor);
+            return Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
         }
 
-        let playsTarget = Strategy.computeNonLosingValidPlays(board, targetPlayerColor); 
+        let playsTarget = Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
 
         let playsTargetNext = [];
         playsTarget.forEach((currPlay) => {
             let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = currPlay;
             let otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
 
-            let otherPlayerPlays = Strategy.computeNonLosingValidPlays(targetPlayerBoard, otherPlayerColor);
+            let otherPlayerPlays = Strategy.computeNonLosingValidBoardsPlaysWins(targetPlayerBoard, otherPlayerColor);
 
             otherPlayerPlays.forEach((otherPlay) => {
                 let [otherPlayerBoard, [otherPlayerWorker, otherPlayerDirections], otherPlayerDidWin] = otherPlay;
@@ -61,7 +61,7 @@ export class Strategy {
         });
         return playsTargetNext;
     }
-    static helper(board: Board, targetPlayerColor: string) {
+    static computeNonLosingValidBoardsPlaysWins(board: Board, targetPlayerColor: string) {
         // compute plays for target player
         let targetPlayerValidPlays = Strategy.computeValidPlays(board, targetPlayerColor);
 
