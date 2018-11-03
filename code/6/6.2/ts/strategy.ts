@@ -54,8 +54,10 @@ export class Strategy {
         console.log(`playsTarget | n = ${n} | length = ${playsTarget.length}`);
 
         let playsTargetNext = [];
-        playsTarget.forEach((currPlay) => {
-            let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = currPlay;
+
+        for (let i in playsTarget) {
+            let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = playsTarget[i];
+            let currPlay = playsTarget[i]
 
             if (targetPlayerDidWin) {
                 playsTargetNext.push(currPlay);
@@ -69,13 +71,17 @@ export class Strategy {
                     console.log('winning move for target player');
                 }
 
-                otherPlayerPlays.forEach((otherPlay) => {
-                    let [otherPlayerBoard, [otherPlayerWorker, otherPlayerDirections], otherPlayerDidWin] = otherPlay;
-                    playsTargetNext.concat(Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1));
-                });
-            }
+                for (let j in otherPlayerPlays) {
+                    let [otherPlayerBoard, [otherPlayerWorker, otherPlayerDirections], otherPlayerDidWin] = otherPlayerPlays[j];
+                    let temp = Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1);
 
-       });
+                    if (temp.length > 0) {
+                        playsTargetNext.push(temp);
+                        return playsTargetNext;
+                    }
+                }
+            }
+        }
         console.log(`playsTargetNext | n = ${n} | length = ${playsTargetNext.length}`);
         return playsTargetNext;
     }

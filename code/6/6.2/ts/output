@@ -1,0 +1,4 @@
+
+> board-interface@1.0.0 test /home/rshang97/northwestern/397/team20/code/6/6.2
+> tsc && mocha
+
