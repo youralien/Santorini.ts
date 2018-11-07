@@ -23,12 +23,11 @@ export class Player {
     /**
      * Initializes class attributes to default values (see above).
      */
-    constructor( initialBoard: Array<Array<any>>) {
+    constructor() {
         this.color = undefined;
         this.name = undefined;
-        this.boardInstance = new Board(initialBoard);
+        this.boardInstance = new Board(Board.createEmptyBoard(5,5));
     }
-
 
     /**
      * Connects to the game engine, and responds with appropriate actions when requested.

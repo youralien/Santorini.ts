@@ -2,7 +2,7 @@
 import * as readline from 'readline';
 import { Player } from "./player";
 import { Board } from "./board";
-
+import {Referee} from "./referee";
 
 // create stdin interface
 const rl = readline.createInterface({
@@ -13,8 +13,7 @@ const rl = readline.createInterface({
 
 // global variables
 let currReadString = '';  // stores current input from user (allows for multi-line JSON)
-let playerInstance;
-
+let refInstance = new Referee(new Player(), new Player());
 
 /**
  * Reads lines as input to stdin is made.
@@ -31,19 +30,35 @@ rl.on('line', (input) => {
         if (isValidInput(maybeValidResponse)) {
             let outputMessage = '';
 
-            let command = maybeValidResponse[0];
-            if (command === 'Place') {
-                let color = maybeValidResponse[1];
-                let initialBoard = maybeValidResponse[2];
+            // HELPFUL INPUT DEBUGGING
+            // console.log(maybeValidResponse);
 
-                playerInstance = new Player(color, initialBoard);
-                outputMessage = playerInstance.placeWorkers();
-            } else if (command === 'Play') {
-                outputMessage = playerInstance.determinePlays(new Board(maybeValidResponse[1]));
+            // Name
+            let command;
+            if (typeof(maybeValidResponse) === 'string') {
+                command = 'Name';
+            }
+            else if (Array.isArray(maybeValidResponse[0])) {
+                command = 'Place';
+            } else {
+                command = 'Play';
             }
 
-            // return output from function call
-            console.log(JSON.stringify(outputMessage));
+            let res = refInstance.doTurn(command, maybeValidResponse);
+
+            if (res === undefined) {
+                return;
+            }
+            // FOR NICE PRINTING
+            // if (typeof(res) === "string") {
+            //     console.log(JSON.stringify(res));
+            // }
+            // else {
+            //     console.table(res);
+            // }
+
+            // FOR TURNING IT IN
+            console.log(JSON.stringify(res));
         }
     }
 });
@@ -73,10 +88,12 @@ const maybeValidJson = function checkIfJsonIsValid(inputString) {
 
 
 /**
- * Checks if inputs passed from parsed JSON is valid for Santorini.
+ * Checks if inputs passed from parsed JSON is valid for Santorini Referee Interface.
  * @param obj {Object} parsed, valid JSON from command line input
  */
 const isValidInput = function checkValidCommand(obj): boolean {
-    // check if array of either length 2 or 3
-    return Array.isArray(obj) && (obj.length === 2 || obj.length === 3);
+    // Name
+    // [Placement,Placement]
+    // [Worker,Directions]
+    return ((Array.isArray(obj) && (obj.length === 2)) || (typeof(obj) === 'string'));
 };

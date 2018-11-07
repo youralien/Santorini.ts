@@ -1,6 +1,8 @@
-import {RuleChecker} from "../../../code/5/5.2/ts/rules";
+import {RuleChecker} from "./rules";
+import {Board} from "./board";
+import {Player} from "./player";
 
-class Referee {
+export class Referee {
 
     /*
       It detects if players are violating any rules.
@@ -9,22 +11,22 @@ class Referee {
     /*
      The referee has to be able to receive two instances of your player component that implements the interface for players you have designed and manage a game of Santorini between these two players.
      */
-    board: Board;
+    boardInstance: Board;
     player1: Player;
     player2: Player;
-    rulecheck: RuleChecker;
     whoseTurnIdx: number;
-    player1status: string // won, loss, still playing
-    player2status: string // won, loss, still playing
+    winner: string;
+    // player1status: string;// won, loss, still playing
+    // player2status: string;// won, loss, still playing
 
-    constructor(board: Board, player1: Player, player2: Player) {
+    constructor(player1: Player, player2: Player) {
+        this.boardInstance = new Board(Board.createEmptyBoard(5,5));
         this.player1 = player1;
         this.player2 = player2;
         this.player1.setColor('blue');
-        this.player1.setColor('white');
-
-        this.rulecheck = new RuleChecker();
+        this.player2.setColor('white');
         this.whoseTurnIdx = 0;
+        this.winner = undefined; // not set until theres a winner
     }
 
     initializeName(name: string) {
@@ -45,7 +47,7 @@ class Referee {
     }
 
     whoseTurnIsItNot() {
-        if (this.whiteTurnIdx % 2 === 0) {
+        if (this.whoseTurnIdx % 2 === 0) {
             return this.player2;
         }
         else {
@@ -53,11 +55,11 @@ class Referee {
         }
     }
 
-    placeWorkers(placementList: Array<Array<int>>) {
+    placeWorkers(placementList: Array<Array<number>>) {
         let [[w1row, w1col], [w2row, w2col]] = placementList;
-        this.board.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '1', w1row, w1col);
-        this.board.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '2', w2row, w2col);
-        return this.board.board;
+        this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '1', w1row, w1col);
+        this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '2', w2row, w2col);
+        return this.boardInstance.board;
     }
 
     playTurn(workerdirections: [string, [string, string]]) {
@@ -68,18 +70,27 @@ class Referee {
             return;
         }
 
-        let rulecheck = new RuleChecker(this.board.board, worker, directions);
+        let rulecheck = new RuleChecker(this.boardInstance.board, worker, directions);
         let validplay = rulecheck.executeTurn();
+
+        // Game will End
         let didWin = rulecheck.didPlayerWin();
         if (didWin) {
-            return this.whoseTurnIsIt().name;
+            this.winner = this.whoseTurnIsIt().name;
         }
         else if (validplay == 'no') {
-            return this.whoseTurnIsItNot().name;
+            this.winner = this.whoseTurnIsItNot().name;
         }
 
-        return this.board.board;
+        if (this.winner !== undefined) {
+            return this.winner;
+        }
+
+        // Keep Playing - update our board
+        this.boardInstance.board = rulecheck.boardInstance.board;
+        return this.boardInstance.board;
     }
+
     /**
      * doTurn
      * Purpose:
@@ -96,9 +107,14 @@ class Referee {
      * @return didNotViolate {boolean} true if play was good otherwise false
      */
     doTurn(command: string, parsedJson) {
+        if (this.winner) {
+            // Any messages after deciding on the winner of a game should be ignored.
+            return;
+        }
+
         let result = undefined;
         if (command == 'Name') {
-            result = this.initializeName(JSON.stringify(parsedJson));
+            result = this.initializeName(parsedJson);
         }
         else if (command == 'Place') {
             result = this.placeWorkers(parsedJson);
