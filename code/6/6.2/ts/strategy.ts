@@ -39,10 +39,15 @@ export class Strategy {
     static pickNonLosingPlay(board : Board, targetPlayerColor : string, n : number) {
         let nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
         
-        console.log("nonLosingPlays length");
-        console.log(nonLosingPlays.length);
         if (nonLosingPlays.length > 0) {
-            let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = nonLosingPlays[0];
+            let ret = []
+            for (var i = 0; i < nonLosingPlays.length; i++) {
+                let [targetPlayerBoard, ans, targetPlayerDidWin] = nonLosingPlays[i];
+                if (ans) {
+                    ret.push(ans);
+                }
+            }
+            return ret;
         } else {
             console.error('Could not find a non losing play, in Strategy.pickNonLosingPlay');
         }

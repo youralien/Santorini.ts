@@ -35,7 +35,14 @@ var Strategy = /** @class */ (function () {
     Strategy.pickNonLosingPlay = function (board, targetPlayerColor, n) {
         var nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
         if (nonLosingPlays.length > 0) {
-            return nonLosingPlays[0];
+            var ret = [];
+            for (var i = 0; i < nonLosingPlays.length; i++) {
+                var _a = nonLosingPlays[i], targetPlayerBoard = _a[0], ans = _a[1], targetPlayerDidWin = _a[2];
+                if (ans) {
+                    ret.push(ans);
+                }
+            }
+            return ret;
         }
         else {
             console.error('Could not find a non losing play, in Strategy.pickNonLosingPlay');
@@ -46,33 +53,31 @@ var Strategy = /** @class */ (function () {
             return Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
         }
         var playsTarget = Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
-        console.log("playsTarget | n = " + n + " | length = " + playsTarget.length);
         var playsTargetNext = [];
         for (var i in playsTarget) {
             var _a = playsTarget[i], targetPlayerBoard = _a[0], _b = _a[1], targetPlayerWorker = _b[0], targetPlayerDirections = _b[1], targetPlayerDidWin = _a[2];
             var currPlay = playsTarget[i];
+            // if win then use this play
             if (targetPlayerDidWin) {
                 playsTargetNext.push(currPlay);
             }
             else {
                 var otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
                 var otherPlayerPlays = Strategy.computeNonLosingValidBoardsPlaysWins(targetPlayerBoard, otherPlayerColor);
-                console.log('otherPlayerPlays.length', otherPlayerPlays.length);
                 if (otherPlayerPlays.length === 0) {
                     playsTargetNext.push(currPlay);
-                    console.log('winning move for target player');
                 }
                 for (var j in otherPlayerPlays) {
                     var _c = otherPlayerPlays[j], otherPlayerBoard = _c[0], _d = _c[1], otherPlayerWorker = _d[0], otherPlayerDirections = _d[1], otherPlayerDidWin = _c[2];
                     var temp = Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1);
                     if (temp.length > 0) {
                         playsTargetNext.push(temp);
+                        // return first feasible move found
                         return playsTargetNext;
                     }
                 }
             }
         }
-        console.log("playsTargetNext | n = " + n + " | length = " + playsTargetNext.length);
         return playsTargetNext;
     };
     Strategy.computeNonLosingValidBoardsPlaysWins = function (board, targetPlayerColor) {

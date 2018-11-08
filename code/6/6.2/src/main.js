@@ -20,7 +20,7 @@ rl.on('line', function (input) {
     // add new input to current read in string (handling valid JSON across multiple lines)
     currReadString += input;
     // determine if JSON is valid
-    var maybeValidResponse = maybeValidJson(currReadString);
+    var maybeValidResponse = exports.maybeValidJson(currReadString);
     if (maybeValidResponse !== undefined) {
         // clear current read string and augment the valid, parsed JSON
         currReadString = '';
@@ -34,7 +34,7 @@ rl.on('line', function (input) {
                 outputMessage = playerInstance.placeWorkers();
             }
             else if (command === 'Play') {
-                outputMessage = playerInstance.determinePlays(new board_1.Board(maybeValidResponse[1]));
+                outputMessage = playerInstance.pickNonLosingPlay(new board_1.Board(maybeValidResponse[1]));
             }
             // return output from function call
             console.log(JSON.stringify(outputMessage));
@@ -52,7 +52,7 @@ rl.on('close', function () {
  * @param inputString {string} string to attempt to find valid JSON in.
  * @return {object} valid JSON object or undefined if failed to parse.
  */
-var maybeValidJson = function checkIfJsonIsValid(inputString) {
+exports.maybeValidJson = function checkIfJsonIsValid(inputString) {
     // attempt to parse JSON
     try {
         return JSON.parse(inputString);

@@ -1,7 +1,12 @@
 "use strict";
 exports.__esModule = true;
+var fs = require('fs');
+var readline = require('readline');
+var instream = fs.createReadStream('./strategy.config');
+var rl = readline.createInterface(instream, process.stdout);
 var board_1 = require("./board");
 var strategy_1 = require("./strategy");
+var main_1 = require("./main");
 /**
  * Implements a Player component that can communicate with a game engine to play Santorini.
  */
@@ -10,8 +15,18 @@ var Player = /** @class */ (function () {
      * Initializes class attributes to default values (see above).
      */
     function Player(selectedColor, initialBoard) {
+        var _this = this;
         this.color = selectedColor;
         this.boardInstance = new board_1.Board(initialBoard);
+        rl.on('line', function (input) {
+            var config = main_1.maybeValidJson(input);
+            if (config) {
+                _this.look_ahead = config["look-ahead"];
+            }
+            else {
+                console.log("look_ahead value invalid");
+            }
+        });
     }
     /**
      * Connects to the game engine, and responds with appropriate actions when requested.
@@ -56,6 +71,14 @@ var Player = /** @class */ (function () {
     };
     Player.prototype.determinePlays = function (board) {
         return strategy_1.Strategy.computeNonLosingValidPlays(board, this.color);
+    };
+    Player.prototype.pickNonLosingPlay = function (board) {
+        if (this.look_ahead) {
+            return strategy_1.Strategy.pickNonLosingPlay(board, this.color, this.look_ahead);
+        }
+        else {
+            console.log("look_ahead value not found");
+        }
     };
     /**
      * Uses Strategy module pickBestMove function to to determine a game move, and returns the properly formatted move.
