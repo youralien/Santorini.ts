@@ -36,17 +36,11 @@ class Player {
     placeWorkers() {
     }
 
-    
-    determineNonLosingPlays() {
-    }
-
-    
-
     /**
-     * Updates the Player's internal view of the boardInstance once the game engine returns the updated boardInstance.
-     * @param updatedBoard {Array<Array<any>>} current state of the game boardInstance as sent by the game engine.
+     * Uses Strategy.pickNonLosingPlay, for the this.color and for a particular number of this.look_ahead steps
+     * @return {Array<[worker, directions]>}
      */
-    updateGameState(updatedBoard: Array<Array<any>>): void {
-        this.board = updatedBoard;
+    pickNonLosingPlay(board: Board) {
     }
+
 }
