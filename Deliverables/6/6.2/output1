@@ -1,6 +1,2 @@
-
-> board-interface@1.0.0 start /home/rshang97/northwestern/397/team20/code/6/6.2
-> tsc && node src/main.js
-
 [[0,0],[0,4]]
 [["blue2",["N"]],["blue2",["S"]]]
