@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# if node command exists, use it
+if hash node 2>/dev/null; then
+    node lib/main.js
+# otherwise, on tlab machine so use scl
+else
+    scl enable rh-nodejs6 "node lib/main.js"
+fi
