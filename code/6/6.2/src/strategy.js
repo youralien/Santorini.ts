@@ -34,19 +34,16 @@ var Strategy = /** @class */ (function () {
     };
     Strategy.pickNonLosingPlay = function (board, targetPlayerColor, n) {
         var nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
+        var ret = [];
         if (nonLosingPlays.length > 0) {
-            var ret = [];
             for (var i = 0; i < nonLosingPlays.length; i++) {
                 var _a = nonLosingPlays[i], targetPlayerBoard = _a[0], ans = _a[1], targetPlayerDidWin = _a[2];
                 if (ans) {
                     ret.push(ans);
                 }
             }
-            return ret;
         }
-        else {
-            console.error('Could not find a non losing play, in Strategy.pickNonLosingPlay');
-        }
+        return ret;
     };
     Strategy.getNonLosingPlays = function (board, targetPlayerColor, n) {
         if (n === 1) {

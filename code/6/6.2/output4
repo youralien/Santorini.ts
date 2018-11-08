@@ -1,3 +1,7 @@
+
+> board-interface@1.0.0 start /home/rshang97/northwestern/397/team20/code/6/6.2
+> tsc && node src/main.js
+
 [[0,4],[4,0]]
-[["white1",["S","N"]],["white1",["S","S"]],["white1",["S","W"]],["white1",["S","NW"]],["white1",["S","SW"]],["white1",["W","S"]],["white1",["W","W"]],["white1",["W","E"]],["white1",["W","SW"]],["white1",["W","SE"]],["white1",["SW","N"]],["white1",["SW","S"]],["white1",["SW","W"]],["white1",["SW","E"]],["white1",["SW","NW"]],["white1",["SW","NE"]],["white1",["SW","SW"]],["white1",["SW","SE"]],["white2",["N","N"]],["white2",["N","S"]],["white2",["N","E"]],["white2",["N","NE"]],["white2",["N","SE"]],["white2",["E","N"]],["white2",["E","W"]],["white2",["E","E"]],["white2",["E","NW"]],["white2",["E","NE"]],["white2",["NE","N"]],["white2",["NE","S"]],["white2",["NE","W"]],["white2",["NE","E"]],["white2",["NE","NW"]],["white2",["NE","NE"]],["white2",["NE","SW"]],["white2",["NE","SE"]]]
-[["white1",["S","N"]],["white1",["S","S"]],["white1",["S","W"]],["white1",["S","SW"]],["white1",["SW","S"]],["white1",["SW","W"]],["white1",["SW","E"]],["white1",["SW","NW"]],["white1",["SW","NE"]],["white1",["SW","SW"]],["white1",["SW","SE"]],["white2",["N","N"]],["white2",["N","S"]],["white2",["N","E"]],["white2",["N","NE"]],["white2",["NE","N"]],["white2",["NE","W"]],["white2",["NE","E"]],["white2",["NE","NW"]],["white2",["NE","NE"]],["white2",["NE","SW"]],["white2",["NE","SE"]]]
+[]
+[]
