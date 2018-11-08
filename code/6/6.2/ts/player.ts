@@ -32,15 +32,7 @@ export class Player {
     constructor(selectedColor: string, initialBoard: Array<Array<any>>) {
         this.color = selectedColor;
         this.boardInstance = new Board(initialBoard);
-        rl.on('line', (input) => {
-            let config = maybeValidJson(input);
-
-            if (config) {
-                this.look_ahead = config["look-ahead"];
-            } else {
-                console.log("look_ahead value invalid");
-            }
-        });
+        this.look_ahead = fs.readFileSync('strategy.config', 'utf8');
     }
 
 
