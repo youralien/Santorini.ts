@@ -27,7 +27,6 @@ class Referee {
      * doTurn
      * Purpose:
      * - Asks next player to choose a play, and updates the board accordingly.
-     * - It will return false
      *
      * Dependencies:
      * - Player.makePlay: request each Player to make a play

@@ -48,8 +48,9 @@ var Strategy = /** @class */ (function () {
         var playsTarget = Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
         console.log("playsTarget | n = " + n + " | length = " + playsTarget.length);
         var playsTargetNext = [];
-        playsTarget.forEach(function (currPlay) {
-            var targetPlayerBoard = currPlay[0], _a = currPlay[1], targetPlayerWorker = _a[0], targetPlayerDirections = _a[1], targetPlayerDidWin = currPlay[2];
+        for (var i in playsTarget) {
+            var _a = playsTarget[i], targetPlayerBoard = _a[0], _b = _a[1], targetPlayerWorker = _b[0], targetPlayerDirections = _b[1], targetPlayerDidWin = _a[2];
+            var currPlay = playsTarget[i];
             if (targetPlayerDidWin) {
                 playsTargetNext.push(currPlay);
             }
@@ -61,12 +62,16 @@ var Strategy = /** @class */ (function () {
                     playsTargetNext.push(currPlay);
                     console.log('winning move for target player');
                 }
-                otherPlayerPlays.forEach(function (otherPlay) {
-                    var otherPlayerBoard = otherPlay[0], _a = otherPlay[1], otherPlayerWorker = _a[0], otherPlayerDirections = _a[1], otherPlayerDidWin = otherPlay[2];
-                    playsTargetNext.concat(Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1));
-                });
+                for (var j in otherPlayerPlays) {
+                    var _c = otherPlayerPlays[j], otherPlayerBoard = _c[0], _d = _c[1], otherPlayerWorker = _d[0], otherPlayerDirections = _d[1], otherPlayerDidWin = _c[2];
+                    var temp = Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1);
+                    if (temp.length > 0) {
+                        playsTargetNext.push(temp);
+                        return playsTargetNext;
+                    }
+                }
             }
-        });
+        }
         console.log("playsTargetNext | n = " + n + " | length = " + playsTargetNext.length);
         return playsTargetNext;
     };
