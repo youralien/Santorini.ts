@@ -2,3 +2,210 @@
 > board-interface@1.0.0 test /home/rshang97/northwestern/397/team20/code/6/6.2
 > tsc && mocha
 
+Board -- Testing Board
+Player -- Testing Board
+[[[0,"blue1"],3,2,2,[1,"white1"]],[4,0,0,1,2],[2,2,1,3,2],[0,0,1,[2,"blue2"],4],[3,2,2,3,[2,"white2"]]]
+[["white2",["W"]]]
+RuleChecker -- Testing Board
+Player -- Middle Testing Board
+[[0,0,0,0,[0,"white2"]],[0,0,0,0,0],[0,0,[0,"white1"],0,0],[0,0,0,0,0],[[0,"blue2"],0,0,0,[0,"blue1"]]]
+computeNonLosingValidBoardsPlaysWins:  [ [ 'white1', [ 'N', 'N' ] ],
+  [ 'white1', [ 'N', 'S' ] ],
+  [ 'white1', [ 'N', 'W' ] ],
+  [ 'white1', [ 'N', 'E' ] ],
+  [ 'white1', [ 'N', 'NW' ] ],
+  [ 'white1', [ 'N', 'NE' ] ],
+  [ 'white1', [ 'N', 'SW' ] ],
+  [ 'white1', [ 'N', 'SE' ] ],
+  [ 'white1', [ 'S', 'N' ] ],
+  [ 'white1', [ 'S', 'S' ] ],
+  [ 'white1', [ 'S', 'W' ] ],
+  [ 'white1', [ 'S', 'E' ] ],
+  [ 'white1', [ 'S', 'NW' ] ],
+  [ 'white1', [ 'S', 'NE' ] ],
+  [ 'white1', [ 'S', 'SW' ] ],
+  [ 'white1', [ 'S', 'SE' ] ],
+  [ 'white1', [ 'W', 'N' ] ],
+  [ 'white1', [ 'W', 'S' ] ],
+  [ 'white1', [ 'W', 'W' ] ],
+  [ 'white1', [ 'W', 'E' ] ],
+  [ 'white1', [ 'W', 'NW' ] ],
+  [ 'white1', [ 'W', 'NE' ] ],
+  [ 'white1', [ 'W', 'SW' ] ],
+  [ 'white1', [ 'W', 'SE' ] ],
+  [ 'white1', [ 'E', 'N' ] ],
+  [ 'white1', [ 'E', 'S' ] ],
+  [ 'white1', [ 'E', 'W' ] ],
+  [ 'white1', [ 'E', 'E' ] ],
+  [ 'white1', [ 'E', 'NW' ] ],
+  [ 'white1', [ 'E', 'NE' ] ],
+  [ 'white1', [ 'E', 'SW' ] ],
+  [ 'white1', [ 'E', 'SE' ] ],
+  [ 'white1', [ 'NW', 'N' ] ],
+  [ 'white1', [ 'NW', 'S' ] ],
+  [ 'white1', [ 'NW', 'W' ] ],
+  [ 'white1', [ 'NW', 'E' ] ],
+  [ 'white1', [ 'NW', 'NW' ] ],
+  [ 'white1', [ 'NW', 'NE' ] ],
+  [ 'white1', [ 'NW', 'SW' ] ],
+  [ 'white1', [ 'NW', 'SE' ] ],
+  [ 'white1', [ 'NE', 'N' ] ],
+  [ 'white1', [ 'NE', 'S' ] ],
+  [ 'white1', [ 'NE', 'W' ] ],
+  [ 'white1', [ 'NE', 'E' ] ],
+  [ 'white1', [ 'NE', 'NW' ] ],
+  [ 'white1', [ 'NE', 'SW' ] ],
+  [ 'white1', [ 'NE', 'SE' ] ],
+  [ 'white1', [ 'SW', 'N' ] ],
+  [ 'white1', [ 'SW', 'S' ] ],
+  [ 'white1', [ 'SW', 'W' ] ],
+  [ 'white1', [ 'SW', 'E' ] ],
+  [ 'white1', [ 'SW', 'NW' ] ],
+  [ 'white1', [ 'SW', 'NE' ] ],
+  [ 'white1', [ 'SW', 'SE' ] ],
+  [ 'white1', [ 'SE', 'N' ] ],
+  [ 'white1', [ 'SE', 'S' ] ],
+  [ 'white1', [ 'SE', 'W' ] ],
+  [ 'white1', [ 'SE', 'E' ] ],
+  [ 'white1', [ 'SE', 'NW' ] ],
+  [ 'white1', [ 'SE', 'NE' ] ],
+  [ 'white1', [ 'SE', 'SW' ] ],
+  [ 'white2', [ 'S', 'N' ] ],
+  [ 'white2', [ 'S', 'S' ] ],
+  [ 'white2', [ 'S', 'W' ] ],
+  [ 'white2', [ 'S', 'NW' ] ],
+  [ 'white2', [ 'S', 'SW' ] ],
+  [ 'white2', [ 'W', 'S' ] ],
+  [ 'white2', [ 'W', 'W' ] ],
+  [ 'white2', [ 'W', 'E' ] ],
+  [ 'white2', [ 'W', 'SW' ] ],
+  [ 'white2', [ 'W', 'SE' ] ],
+  [ 'white2', [ 'SW', 'N' ] ],
+  [ 'white2', [ 'SW', 'S' ] ],
+  [ 'white2', [ 'SW', 'W' ] ],
+  [ 'white2', [ 'SW', 'E' ] ],
+  [ 'white2', [ 'SW', 'NW' ] ],
+  [ 'white2', [ 'SW', 'NE' ] ],
+  [ 'white2', [ 'SW', 'SE' ] ] ]
+computeNonLosingValidBoardsPlaysWins.length:  78
+playsTarget | n = 3 | length = 78
+otherPlayerPlays.length 36
+playsTarget | n = 2 | length = 68
+otherPlayerPlays.length 47
+non losing plays length
+1
+pickNonLosingPlay [ [ [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ],
+    [ [Object], [Array], false ] ] ]
+
+
+  1) Uncaught error outside test suite
+  Board -- Testing neighboring-cell-exists
+    ✓ blue1 [0, 0] cant have cell N of it
+    ✓ blue1 [0, 0] has cell S of it
+    ✓ blue4 is not a valid worker
+
+  Board -- Testing get-height
+    ✓ no cell at [-1, 5] is not a valid cell
+    ✓ 2 is E of blue1
+    ✓ [3, white2] is SE of blue2
+
+  Board -- Testing is-occupied
+    ✓ no cell at [-1, 5] is not a valid cell
+    ✓ 2 is E of blue1 and is thus unoccupied
+    ✓ [3, white2] is SE of blue2
+
+  Board -- Testing build
+    ✓ no cell at [-1, 5] so cant build
+    ✓ 2 is E of blue1, so building should increase it to 3
+
+  Board -- Testing move
+    ✓ no cell at [-1, 5] so cant move
+    ✓ blue1 can move SE to [1, 1]
+    ✓ white1 can move W to [0, 3] where height is 2
+    ✓ white2 can move W because 0 < 4
+
+  Player -- Testing Placement of Workers
+    ✓ empty board, so place at top two corners
+    ✓ blue is at top half
+    ✓ blue is at bottom half
+    ✓ blue is at left half
+    ✓ blue is at right half
+    ✓ blue is at top-left and bottom-right
+    ✓ blue is at top-right and bottom-left
+
+  RuleChecker -- Testing Move Only
+    ✓ blue1 tries to move to [0, 1] where it would win but cant -- invalid
+    ✓ blue2 moves to [2, 3] and wins -- valid
+
+  RuleChecker -- Testing Valid Move, Invalid Build
+    ✓ blue2 can move S, but cant build E since white 2 is there -- invalid
+    ✓ blue1 can move SE, but cant build W because it has a cap -- invalid
+    ✓ white1 can move W, but cant build N because out of bounds -- invalid
+
+  RuleChecker -- Testing Valid Move, and Valid Build, but Move should result in win
+    ✓ blue1 tries to move and build, but would have won after moving -- invalid
+    ✓ white2 tries to move and build, but would have won after moving -- invalid
+    ✓ white1 tries to move and build, but would have won after moving -- invalid
+
+  RuleChecker -- Testing Invalid Move, Any Build
+    ✓ blue2 cant move SE even though building W after is valid -- invalid
+    ✓ blue1 cant move S -- invalid
+    ✓ blue1 cant move N because its outside of the boardInstance -- invalid
+
+  RuleChecker -- Testing Valid Move, Valid Build
+    ✓ blue1 moves SE and build N to 4 -- valid
+    ✓ blue2 moves N to winning tower, but also decided to build W -- invalid
+
+
+  35 passing (40ms)
+  1 failing
+
+  1) Uncaught error outside test suite:
+     Uncaught Error: ENOENT: no such file or directory, open './strategy.config'
+  
+
+
+

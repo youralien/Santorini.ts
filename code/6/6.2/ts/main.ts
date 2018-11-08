@@ -39,7 +39,7 @@ rl.on('line', (input) => {
                 playerInstance = new Player(color, initialBoard);
                 outputMessage = playerInstance.placeWorkers();
             } else if (command === 'Play') {
-                outputMessage = playerInstance.determinePlays(new Board(maybeValidResponse[1]));
+                outputMessage = playerInstance.pickNonLosingPlay(new Board(maybeValidResponse[1]));
             }
 
             // return output from function call
@@ -62,7 +62,7 @@ rl.on('close', () => {
  * @param inputString {string} string to attempt to find valid JSON in.
  * @return {object} valid JSON object or undefined if failed to parse.
  */
-const maybeValidJson = function checkIfJsonIsValid(inputString) {
+export const maybeValidJson = function checkIfJsonIsValid(inputString) {
     // attempt to parse JSON
     try {
         return JSON.parse(inputString);

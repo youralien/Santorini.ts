@@ -1,5 +1,11 @@
+var fs = require('fs');
+var readline = require('readline');
+var instream = fs.createReadStream('./strategy.config');
+var rl = readline.createInterface(instream, process.stdout);
+    
 import { Board } from "./board";
 import { Strategy } from "./strategy";
+import {maybeValidJson} from "./main";
 
 /**
  * Cell interface for boardInstance.
@@ -18,6 +24,7 @@ export class Player {
      */
     color: string;             // chosen color for game
     boardInstance: Board;      // boardInstance class instance that holds the current state of the game
+    look_ahead: number;
 
     /**
      * Initializes class attributes to default values (see above).
@@ -25,6 +32,18 @@ export class Player {
     constructor(selectedColor: string, initialBoard: Array<Array<any>>) {
         this.color = selectedColor;
         this.boardInstance = new Board(initialBoard);
+        rl.on('line', (input) => {
+            let config = maybeValidJson(input);
+
+            if (config) {
+                this.look_ahead = config["look-ahead"];
+                console.log("look_ahead");
+                console.log(this.look_ahead);
+                
+            } else {
+                console.log("look_ahead value invalid");
+            }
+        });
     }
 
 
@@ -77,6 +96,14 @@ export class Player {
 
     determinePlays(board: Board) {
         return Strategy.computeNonLosingValidPlays(board, this.color);
+    }
+
+    pickNonLosingPlay(board: Board) {
+        if (this.look_ahead) {
+            return Strategy.pickNonLosingPlay(board, this.color, this.look_ahead);
+        } else {
+            console.log("look_ahead value not found");
+        }
     }
 
     /**

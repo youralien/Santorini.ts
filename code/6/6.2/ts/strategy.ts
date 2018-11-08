@@ -38,6 +38,8 @@ export class Strategy {
 
     static pickNonLosingPlay(board : Board, targetPlayerColor : string, n : number) {
         let nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
+        console.log("non losing plays length");
+        console.log(nonLosingPlays.length);
         if (nonLosingPlays.length > 0) {
             return nonLosingPlays[0];
         } else {
