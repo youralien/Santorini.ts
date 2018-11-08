@@ -38,10 +38,11 @@ export class Strategy {
 
     static pickNonLosingPlay(board : Board, targetPlayerColor : string, n : number) {
         let nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
-        console.log("non losing plays length");
+        
+        console.log("nonLosingPlays length");
         console.log(nonLosingPlays.length);
         if (nonLosingPlays.length > 0) {
-            return nonLosingPlays[0];
+            let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = nonLosingPlays[0];
         } else {
             console.error('Could not find a non losing play, in Strategy.pickNonLosingPlay');
         }
@@ -53,7 +54,6 @@ export class Strategy {
         }
 
         let playsTarget = Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
-        console.log(`playsTarget | n = ${n} | length = ${playsTarget.length}`);
 
         let playsTargetNext = [];
 
@@ -61,16 +61,15 @@ export class Strategy {
             let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = playsTarget[i];
             let currPlay = playsTarget[i]
 
+            // if win then use this play
             if (targetPlayerDidWin) {
                 playsTargetNext.push(currPlay);
             } else {
                 let otherPlayerColor = targetPlayerColor === 'white' ? 'blue' : 'white';
 
                 let otherPlayerPlays = Strategy.computeNonLosingValidBoardsPlaysWins(targetPlayerBoard, otherPlayerColor);
-                console.log('otherPlayerPlays.length', otherPlayerPlays.length);
                 if (otherPlayerPlays.length === 0) {
                     playsTargetNext.push(currPlay);
-                    console.log('winning move for target player');
                 }
 
                 for (let j in otherPlayerPlays) {
@@ -79,12 +78,13 @@ export class Strategy {
 
                     if (temp.length > 0) {
                         playsTargetNext.push(temp);
+
+                        // return first feasible move found
                         return playsTargetNext;
                     }
                 }
             }
         }
-        console.log(`playsTargetNext | n = ${n} | length = ${playsTargetNext.length}`);
         return playsTargetNext;
     }
     static computeNonLosingValidBoardsPlaysWins(board: Board, targetPlayerColor: string) : Array<[Board, [string, [string, string]], boolean]> {

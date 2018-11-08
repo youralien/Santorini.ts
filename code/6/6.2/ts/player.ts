@@ -37,9 +37,6 @@ export class Player {
 
             if (config) {
                 this.look_ahead = config["look-ahead"];
-                console.log("look_ahead");
-                console.log(this.look_ahead);
-                
             } else {
                 console.log("look_ahead value invalid");
             }
