@@ -8,6 +8,7 @@ interface PlayerInterface {
     register(): string;
     placeWorkers(color: string, board: any[][]): number[][];
     play(board: any[][]): [string, string[]];
+    playOptionsNonLosing(board: any[][]): Array<[string, string[]]>;
     gameOver(name: string): string;
 
 }
@@ -111,3 +112,17 @@ export class Player implements PlayerInterface {
     }
 }
 
+/**
+ * Implements a Remote Proxy for the Player Class
+ * It will setup the tcp/ip socket as a “client” to connect to some remote player component
+ */
+export class RemoteProxyPlayer implements PlayerInterface {
+
+    constructor(){}
+    register(): string {}
+    placeWorkers(color: string, board: any[][]): number[][] {}
+    play(board: any[][]): [string, string[]] {}
+    playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
+    gameOver(name: string): string {}
+
+}

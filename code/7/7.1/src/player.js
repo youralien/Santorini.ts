@@ -87,3 +87,18 @@ var Player = /** @class */ (function () {
     return Player;
 }());
 exports.Player = Player;
+/**
+ * Implements a Remote Proxy for the Player Class
+ * It will setup the tcp/ip socket as a “client” to connect to some remote player component
+ */
+var RemoteProxyPlayer = /** @class */ (function () {
+    function RemoteProxyPlayer() {
+    }
+    RemoteProxyPlayer.prototype.register = function () { };
+    RemoteProxyPlayer.prototype.placeWorkers = function (color, board) { };
+    RemoteProxyPlayer.prototype.play = function (board) { };
+    RemoteProxyPlayer.prototype.playOptionsNonLosing = function (board) { };
+    RemoteProxyPlayer.prototype.gameOver = function (name) { };
+    return RemoteProxyPlayer;
+}());
+exports.RemoteProxyPlayer = RemoteProxyPlayer;
