@@ -1,5 +1,6 @@
 import { Board } from "./board";
 import { RuleChecker } from "./rules";
+import {worker} from "cluster";
 
 /**
  * Implements a Strategy module that the Player uses to decide what plays to make.
@@ -9,49 +10,29 @@ export class Strategy {
     constructor() {
     }
 
-    /**
-     * Computes and returns a value that is a heuristic for how good an action is.
-     * @param currentBoardState {Array<Array<Cell>>} current boardInstance to evaluate how good player is doing.
-     * @return {number} computed heuristic
-     */
-    computeHeuristic(): number {
-        let heuristic = 0;
-        return heuristic;
+
+    static pickOneNonLosingPlay(board: Board, targetPlayerColor: string, n: number) : [string, string[]] {
+        let manyPlays = Strategy.computeManyNonLosingPlays(board, targetPlayerColor, n);
+        // TODO: choose something smarter from the options
+        return (manyPlays.length ? manyPlays[0] : undefined);
     }
 
-    /**
-     * Uses boardInstance instance to compute valid potential next states of the boardInstance and their cooresponding heuristic values.
-     * @return {object} computed search tree with heuristics.
-     */
-    generateSearchTree(): object {
-        return {};
-    }
-
-    /**
-     * Uses a search tree to figure out best move to make and returns instructions to make that move.
-     * @param searchTree {object} search tree to use for computing best move
-     * @return {[Array<Array<Cell>>, string, [string, string]]} valid play command.
-     */
-    pickBestMove(searchTree: object): [Array<Array<any>>, string, [string, string]] {
-        return [[[], [], [], [], []], 'worker', ['direction1', 'direction2']];
-    }
-
-    static pickNonLosingPlay(board : Board, targetPlayerColor : string, n : number) {
-        let nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
+    static computeManyNonLosingPlays(board : Board, targetPlayerColor : string, n : number) : Array<[string, string[]]> {
+        let nonLosingPlays = Strategy.getNonLosingBoardsPlaysWinsAtDepth(board, targetPlayerColor, n);
         let ret = [];
         
         if (nonLosingPlays.length > 0) {
-            for (var i = 0; i < nonLosingPlays.length; i++) {
-                let [targetPlayerBoard, ans, targetPlayerDidWin] = nonLosingPlays[i];
-                if (ans) {
-                    ret.push(ans);
+            for (let i = 0; i < nonLosingPlays.length; i++) {
+                let [targetPlayerBoard, workerDirections, targetPlayerDidWin] = nonLosingPlays[i];
+                if (workerDirections) {
+                    ret.push(workerDirections);
                 }
             }
         }    
         return ret;
     }
 
-    static getNonLosingPlays(board : Board, targetPlayerColor : string, n : number) {
+    static getNonLosingBoardsPlaysWinsAtDepth(board : Board, targetPlayerColor : string, n : number) : Array<[Board, [string, string[]], boolean]> {
         if (n === 1) {
             return Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
         }
@@ -62,7 +43,7 @@ export class Strategy {
 
         for (let i in playsTarget) {
             let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = playsTarget[i];
-            let currPlay = playsTarget[i]
+            let currPlay = playsTarget[i];
 
             // if win then use this play
             if (targetPlayerDidWin) {
@@ -77,7 +58,7 @@ export class Strategy {
 
                 for (let j in otherPlayerPlays) {
                     let [otherPlayerBoard, [otherPlayerWorker, otherPlayerDirections], otherPlayerDidWin] = otherPlayerPlays[j];
-                    let temp = Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1);
+                    let temp = Strategy.getNonLosingBoardsPlaysWinsAtDepth(otherPlayerBoard, targetPlayerColor, n - 1);
 
                     if (temp.length > 0) {
                         playsTargetNext.push(temp);
@@ -90,7 +71,7 @@ export class Strategy {
         }
         return playsTargetNext;
     }
-    static computeNonLosingValidBoardsPlaysWins(board: Board, targetPlayerColor: string) : Array<[Board, [string, [string, string]], boolean]> {
+    static computeNonLosingValidBoardsPlaysWins(board: Board, targetPlayerColor: string) : Array<[Board, [string, string[]], boolean]> {
         // compute plays for target player
         let targetPlayerValidPlays = Strategy.computeValidPlays(board, targetPlayerColor);
 

@@ -1,45 +1,42 @@
 "use strict";
 exports.__esModule = true;
 var fs = require('fs');
-var readline = require('readline');
-var instream = fs.createReadStream('./strategy.config');
-var rl = readline.createInterface(instream, process.stdout);
 var board_1 = require("./board");
 var strategy_1 = require("./strategy");
 /**
  * Implements a Player component that can communicate with a game engine to play Santorini.
  */
 var Player = /** @class */ (function () {
-    /**
-     * Initializes class attributes to default values (see above).
-     */
-    function Player(selectedColor, initialBoard) {
-        this.color = selectedColor;
-        this.boardInstance = new board_1.Board(initialBoard);
+    function Player() {
+        this.color = undefined;
+        this.boardInstance = undefined;
         this.look_ahead = fs.readFileSync('strategy.config', 'utf8');
     }
     /**
-     * Connects to the game engine, and responds with appropriate actions when requested.
-     * NOT IMPLEMENTED IN CURRENT VERSION
+     *
+     * @return {string} denotes name of player (their color)
      */
-    Player.prototype.connectToGameEngine = function () {
-        // communicates with game engine to set color, make moves, and update internal game state
+    Player.prototype.register = function () {
+        return this.color;
     };
     /**
-     * Picks and returns a worker color (i.e. blue, white) for game when requested by the game engine.
-     * @return {string} selected color.
+     * Starts Remote Connection
      */
-    Player.prototype.chooseColor = function () {
-        var color = '';
-        this.color = color;
-        return color;
+    Player.prototype.startRemoteConnection = function () {
+        // communicates with game engine to set color, make moves, and update internal game state
     };
     /**
      * Places workers for the Player's selected color on unoccupied corners clock-wise starting
      * from the top-leftmost corner of the boardInstance.
      * @return {[[number, number]]>} JSON list that contains two pairs of numbers, each between 0 and 4.
      */
-    Player.prototype.placeWorkers = function () {
+    Player.prototype.placeWorkers = function (color, board) {
+        if (this.color || this.boardInstance) {
+            console.log("Place command should only be called once for player name " + this.color);
+            return;
+        }
+        this.color = color;
+        this.boardInstance = new board_1.Board(board);
         var potentialPlacements = [[0, 0], [0, 4], [4, 4], [4, 0]];
         var workersToPlace = [this.color + "1", this.color + "2"];
         var workerPlacements = [];
@@ -59,30 +56,33 @@ var Player = /** @class */ (function () {
         // return placements
         return workerPlacements;
     };
-    Player.prototype.determinePlays = function (board) {
-        return strategy_1.Strategy.computeNonLosingValidPlays(board, this.color);
+    /**
+     * Chooses a single play. Currently is dumb, and chooses the first play
+     * @param {any[][]} board
+     * @return {[string , [string , string]]}
+     */
+    Player.prototype.play = function (board) {
+        this.boardInstance = new board_1.Board(board);
+        return this.pickNonLosingPlay(this.boardInstance);
     };
     Player.prototype.pickNonLosingPlay = function (board) {
+        return strategy_1.Strategy.pickOneNonLosingPlay(board, this.color, this.look_ahead);
+    };
+    Player.prototype.playOptionsNonLosing = function (board) {
+        this.boardInstance = new board_1.Board(board);
+        return this.computeManyNonLosingPlays(this.boardInstance);
+    };
+    Player.prototype.computeManyNonLosingPlays = function (board) {
         if (this.look_ahead) {
-            return strategy_1.Strategy.pickNonLosingPlay(board, this.color, this.look_ahead);
+            return strategy_1.Strategy.computeManyNonLosingPlays(board, this.color, this.look_ahead);
         }
         else {
             console.log("look_ahead value not found");
         }
     };
-    /**
-     * Uses Strategy module pickBestMove function to to determine a game move, and returns the properly formatted move.
-     * @return {[Array<Array<Cell>>, string, [string, string]]} valid play command.
-     */
-    Player.prototype.makePlay = function () {
-        return [this.boardInstance.board, 'worker', ['direction1', 'direction2']];
-    };
-    /**
-     * Updates the Player's internal view of the boardInstance once the game engine returns the updated boardInstance.
-     * @param updatedBoard {Array<Array<Cell>>} current state of the game boardInstance as sent by the game engine.
-     */
-    Player.prototype.updateGameState = function (updatedBoard) {
-        this.boardInstance.board = updatedBoard;
+    Player.prototype.gameOver = function (name) {
+        // TODO: maybe change the state
+        return 'ok';
     };
     return Player;
 }());

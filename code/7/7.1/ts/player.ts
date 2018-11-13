@@ -1,57 +1,45 @@
 var fs = require('fs');
-var readline = require('readline');
-var instream = fs.createReadStream('./strategy.config');
-var rl = readline.createInterface(instream, process.stdout);
-    
+
 import { Board } from "./board";
 import { Strategy } from "./strategy";
-import {maybeValidJson} from "./main";
 
-/**
- * Cell interface for boardInstance.
- */
-interface Cell {
-    worker?: string;
-    height: number;
+interface PlayerInterface {
+
+    register(): string;
+    placeWorkers(color: string, board: any[][]): number[][];
+    play(board: any[][]): [string, string[]];
+    gameOver(name: string): string;
+
 }
+
 
 /**
  * Implements a Player component that can communicate with a game engine to play Santorini.
  */
-export class Player {
-    /**
-     * Player Knowledge
-     */
-    color: string;             // chosen color for game
-    boardInstance: Board;      // boardInstance class instance that holds the current state of the game
+export class Player implements PlayerInterface {
+    color: string;
+    boardInstance: Board;
     look_ahead: number;
 
-    /**
-     * Initializes class attributes to default values (see above).
-     */
-    constructor(selectedColor: string, initialBoard: Array<Array<any>>) {
-        this.color = selectedColor;
-        this.boardInstance = new Board(initialBoard);
+    constructor() {
+        this.color = undefined;
+        this.boardInstance = undefined;
         this.look_ahead = fs.readFileSync('strategy.config', 'utf8');
     }
 
-
     /**
-     * Connects to the game engine, and responds with appropriate actions when requested.
-     * NOT IMPLEMENTED IN CURRENT VERSION
+     *
+     * @return {string} denotes name of player (their color)
      */
-    connectToGameEngine() {
-        // communicates with game engine to set color, make moves, and update internal game state
+    register(): string {
+        return this.color;
     }
 
     /**
-     * Picks and returns a worker color (i.e. blue, white) for game when requested by the game engine.
-     * @return {string} selected color.
+     * Starts Remote Connection
      */
-    chooseColor(): string {
-        let color = '';
-        this.color = color;
-        return color;
+    startRemoteConnection() {
+        // communicates with game engine to set color, make moves, and update internal game state
     }
 
     /**
@@ -59,7 +47,14 @@ export class Player {
      * from the top-leftmost corner of the boardInstance.
      * @return {[[number, number]]>} JSON list that contains two pairs of numbers, each between 0 and 4.
      */
-    placeWorkers() {
+    placeWorkers(color: string, board: any[][]) : number[][] {
+        if (this.color || this.boardInstance) {
+            console.log(`Place command should only be called once for player name ${this.color}`);
+            return;
+        }
+
+        this.color = color;
+        this.boardInstance = new Board(board);
         const potentialPlacements = [[0, 0], [0, 4], [4, 4], [4, 0]];
         let workersToPlace = [`${ this.color }1`, `${ this.color }2`];
         let workerPlacements = [];
@@ -83,31 +78,36 @@ export class Player {
         return workerPlacements;
     }
 
-    determinePlays(board: Board) {
-        return Strategy.computeNonLosingValidPlays(board, this.color);
+    /**
+     * Chooses a single play. Currently is dumb, and chooses the first play
+     * @param {any[][]} board
+     * @return {[string , [string , string]]}
+     */
+    play(board: any[][]): [string, string[] ] {
+        this.boardInstance = new Board(board);
+        return this.pickNonLosingPlay(this.boardInstance);
     }
 
-    pickNonLosingPlay(board: Board) {
+    private pickNonLosingPlay(board: Board) : [string, string[]] {
+        return Strategy.pickOneNonLosingPlay(board, this.color, this.look_ahead);
+    }
+
+    playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {
+        this.boardInstance = new Board(board);
+        return this.computeManyNonLosingPlays(this.boardInstance);
+    }
+
+    private computeManyNonLosingPlays(board: Board) : Array<[string, string[]]> {
         if (this.look_ahead) {
-            return Strategy.pickNonLosingPlay(board, this.color, this.look_ahead);
+            return Strategy.computeManyNonLosingPlays(board, this.color, this.look_ahead);
         } else {
             console.log("look_ahead value not found");
         }
     }
 
-    /**
-     * Uses Strategy module pickBestMove function to to determine a game move, and returns the properly formatted move.
-     * @return {[Array<Array<Cell>>, string, [string, string]]} valid play command.
-     */
-    makePlay(): [Array<Array<Cell>>, string, [string, string]] {
-        return [this.boardInstance.board, 'worker', ['direction1', 'direction2']];
-    }
-
-    /**
-     * Updates the Player's internal view of the boardInstance once the game engine returns the updated boardInstance.
-     * @param updatedBoard {Array<Array<Cell>>} current state of the game boardInstance as sent by the game engine.
-     */
-    updateGameState(updatedBoard: Array<Array<Cell>>): void {
-        this.boardInstance.board = updatedBoard;
+    gameOver(name: string) : string {
+        // TODO: maybe change the state
+        return 'ok';
     }
 }
+

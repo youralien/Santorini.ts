@@ -3,7 +3,6 @@ exports.__esModule = true;
 // import necessary packages and modules
 var readline = require("readline");
 var player_1 = require("./player");
-var board_1 = require("./board");
 // create stdin interface
 var rl = readline.createInterface({
     input: process.stdin,
@@ -12,7 +11,7 @@ var rl = readline.createInterface({
 });
 // global variables
 var currReadString = ''; // stores current input from user (allows for multi-line JSON)
-var playerInstance;
+var playerInstance = new player_1.Player();
 /**
  * Reads lines as input to stdin is made.
  */
@@ -25,16 +24,16 @@ rl.on('line', function (input) {
         // clear current read string and augment the valid, parsed JSON
         currReadString = '';
         if (isValidInput(maybeValidResponse)) {
-            var outputMessage = '';
+            var outputMessage = undefined;
             var command = maybeValidResponse[0];
             if (command === 'Place') {
                 var color = maybeValidResponse[1];
                 var initialBoard = maybeValidResponse[2];
-                playerInstance = new player_1.Player(color, initialBoard);
-                outputMessage = playerInstance.placeWorkers();
+                outputMessage = playerInstance.placeWorkers(color, initialBoard);
             }
             else if (command === 'Play') {
-                outputMessage = playerInstance.pickNonLosingPlay(new board_1.Board(maybeValidResponse[1]));
+                var board = maybeValidResponse[1];
+                outputMessage = playerInstance.playOptionsNonLosing(board);
             }
             // return output from function call
             console.log(JSON.stringify(outputMessage));

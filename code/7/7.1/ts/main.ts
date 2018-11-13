@@ -13,7 +13,7 @@ const rl = readline.createInterface({
 
 // global variables
 let currReadString = '';  // stores current input from user (allows for multi-line JSON)
-let playerInstance;
+let playerInstance = new Player();
 
 
 /**
@@ -29,17 +29,17 @@ rl.on('line', (input) => {
         currReadString = '';
 
         if (isValidInput(maybeValidResponse)) {
-            let outputMessage = '';
+            let outputMessage = undefined;
 
             let command = maybeValidResponse[0];
             if (command === 'Place') {
                 let color = maybeValidResponse[1];
                 let initialBoard = maybeValidResponse[2];
 
-                playerInstance = new Player(color, initialBoard);
-                outputMessage = playerInstance.placeWorkers();
+                outputMessage = playerInstance.placeWorkers(color, initialBoard);
             } else if (command === 'Play') {
-                outputMessage = playerInstance.pickNonLosingPlay(new Board(maybeValidResponse[1]));
+                let board = maybeValidResponse[1];
+                outputMessage = playerInstance.playOptionsNonLosing(board);
             }
 
             // return output from function call

@@ -8,44 +8,25 @@ var rules_1 = require("./rules");
 var Strategy = /** @class */ (function () {
     function Strategy() {
     }
-    /**
-     * Computes and returns a value that is a heuristic for how good an action is.
-     * @param currentBoardState {Array<Array<Cell>>} current boardInstance to evaluate how good player is doing.
-     * @return {number} computed heuristic
-     */
-    Strategy.prototype.computeHeuristic = function () {
-        var heuristic = 0;
-        return heuristic;
+    Strategy.pickOneNonLosingPlay = function (board, targetPlayerColor, n) {
+        var manyPlays = Strategy.computeManyNonLosingPlays(board, targetPlayerColor, n);
+        // TODO: choose something smarter from the options
+        return (manyPlays.length ? manyPlays[0] : undefined);
     };
-    /**
-     * Uses boardInstance instance to compute valid potential next states of the boardInstance and their cooresponding heuristic values.
-     * @return {object} computed search tree with heuristics.
-     */
-    Strategy.prototype.generateSearchTree = function () {
-        return {};
-    };
-    /**
-     * Uses a search tree to figure out best move to make and returns instructions to make that move.
-     * @param searchTree {object} search tree to use for computing best move
-     * @return {[Array<Array<Cell>>, string, [string, string]]} valid play command.
-     */
-    Strategy.prototype.pickBestMove = function (searchTree) {
-        return [[[], [], [], [], []], 'worker', ['direction1', 'direction2']];
-    };
-    Strategy.pickNonLosingPlay = function (board, targetPlayerColor, n) {
-        var nonLosingPlays = Strategy.getNonLosingPlays(board, targetPlayerColor, n);
+    Strategy.computeManyNonLosingPlays = function (board, targetPlayerColor, n) {
+        var nonLosingPlays = Strategy.getNonLosingBoardsPlaysWinsAtDepth(board, targetPlayerColor, n);
         var ret = [];
         if (nonLosingPlays.length > 0) {
             for (var i = 0; i < nonLosingPlays.length; i++) {
-                var _a = nonLosingPlays[i], targetPlayerBoard = _a[0], ans = _a[1], targetPlayerDidWin = _a[2];
-                if (ans) {
-                    ret.push(ans);
+                var _a = nonLosingPlays[i], targetPlayerBoard = _a[0], workerDirections = _a[1], targetPlayerDidWin = _a[2];
+                if (workerDirections) {
+                    ret.push(workerDirections);
                 }
             }
         }
         return ret;
     };
-    Strategy.getNonLosingPlays = function (board, targetPlayerColor, n) {
+    Strategy.getNonLosingBoardsPlaysWinsAtDepth = function (board, targetPlayerColor, n) {
         if (n === 1) {
             return Strategy.computeNonLosingValidBoardsPlaysWins(board, targetPlayerColor);
         }
@@ -66,7 +47,7 @@ var Strategy = /** @class */ (function () {
                 }
                 for (var j in otherPlayerPlays) {
                     var _c = otherPlayerPlays[j], otherPlayerBoard = _c[0], _d = _c[1], otherPlayerWorker = _d[0], otherPlayerDirections = _d[1], otherPlayerDidWin = _c[2];
-                    var temp = Strategy.getNonLosingPlays(otherPlayerBoard, targetPlayerColor, n - 1);
+                    var temp = Strategy.getNonLosingBoardsPlaysWinsAtDepth(otherPlayerBoard, targetPlayerColor, n - 1);
                     if (temp.length > 0) {
                         playsTargetNext.push(temp);
                         // return first feasible move found
