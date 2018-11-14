@@ -2,6 +2,7 @@ var fs = require('fs');
 
 import { Board } from "./board";
 import { Strategy } from "./strategy";
+import { maybeValidJson } from "./main";
 
 interface PlayerInterface {
 
@@ -119,29 +120,161 @@ export class Player implements PlayerInterface {
     }
 }
 
-// export class RemotePlayer implements PlayerInterface {
-//     constructor(port) {
-//
-//     }
-//     register(): string {}
-//     placeWorkers(color: string, board: any[][]): number[][] {}
-//     play(board: any[][]): [string, string[]] {}
-//     playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
-//     gameOver(name: string): string {}
-// }
-//
-//
-// /**
-//  * Implements a Remote Proxy for the Player Class
-//  * It will setup the tcp/ip socket as a “client” to connect to some remote player component
-//  */
-// export class RemoteProxyPlayer implements PlayerInterface {
-//
-//     constructor(){}
-//     register(): string {}
-//     placeWorkers(color: string, board: any[][]): number[][] {}
-//     play(board: any[][]): [string, string[]] {}
-//     playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
-//     gameOver(name: string): string {}
-//
-// }
+
+
+
+
+// load in package for stdin and stdout, and create input/output interface
+// const readline = require('readline');
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+//   terminal: false
+// });
+
+// global variables
+let currReadString = '';  // stores current input from user (allows for multi-line JSON)
+
+
+/**
+ * Reads lines as input to stdin is made.
+ */
+client.on('data', (data) => {
+    let input = data.toString('utf-8');
+
+    // add new input to current read in string (handling valid JSON across multiple lines)
+    currReadString += input;
+    // determine if JSON is valid
+    let isValidResponse = maybeValidJson(currReadString);
+    console.log(isValidResponse);
+    if (isValidResponse !== undefined) {
+        // clear current read string and augment the valid, parsed JSON
+        currReadString = '';
+
+        if (isValidCommand(isValidResponse)) {
+            if (isValidResponse["operation-name"] === 'Declare') {
+                // console.log(JSON.stringify(declareNumber()));
+                client.write(JSON.stringify(declareNumber()));
+            }
+            else if (isValidResponse["operation-name"] === 'Swap') {
+                // console.log(JSON.stringify(swapNumber()));
+                client.write(JSON.stringify(swapNumber()));
+            }
+        }
+    }
+});
+
+
+/**
+ * Detect when input stream is closed.
+ */
+client.on('close', () => {
+    console.log('connection to administrator closed.');
+});
+
+/**
+ * Implements a Remote Proxy for the Player Class
+ * It will setup the tcp/ip socket as a “client” to connect to some remote player component
+ */
+export class RemoteProxyPlayer implements PlayerInterface {
+    client;
+    turn: number;
+    commands: object;
+
+    constructor(host: string, port: number) {
+        this.commands = {
+            "Register": this.register,
+            "Place": this.placeWorkers,
+            "Play": this.play,
+            "Game Over": this.gameOver
+        };
+
+        // track what command turn it is, starts on expecting register
+        this.turn = 0;
+
+        // remote client
+        const net = require('net');
+        this.client = new net.Socket();
+        this.client.connect(port, host, function() {
+            console.log('ProxyPlayer is connected to Remote Player.');
+        });
+    }
+
+    /**
+     * Assume valid input commmand
+     * @param commandInput
+     */
+    progressTurn(commandInput: any[]) {
+        let command = commandInput[0];
+        let args = commandInput.slice(1);
+        let func = this.commands[command];
+
+        let outputMessage = func(...args);
+        console.log(outputMessage);
+
+        this.turn++;
+
+        return outputMessage;
+        // if ((command == 'Register') && (this.turn != 0)) {
+        //     outputMessage = this.commandsOutOfSequence();
+        // }
+        // if (command == 'Register') {
+        //     if (this.turn != this.commands.indexOf(command)) {
+        //         outputMessage = this.commandsOutOfSequence();
+        //     } else {
+        //         outputMessage = this.register();
+        //     }
+        //
+        // } {
+        // }
+        //
+    }
+
+    private receive() {
+        // global variables
+        let currReadString = '';  // stores current input from user (allows for multi-line JSON)
+
+
+        /**
+         * Reads lines as input to stdin is made.
+         */
+        this.client.on('data', (data) => {
+            let input = data.toString('utf-8');
+
+            // add new input to current read in string (handling valid JSON across multiple lines)
+            currReadString += input;
+            // determine if JSON is valid
+            let isValidResponse = maybeValidJson(currReadString);
+            console.log(isValidResponse);
+            if (isValidResponse !== undefined) {
+                // clear current read string and augment the valid, parsed JSON
+                currReadString = '';
+
+                this.validResponse = isValidResponse;
+
+            }
+        });
+
+
+    }
+
+
+    private commandsOutOfSequence() {
+        return "Santorini is broken! Too many tourists in such a small place...";
+    }
+
+    register(): string {
+        if (this.turn !== 0) {
+            return this.commandsOutOfSequence();
+        }
+
+        let commandAndArgs = ["Register"];
+        this.client.write(commandAndArgs)
+
+    }
+    placeWorkers(color: string, board: any[][]): number[][] {}
+    play(board: any[][]): [string, string[]] {}
+    playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
+    gameOver(name: string): string {}
+
+}
