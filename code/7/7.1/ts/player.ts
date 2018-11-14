@@ -6,11 +6,11 @@ import { maybeValidJson } from "./main";
 
 interface PlayerInterface {
 
-    register(): string;
-    placeWorkers(color: string, board: any[][]): number[][];
+    register(); // string;
+    placeWorkers(color: string, board: any[][]); // number[][];
     play(board: any[][]): [string, string[]];
-    playOptionsNonLosing(board: any[][]): Array<[string, string[]]>;
-    gameOver(name: string): string;
+    playOptionsNonLosing(board: any[][]); // Array<[string, string[]]>;
+    gameOver(name: string); // string;
 
 }
 
@@ -138,7 +138,6 @@ let currReadString = '';  // stores current input from user (allows for multi-li
 
 /**
  * Reads lines as input to stdin is made.
- */
 client.on('data', (data) => {
     let input = data.toString('utf-8');
 
@@ -165,14 +164,12 @@ client.on('data', (data) => {
 });
 
 
-/**
  * Detect when input stream is closed.
- */
-client.on('close', () => {
+
+thisclient.on('close', () => {
     console.log('connection to administrator closed.');
 });
 
-/**
  * Implements a Remote Proxy for the Player Class
  * It will setup the tcp/ip socket as a “client” to connect to some remote player component
  */
@@ -234,7 +231,6 @@ export class RemoteProxyPlayer implements PlayerInterface {
         // global variables
         let currReadString = '';  // stores current input from user (allows for multi-line JSON)
 
-
         /**
          * Reads lines as input to stdin is made.
          */
@@ -250,12 +246,9 @@ export class RemoteProxyPlayer implements PlayerInterface {
                 // clear current read string and augment the valid, parsed JSON
                 currReadString = '';
 
-                this.validResponse = isValidResponse;
-
+                return isValidResponse;
             }
         });
-
-
     }
 
 
@@ -263,18 +256,33 @@ export class RemoteProxyPlayer implements PlayerInterface {
         return "Santorini is broken! Too many tourists in such a small place...";
     }
 
-    register(): string {
+    register() {
         if (this.turn !== 0) {
             return this.commandsOutOfSequence();
         }
-
         let commandAndArgs = ["Register"];
         this.client.write(commandAndArgs)
-
+        return this.receive();
     }
-    placeWorkers(color: string, board: any[][]): number[][] {}
-    play(board: any[][]): [string, string[]] {}
-    playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
-    gameOver(name: string): string {}
+
+    placeWorkers(color: string, board: any[][]) {
+        if (this.turn != 1) {
+            return this.commandsOutOfSequence();
+        }
+
+        let commandAndArgs = [];
+    }
+    play(board: any[][]): [string, string[]] {
+        return ['richard', ['ryan']]
+    }
+    playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {
+        return [
+            ['richard', ['ryan']],
+            ['richard', ['ryan']]
+        ];
+    }
+    gameOver(name: string): string {
+        return 'OK';
+    }
 
 }

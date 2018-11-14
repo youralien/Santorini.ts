@@ -3,6 +3,7 @@ exports.__esModule = true;
 var fs = require('fs');
 var board_1 = require("./board");
 var strategy_1 = require("./strategy");
+var main_1 = require("./main");
 /**
  * Implements a Player component that can communicate with a game engine to play Santorini.
  */
@@ -92,29 +93,144 @@ var Player = /** @class */ (function () {
     return Player;
 }());
 exports.Player = Player;
-// export class RemotePlayer implements PlayerInterface {
-//     constructor(port) {
-//
-//     }
-//     register(): string {}
-//     placeWorkers(color: string, board: any[][]): number[][] {}
-//     play(board: any[][]): [string, string[]] {}
-//     playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
-//     gameOver(name: string): string {}
-// }
-//
-//
-// /**
-//  * Implements a Remote Proxy for the Player Class
-//  * It will setup the tcp/ip socket as a “client” to connect to some remote player component
-//  */
-// export class RemoteProxyPlayer implements PlayerInterface {
-//
-//     constructor(){}
-//     register(): string {}
-//     placeWorkers(color: string, board: any[][]): number[][] {}
-//     play(board: any[][]): [string, string[]] {}
-//     playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
-//     gameOver(name: string): string {}
-//
-// }
+// load in package for stdin and stdout, and create input/output interface
+// const readline = require('readline');
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+//   terminal: false
+// });
+// global variables
+var currReadString = ''; // stores current input from user (allows for multi-line JSON)
+/**
+ * Reads lines as input to stdin is made.
+client.on('data', (data) => {
+    let input = data.toString('utf-8');
+
+    // add new input to current read in string (handling valid JSON across multiple lines)
+    currReadString += input;
+    // determine if JSON is valid
+    let isValidResponse = maybeValidJson(currReadString);
+    console.log(isValidResponse);
+    if (isValidResponse !== undefined) {
+        // clear current read string and augment the valid, parsed JSON
+        currReadString = '';
+
+        if (isValidCommand(isValidResponse)) {
+            if (isValidResponse["operation-name"] === 'Declare') {
+                // console.log(JSON.stringify(declareNumber()));
+                client.write(JSON.stringify(declareNumber()));
+            }
+            else if (isValidResponse["operation-name"] === 'Swap') {
+                // console.log(JSON.stringify(swapNumber()));
+                client.write(JSON.stringify(swapNumber()));
+            }
+        }
+    }
+});
+
+
+ * Detect when input stream is closed.
+
+thisclient.on('close', () => {
+    console.log('connection to administrator closed.');
+});
+
+ * Implements a Remote Proxy for the Player Class
+ * It will setup the tcp/ip socket as a “client” to connect to some remote player component
+ */
+var RemoteProxyPlayer = /** @class */ (function () {
+    function RemoteProxyPlayer(host, port) {
+        this.commands = {
+            "Register": this.register,
+            "Place": this.placeWorkers,
+            "Play": this.play,
+            "Game Over": this.gameOver
+        };
+        // track what command turn it is, starts on expecting register
+        this.turn = 0;
+        // remote client
+        var net = require('net');
+        this.client = new net.Socket();
+        this.client.connect(port, host, function () {
+            console.log('ProxyPlayer is connected to Remote Player.');
+        });
+    }
+    /**
+     * Assume valid input commmand
+     * @param commandInput
+     */
+    RemoteProxyPlayer.prototype.progressTurn = function (commandInput) {
+        var command = commandInput[0];
+        var args = commandInput.slice(1);
+        var func = this.commands[command];
+        var outputMessage = func.apply(void 0, args);
+        console.log(outputMessage);
+        this.turn++;
+        return outputMessage;
+        // if ((command == 'Register') && (this.turn != 0)) {
+        //     outputMessage = this.commandsOutOfSequence();
+        // }
+        // if (command == 'Register') {
+        //     if (this.turn != this.commands.indexOf(command)) {
+        //         outputMessage = this.commandsOutOfSequence();
+        //     } else {
+        //         outputMessage = this.register();
+        //     }
+        //
+        // } {
+        // }
+        //
+    };
+    RemoteProxyPlayer.prototype.receive = function () {
+        // global variables
+        var currReadString = ''; // stores current input from user (allows for multi-line JSON)
+        /**
+         * Reads lines as input to stdin is made.
+         */
+        this.client.on('data', function (data) {
+            var input = data.toString('utf-8');
+            // add new input to current read in string (handling valid JSON across multiple lines)
+            currReadString += input;
+            // determine if JSON is valid
+            var isValidResponse = main_1.maybeValidJson(currReadString);
+            console.log(isValidResponse);
+            if (isValidResponse !== undefined) {
+                // clear current read string and augment the valid, parsed JSON
+                currReadString = '';
+                return isValidResponse;
+            }
+        });
+    };
+    RemoteProxyPlayer.prototype.commandsOutOfSequence = function () {
+        return "Santorini is broken! Too many tourists in such a small place...";
+    };
+    RemoteProxyPlayer.prototype.register = function () {
+        if (this.turn !== 0) {
+            return this.commandsOutOfSequence();
+        }
+        var commandAndArgs = ["Register"];
+        this.client.write(commandAndArgs);
+        return this.receive();
+    };
+    RemoteProxyPlayer.prototype.placeWorkers = function (color, board) {
+        if (this.turn != 1) {
+            return this.commandsOutOfSequence();
+        }
+        var commandAndArgs = [];
+    };
+    RemoteProxyPlayer.prototype.play = function (board) {
+        return ['richard', ['ryan']];
+    };
+    RemoteProxyPlayer.prototype.playOptionsNonLosing = function (board) {
+        return [
+            ['richard', ['ryan']],
+            ['richard', ['ryan']]
+        ];
+    };
+    RemoteProxyPlayer.prototype.gameOver = function (name) {
+        return 'OK';
+    };
+    return RemoteProxyPlayer;
+}());
+exports.RemoteProxyPlayer = RemoteProxyPlayer;
