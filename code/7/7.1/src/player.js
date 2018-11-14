@@ -141,12 +141,6 @@ thisclient.on('close', () => {
  */
 var RemoteProxyPlayer = /** @class */ (function () {
     function RemoteProxyPlayer(host, port) {
-        this.commands = {
-            "Register": this.register,
-            "Place": this.placeWorkers,
-            "Play": this.play,
-            "Game Over": this.gameOver
-        };
         // track what command turn it is, starts on expecting register
         this.turn = 0;
         // remote client
@@ -155,6 +149,12 @@ var RemoteProxyPlayer = /** @class */ (function () {
         this.client.connect(port, host, function () {
             console.log('ProxyPlayer is connected to Remote Player.');
         });
+        this.commands = {
+            "Register": this.register,
+            "Place": this.placeWorkers,
+            "Play": this.play,
+            "Game Over": this.gameOver
+        };
     }
     /**
      * Assume valid input commmand
@@ -162,12 +162,27 @@ var RemoteProxyPlayer = /** @class */ (function () {
      */
     RemoteProxyPlayer.prototype.progressTurn = function (commandInput) {
         var command = commandInput[0];
-        var args = commandInput.slice(1);
-        var func = this.commands[command];
-        var outputMessage = func.apply(void 0, args);
-        console.log(outputMessage);
+        var res = undefined;
+        console.log("progressing turn:");
+        console.log(command);
+        if (command == 'Register') {
+            res = this.register();
+        }
+        else if (command == 'Place') {
+            var color = commandInput[1];
+            var board = commandInput[2];
+            res = this.placeWorkers(color, board);
+        }
+        else if (command == 'Play') {
+            var board = commandInput[1];
+            res = this.play(board);
+        }
+        else if (command == 'Game Over') {
+            var name_1 = commandInput[1];
+            res = this.gameOver(name_1);
+        }
         this.turn++;
-        return outputMessage;
+        return res;
         // if ((command == 'Register') && (this.turn != 0)) {
         //     outputMessage = this.commandsOutOfSequence();
         // }
@@ -194,6 +209,7 @@ var RemoteProxyPlayer = /** @class */ (function () {
             currReadString += input;
             // determine if JSON is valid
             var isValidResponse = main_1.maybeValidJson(currReadString);
+            console.log("received: ");
             console.log(isValidResponse);
             if (isValidResponse !== undefined) {
                 // clear current read string and augment the valid, parsed JSON
@@ -210,8 +226,9 @@ var RemoteProxyPlayer = /** @class */ (function () {
             return this.commandsOutOfSequence();
         }
         var commandAndArgs = ["Register"];
-        this.client.write(commandAndArgs);
-        return this.receive();
+        this.client.write(JSON.stringify(commandAndArgs));
+        var ans = this.receive();
+        return ans;
     };
     RemoteProxyPlayer.prototype.placeWorkers = function (color, board) {
         if (this.turn != 1) {

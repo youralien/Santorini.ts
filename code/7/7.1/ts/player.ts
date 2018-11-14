@@ -8,7 +8,7 @@ interface PlayerInterface {
 
     register(); // string;
     placeWorkers(color: string, board: any[][]); // number[][];
-    play(board: any[][]): [string, string[]];
+    play(board: any[][]); // [string, string[]];
     playOptionsNonLosing(board: any[][]); // Array<[string, string[]]>;
     gameOver(name: string); // string;
 
@@ -177,14 +177,9 @@ export class RemoteProxyPlayer implements PlayerInterface {
     client;
     turn: number;
     commands: object;
+    x: number;
 
     constructor(host: string, port: number) {
-        this.commands = {
-            "Register": this.register,
-            "Place": this.placeWorkers,
-            "Play": this.play,
-            "Game Over": this.gameOver
-        };
 
         // track what command turn it is, starts on expecting register
         this.turn = 0;
@@ -195,6 +190,13 @@ export class RemoteProxyPlayer implements PlayerInterface {
         this.client.connect(port, host, function() {
             console.log('ProxyPlayer is connected to Remote Player.');
         });
+
+        this.commands = {
+            "Register": this.register,
+            "Place": this.placeWorkers,
+            "Play": this.play,
+            "Game Over": this.gameOver
+        };
     }
 
     /**
@@ -203,15 +205,26 @@ export class RemoteProxyPlayer implements PlayerInterface {
      */
     progressTurn(commandInput: any[]) {
         let command = commandInput[0];
-        let args = commandInput.slice(1);
-        let func = this.commands[command];
+        let res = undefined;
 
-        let outputMessage = func(...args);
-        console.log(outputMessage);
+        console.log("progressing turn:");
+        console.log(command)
 
+        if (command == 'Register') {
+            res = this.register();
+        } else if (command == 'Place') {
+            let color = commandInput[1];
+            let board = commandInput[2];
+            res = this.placeWorkers(color, board);
+        } else if (command == 'Play') {
+            let board = commandInput[1]
+            res = this.play(board);
+        } else if (command == 'Game Over') {
+            let name = commandInput[1]
+            res = this.gameOver(name);
+        }
         this.turn++;
-
-        return outputMessage;
+        return res;
         // if ((command == 'Register') && (this.turn != 0)) {
         //     outputMessage = this.commandsOutOfSequence();
         // }
@@ -241,6 +254,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
             currReadString += input;
             // determine if JSON is valid
             let isValidResponse = maybeValidJson(currReadString);
+            console.log("received: ")
             console.log(isValidResponse);
             if (isValidResponse !== undefined) {
                 // clear current read string and augment the valid, parsed JSON
@@ -261,8 +275,9 @@ export class RemoteProxyPlayer implements PlayerInterface {
             return this.commandsOutOfSequence();
         }
         let commandAndArgs = ["Register"];
-        this.client.write(commandAndArgs)
-        return this.receive();
+        this.client.write(JSON.stringify(commandAndArgs));
+        let ans = this.receive();
+        return ans;
     }
 
     placeWorkers(color: string, board: any[][]) {
@@ -270,19 +285,38 @@ export class RemoteProxyPlayer implements PlayerInterface {
             return this.commandsOutOfSequence();
         }
 
-        let commandAndArgs = [];
+        let commandAndArgs = ["Place", color, board];
+        this.client.write(JSON.stringify(commandAndArgs));
+        let ans = this.receive();
+        return ans;
     }
-    play(board: any[][]): [string, string[]] {
-        return ['richard', ['ryan']]
+    play(board: any[][])  {
+        if (this.turn < 1) {
+            return this.commandsOutOfSequence();
+        }
+        let commandAndArgs = ["Play", board];
+        this.client.write(JSON.stringify(commandAndArgs));
+        let ans = this.receive();
+        return ans;
     }
-    playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {
-        return [
-            ['richard', ['ryan']],
-            ['richard', ['ryan']]
-        ];
+    /*
+     * todo 
+     * define interface 
+     */
+    playOptionsNonLosing(board: any[][]) {
+        if (this.turn < 1) {
+            return this.commandsOutOfSequence();
+        }
+        let commandAndArgs = ["Get-Plays", board];
+        this.client.write(JSON.stringify(commandAndArgs));
+        let ans = this.receive();
+        return ans;
     }
-    gameOver(name: string): string {
-        return 'OK';
+    gameOver(name: string) {
+        this.turn = -1;
+        let commandAndArgs = ["Game Over", name]
+        this.client.write(JSON.stringify(commandAndArgs))
+        let ans = this.receive();
+        return ans;
     }
-
 }

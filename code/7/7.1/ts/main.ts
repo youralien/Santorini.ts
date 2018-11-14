@@ -4,19 +4,6 @@ import * as readline from 'readline';
 
 const net = require('net');
 
-/**
- * Attempts to parse and return valid JSON object from string, returning undefined if it can't.
- * @param inputString {string} string to attempt to find valid JSON in.
- * @return {object} valid JSON object or undefined if failed to parse.
- */
-export const maybeValidJson = function checkIfJsonIsValid(inputString) {
-    // attempt to parse JSON
-    try {
-        return JSON.parse(inputString);
-    } catch(e) {
-        return undefined;
-    }
-};
 
 
 /**
@@ -109,8 +96,9 @@ const proxy_test = function(port, host) {
             currReadString = '';
 
             if (isValidInput(maybeValidResponse)) {
-                let outputMessage = undefined;
+                let outputMessage = playerInstance.progressTurn(maybeValidResponse);
 
+                /*
                 let command = maybeValidResponse[0];
                 if (command === 'Place') {
                     let color = maybeValidResponse[1];
@@ -125,6 +113,7 @@ const proxy_test = function(port, host) {
                     outputMessage = playerInstance.gameOver(maybeValidResponse[1]);
                 }
                 // return output from function call
+// */
                 console.log(JSON.stringify(outputMessage));
             }
         }
@@ -138,14 +127,19 @@ const proxy_test = function(port, host) {
         // exit do nothing
     });
 
-    /**
-     * Checks if inputs passed from parsed JSON is valid for Santorini.
-     * @param obj {Object} parsed, valid JSON from command line input
-     */
-    const isValidInput = function checkValidCommand(obj): boolean {
-        // check if array of either length 2 or 3
-        return Array.isArray(obj) && (obj.length === 2 || obj.length === 3);
-    };
 }
 
 proxy_test(8080, '10.105.131.163');
+/**
+ * Attempts to parse and return valid JSON object from string, returning undefined if it can't.
+ * @param inputString {string} string to attempt to find valid JSON in.
+ * @return {object} valid JSON object or undefined if failed to parse.
+ */
+export const maybeValidJson = function checkIfJsonIsValid(inputString) {
+    // attempt to parse JSON
+    try {
+        return JSON.parse(inputString);
+    } catch(e) {
+        return undefined;
+    }
+};
