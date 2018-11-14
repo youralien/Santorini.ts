@@ -17,7 +17,12 @@ var Player = /** @class */ (function () {
      * @return {string} denotes name of player (their color)
      */
     Player.prototype.register = function () {
-        return this.color;
+        this.name = this.randomPlayerName();
+        return this.name;
+    };
+    Player.prototype.randomPlayerName = function () {
+        var randomInt = Math.floor((Math.random() * 10) + 1);
+        return "player-name-" + randomInt;
     };
     /**
      * Starts Remote Connection
@@ -87,18 +92,29 @@ var Player = /** @class */ (function () {
     return Player;
 }());
 exports.Player = Player;
-/**
- * Implements a Remote Proxy for the Player Class
- * It will setup the tcp/ip socket as a “client” to connect to some remote player component
- */
-var RemoteProxyPlayer = /** @class */ (function () {
-    function RemoteProxyPlayer() {
-    }
-    RemoteProxyPlayer.prototype.register = function () { };
-    RemoteProxyPlayer.prototype.placeWorkers = function (color, board) { };
-    RemoteProxyPlayer.prototype.play = function (board) { };
-    RemoteProxyPlayer.prototype.playOptionsNonLosing = function (board) { };
-    RemoteProxyPlayer.prototype.gameOver = function (name) { };
-    return RemoteProxyPlayer;
-}());
-exports.RemoteProxyPlayer = RemoteProxyPlayer;
+// export class RemotePlayer implements PlayerInterface {
+//     constructor(port) {
+//
+//     }
+//     register(): string {}
+//     placeWorkers(color: string, board: any[][]): number[][] {}
+//     play(board: any[][]): [string, string[]] {}
+//     playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
+//     gameOver(name: string): string {}
+// }
+//
+//
+// /**
+//  * Implements a Remote Proxy for the Player Class
+//  * It will setup the tcp/ip socket as a “client” to connect to some remote player component
+//  */
+// export class RemoteProxyPlayer implements PlayerInterface {
+//
+//     constructor(){}
+//     register(): string {}
+//     placeWorkers(color: string, board: any[][]): number[][] {}
+//     play(board: any[][]): [string, string[]] {}
+//     playOptionsNonLosing(board: any[][]): Array<[string, string[]]> {}
+//     gameOver(name: string): string {}
+//
+// }
