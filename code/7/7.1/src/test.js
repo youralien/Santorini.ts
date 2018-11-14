@@ -11,7 +11,7 @@ var rl = readline.createInterface({
 });
 // global variables
 var currReadString = ''; // stores current input from user (allows for multi-line JSON)
-var playerInstance = new player_1.Player();
+var playerInstance = new player_1.RemoteProxyPlayer('10.105.131.163', 8080);
 /**
  * Reads lines as input to stdin is made.
  */
