@@ -224,13 +224,13 @@ export class RemoteProxyPlayer implements PlayerInterface {
         } else if (command == 'Place') {
             let color = commandInput[1];
             let board = commandInput[2];
-            res = this.placeWorkers(color, board);
+            res = await this.placeWorkers(color, board);
         } else if (command == 'Play') {
             let board = commandInput[1]
-            res = this.play(board);
+            res = await this.play(board);
         } else if (command == 'Game Over') {
             let name = commandInput[1]
-            res = this.gameOver(name);
+            res = await this.gameOver(name);
         } else {
             // if its not one of the interfaces, just return and dont progress the turn successfully
             return;
