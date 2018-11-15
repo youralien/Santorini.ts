@@ -307,23 +307,27 @@ export class RemoteProxyPlayer implements PlayerInterface {
         return ans;
     }
 
-    placeWorkers(color: string, board: any[][]) {
+    async placeWorkers(color: string, board: any[][]) {
         if (this.turn != 1) {
             return this.commandsOutOfSequence();
         }
 
         let commandAndArgs = ["Place", color, board];
         this.client.write(JSON.stringify(commandAndArgs));
-        let ans = this.receive();
+        console.log('sending to server: ', commandAndArgs);
+        let ans = await this.receive();
+        console.log('receiving from server: ', ans);
         return ans;
     }
-    play(board: any[][])  {
+    async play(board: any[][])  {
         if (this.turn < 1) {
             return this.commandsOutOfSequence();
         }
         let commandAndArgs = ["Play", board];
         this.client.write(JSON.stringify(commandAndArgs));
-        let ans = this.receive();
+        console.log('sending to server: ', commandAndArgs);
+        let ans = await this.receive();
+        console.log('receiving from server: ', ans);
         return ans;
     }
     /*
@@ -339,11 +343,13 @@ export class RemoteProxyPlayer implements PlayerInterface {
         let ans = this.receive();
         return ans;
     }
-    gameOver(name: string) {
+    async gameOver(name: string) {
         this.turn = -1;
         let commandAndArgs = ["Game Over", name]
         this.client.write(JSON.stringify(commandAndArgs))
-        let ans = this.receive();
+        console.log('sending to server: ', commandAndArgs);
+        let ans = await this.receive();
+        console.log('receiving from server: ', ans);
         return ans;
     }
 }
