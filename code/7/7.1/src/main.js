@@ -56,12 +56,12 @@ var playerComponent = function (port, host) {
     var server = net.createServer(function (socket) {
         socket.on('data', function (data) {
             var textChunk = data.toString('utf8');
-            console.log(textChunk);
+            // console.log(textChunk);
             var maybeValidResponse = exports.maybeValidJson(textChunk);
             if (maybeValidResponse !== undefined) {
                 // clear current read string and augment the valid, parsed JSON
                 if (isValidInput(maybeValidResponse)) {
-                    console.log('maybeValidresponse', maybeValidResponse);
+                    //      console.log('maybeValidresponse', maybeValidResponse);
                     var outputMessage = undefined;
                     var command = maybeValidResponse[0];
                     if (command === 'Place') {
@@ -83,7 +83,7 @@ var playerComponent = function (port, host) {
                     }
                     if (outputMessage !== undefined) {
                         // send output from function call to client
-                        console.log('Writing to socket');
+                        //console.log('Writing to socket');
                         socket.write(JSON.stringify(outputMessage));
                     }
                     else {
@@ -112,14 +112,12 @@ var proxy_test = function (port, host) {
                     rl.on('line', function (input) {
                         // add new input to current read in string (handling valid JSON across multiple lines)
                         currReadString += input;
-                        console.log("read a string");
                         // determine if JSON is valid
                         var maybeValidResponse = exports.maybeValidJson(currReadString);
                         if (maybeValidResponse !== undefined) {
                             // clear current read string and augment the valid, parsed JSON
                             currReadString = '';
                             if (isValidInput(maybeValidResponse)) {
-                                console.log("received valid response");
                                 queue.push(maybeValidResponse);
                             }
                         }
@@ -131,12 +129,10 @@ var proxy_test = function (port, host) {
                 case 2:
                     _a.sent();
                     if (!(queue.length > 0)) return [3 /*break*/, 4];
-                    console.log("queue not empty line 109");
                     maybeValidResponse = queue.shift();
                     return [4 /*yield*/, playerInstance.progressTurn(maybeValidResponse)];
                 case 3:
                     outputMessage = _a.sent();
-                    console.log("line 119 proxy test output");
                     console.log(JSON.stringify(outputMessage));
                     _a.label = 4;
                 case 4: return [3 /*break*/, 1];

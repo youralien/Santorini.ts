@@ -26,14 +26,14 @@ const playerComponent = function(port, host) {
 
         socket.on('data', function(data) {
             let textChunk = data.toString('utf8');
-            console.log(textChunk);
+            // console.log(textChunk);
 
             let maybeValidResponse = maybeValidJson(textChunk);
             if (maybeValidResponse !== undefined) {
                 // clear current read string and augment the valid, parsed JSON
 
                 if (isValidInput(maybeValidResponse)) {
-                    console.log('maybeValidresponse', maybeValidResponse);
+                    //      console.log('maybeValidresponse', maybeValidResponse);
                     let outputMessage = undefined;
 
                     let command = maybeValidResponse[0];
@@ -57,7 +57,7 @@ const playerComponent = function(port, host) {
 
                     if (outputMessage !== undefined) {
                         // send output from function call to client
-                        console.log('Writing to socket');
+                        //console.log('Writing to socket');
                         socket.write(JSON.stringify(outputMessage));
                     } else {
                         console.error(`Returned undefined output for command = ${command}`)
@@ -93,7 +93,6 @@ const proxy_test = async function(port, host) {
         // add new input to current read in string (handling valid JSON across multiple lines)
         
         currReadString += input;
-        console.log("read a string")
         // determine if JSON is valid
         let maybeValidResponse = maybeValidJson(currReadString);
         if (maybeValidResponse !== undefined) {
@@ -101,7 +100,6 @@ const proxy_test = async function(port, host) {
             currReadString = '';
 
             if (isValidInput(maybeValidResponse)) {
-                console.log("received valid response")
                 queue.push(maybeValidResponse);
             }
         }
@@ -110,10 +108,8 @@ const proxy_test = async function(port, host) {
     while (true) {
         await playerInstance.sleep(1000);
         if (queue.length > 0) {
-            console.log("queue not empty line 109")
             let maybeValidResponse = queue.shift();
             let outputMessage = await playerInstance.progressTurn(maybeValidResponse)
-            console.log("line 119 proxy test output")
             console.log(JSON.stringify(outputMessage));
         }
     }

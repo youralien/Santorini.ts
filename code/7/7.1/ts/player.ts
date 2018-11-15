@@ -36,7 +36,6 @@ export class Player implements PlayerInterface {
      */
     register(): string {
         this.name = this.randomPlayerName();
-        console.log("register called: ", this.name);
         return this.name;
     }
 
@@ -196,7 +195,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         const net = require('net');
         this.client = new net.Socket();
         this.client.connect(port, host, function() {
-            console.log('ProxyPlayer is connected to Remote Player.');
+            //console.log('ProxyPlayer is connected to Remote Player.');
         });
         // this.client.pause();
 
@@ -216,24 +215,19 @@ export class RemoteProxyPlayer implements PlayerInterface {
         let command = commandInput[0];
         let res = undefined;
 
-        console.log("progressing turn:");
-        console.log(command)
+        //console.log("progressing turn:");
+        //console.log(command)
 
         if (command == 'Register') {
-            console.log("awaiting register")
             res = await this.register();
         } else if (command == 'Place') {
-            console.log("awaiting place")
             let color = commandInput[1];
             let board = commandInput[2];
             res = await this.placeWorkers(color, board);
-            console.log("got res for place")
         } else if (command == 'Play') {
-            console.log("awaiting play")
             let board = commandInput[1]
             res = await this.play(board);
         } else if (command == 'Game Over') {
-            console.log("awaiting game over")
             let name = commandInput[1]
             res = await this.gameOver(name);
         } else {
@@ -268,7 +262,6 @@ export class RemoteProxyPlayer implements PlayerInterface {
 
             // determine if JSON is valid
             let isValidResponse = maybeValidJson(currReadString);
-            console.log("received: ", isValidResponse);
             if (isValidResponse !== undefined) {
                 // clear current read string and augment the valid, parsed JSON
                 currReadString = '';
@@ -306,9 +299,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         }
         let commandAndArgs = ["Register"];
         this.client.write(JSON.stringify(commandAndArgs));
-        console.log('sending to server: ', commandAndArgs);
         let ans = await this.receive();
-        console.log('receiving from server: ', ans);
         return ans;
     }
 
@@ -319,9 +310,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
 
         let commandAndArgs = ["Place", color, board];
         this.client.write(JSON.stringify(commandAndArgs));
-        console.log('sending to server: ', commandAndArgs);
         let ans = await this.receive();
-        console.log('receiving from server: ', ans);
         return ans;
     }
     async play(board: any[][])  {
@@ -330,9 +319,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         }
         let commandAndArgs = ["Play", board];
         this.client.write(JSON.stringify(commandAndArgs));
-        console.log('sending to server: ', commandAndArgs);
         let ans = await this.receive();
-        console.log('receiving from server: ', ans);
         return ans;
     }
     /*
@@ -352,9 +339,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         this.turn = -1;
         let commandAndArgs = ["Game Over", name]
         this.client.write(JSON.stringify(commandAndArgs))
-        console.log('sending to server: ', commandAndArgs);
         let ans = await this.receive();
-        console.log('receiving from server: ', ans);
         return ans;
     }
 }

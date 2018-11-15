@@ -54,7 +54,6 @@ var Player = /** @class */ (function () {
      */
     Player.prototype.register = function () {
         this.name = this.randomPlayerName();
-        console.log("register called: ", this.name);
         return this.name;
     };
     Player.prototype.randomPlayerName = function () {
@@ -186,7 +185,7 @@ var RemoteProxyPlayer = /** @class */ (function () {
         var net = require('net');
         this.client = new net.Socket();
         this.client.connect(port, host, function () {
-            console.log('ProxyPlayer is connected to Remote Player.');
+            //console.log('ProxyPlayer is connected to Remote Player.');
         });
         // this.client.pause();
         this.commands = {
@@ -208,27 +207,21 @@ var RemoteProxyPlayer = /** @class */ (function () {
                     case 0:
                         command = commandInput[0];
                         res = undefined;
-                        console.log("progressing turn:");
-                        console.log(command);
                         if (!(command == 'Register')) return [3 /*break*/, 2];
-                        console.log("awaiting register");
                         return [4 /*yield*/, this.register()];
                     case 1:
                         res = _a.sent();
                         return [3 /*break*/, 9];
                     case 2:
                         if (!(command == 'Place')) return [3 /*break*/, 4];
-                        console.log("awaiting place");
                         color = commandInput[1];
                         board = commandInput[2];
                         return [4 /*yield*/, this.placeWorkers(color, board)];
                     case 3:
                         res = _a.sent();
-                        console.log("got res for place");
                         return [3 /*break*/, 9];
                     case 4:
                         if (!(command == 'Play')) return [3 /*break*/, 6];
-                        console.log("awaiting play");
                         board = commandInput[1];
                         return [4 /*yield*/, this.play(board)];
                     case 5:
@@ -236,7 +229,6 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         return [3 /*break*/, 9];
                     case 6:
                         if (!(command == 'Game Over')) return [3 /*break*/, 8];
-                        console.log("awaiting game over");
                         name_1 = commandInput[1];
                         return [4 /*yield*/, this.gameOver(name_1)];
                     case 7:
@@ -266,7 +258,6 @@ var RemoteProxyPlayer = /** @class */ (function () {
                             currReadString += input;
                             // determine if JSON is valid
                             var isValidResponse = main_1.maybeValidJson(currReadString);
-                            console.log("received: ", isValidResponse);
                             if (isValidResponse !== undefined) {
                                 // clear current read string and augment the valid, parsed JSON
                                 currReadString = '';
@@ -307,11 +298,9 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         }
                         commandAndArgs = ["Register"];
                         this.client.write(JSON.stringify(commandAndArgs));
-                        console.log('sending to server: ', commandAndArgs);
                         return [4 /*yield*/, this.receive()];
                     case 1:
                         ans = _a.sent();
-                        console.log('receiving from server: ', ans);
                         return [2 /*return*/, ans];
                 }
             });
@@ -328,11 +317,9 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         }
                         commandAndArgs = ["Place", color, board];
                         this.client.write(JSON.stringify(commandAndArgs));
-                        console.log('sending to server: ', commandAndArgs);
                         return [4 /*yield*/, this.receive()];
                     case 1:
                         ans = _a.sent();
-                        console.log('receiving from server: ', ans);
                         return [2 /*return*/, ans];
                 }
             });
@@ -349,11 +336,9 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         }
                         commandAndArgs = ["Play", board];
                         this.client.write(JSON.stringify(commandAndArgs));
-                        console.log('sending to server: ', commandAndArgs);
                         return [4 /*yield*/, this.receive()];
                     case 1:
                         ans = _a.sent();
-                        console.log('receiving from server: ', ans);
                         return [2 /*return*/, ans];
                 }
             });
@@ -381,11 +366,9 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         this.turn = -1;
                         commandAndArgs = ["Game Over", name];
                         this.client.write(JSON.stringify(commandAndArgs));
-                        console.log('sending to server: ', commandAndArgs);
                         return [4 /*yield*/, this.receive()];
                     case 1:
                         ans = _a.sent();
-                        console.log('receiving from server: ', ans);
                         return [2 /*return*/, ans];
                 }
             });
