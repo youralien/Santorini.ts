@@ -73,7 +73,7 @@ const playerComponent = function(port, host) {
 
 
 
-const proxy_test = function(port, host) {
+const proxy_test = async function(port, host) {
 // create stdin interface
     const rl = readline.createInterface({
         input: process.stdin,
@@ -88,9 +88,12 @@ const proxy_test = function(port, host) {
     /**
      * Reads lines as input to stdin is made.
      */
+    let queue = []
     rl.on('line', (input) => {
         // add new input to current read in string (handling valid JSON across multiple lines)
+        
         currReadString += input;
+        console.log("read a string")
         // determine if JSON is valid
         let maybeValidResponse = maybeValidJson(currReadString);
         if (maybeValidResponse !== undefined) {
@@ -98,14 +101,22 @@ const proxy_test = function(port, host) {
             currReadString = '';
 
             if (isValidInput(maybeValidResponse)) {
-                playerInstance.progressTurn(maybeValidResponse).then((outputMessage) => {
-                    console.log("line 119 proxy test output")
-                    console.log(JSON.stringify(outputMessage));
-                });
+                console.log("received valid response")
+                queue.push(maybeValidResponse);
             }
         }
     });
 
+    while (true) {
+        await playerInstance.sleep(1000);
+        if (queue.length > 0) {
+            console.log("queue not empty line 109")
+            let maybeValidResponse = queue.shift();
+            let outputMessage = await playerInstance.progressTurn(maybeValidResponse)
+            console.log("line 119 proxy test output")
+            console.log(JSON.stringify(outputMessage));
+        }
+    }
 
     /**
      * Detect when input stream is closed.

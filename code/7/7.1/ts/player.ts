@@ -292,7 +292,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         return res;
     }
 
-    private sleep(ms) {
+    sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
