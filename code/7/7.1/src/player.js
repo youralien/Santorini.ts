@@ -211,30 +211,41 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         console.log("progressing turn:");
                         console.log(command);
                         if (!(command == 'Register')) return [3 /*break*/, 2];
+                        console.log("awaiting register");
                         return [4 /*yield*/, this.register()];
                     case 1:
                         res = _a.sent();
-                        return [3 /*break*/, 3];
+                        return [3 /*break*/, 9];
                     case 2:
-                        if (command == 'Place') {
-                            color = commandInput[1];
-                            board = commandInput[2];
-                            res = this.placeWorkers(color, board);
-                        }
-                        else if (command == 'Play') {
-                            board = commandInput[1];
-                            res = this.play(board);
-                        }
-                        else if (command == 'Game Over') {
-                            name_1 = commandInput[1];
-                            res = this.gameOver(name_1);
-                        }
-                        else {
-                            // if its not one of the interfaces, just return and dont progress the turn successfully
-                            return [2 /*return*/];
-                        }
-                        _a.label = 3;
+                        if (!(command == 'Place')) return [3 /*break*/, 4];
+                        console.log("awaiting place");
+                        color = commandInput[1];
+                        board = commandInput[2];
+                        return [4 /*yield*/, this.placeWorkers(color, board)];
                     case 3:
+                        res = _a.sent();
+                        console.log("got res for place");
+                        return [3 /*break*/, 9];
+                    case 4:
+                        if (!(command == 'Play')) return [3 /*break*/, 6];
+                        console.log("awaiting play");
+                        board = commandInput[1];
+                        return [4 /*yield*/, this.play(board)];
+                    case 5:
+                        res = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 6:
+                        if (!(command == 'Game Over')) return [3 /*break*/, 8];
+                        console.log("awaiting game over");
+                        name_1 = commandInput[1];
+                        return [4 /*yield*/, this.gameOver(name_1)];
+                    case 7:
+                        res = _a.sent();
+                        return [3 /*break*/, 9];
+                    case 8: 
+                    // if its not one of the interfaces, just return and dont progress the turn successfully
+                    return [2 /*return*/];
+                    case 9:
                         this.turn++;
                         return [2 /*return*/, res];
                 }
@@ -248,19 +259,16 @@ var RemoteProxyPlayer = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log('function receive');
                         currReadString = '';
                         this.client.on('data', function (data) {
                             var input = data.toString('utf-8');
                             // add new input to current read in string (handling valid JSON across multiple lines)
                             currReadString += input;
-                            // this.currReadString += input;
                             // determine if JSON is valid
                             var isValidResponse = main_1.maybeValidJson(currReadString);
                             console.log("received: ", isValidResponse);
                             if (isValidResponse !== undefined) {
                                 // clear current read string and augment the valid, parsed JSON
-                                // this.currReadString = '';
                                 currReadString = '';
                                 // write response to 'mailbox' that stores results of remote call
                                 _this.currRes = isValidResponse;
@@ -272,14 +280,11 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         return [4 /*yield*/, this.sleep(1000)];
                     case 2:
                         _a.sent();
-                        console.log('sleeping for 1 second');
                         return [3 /*break*/, 1];
                     case 3:
-                        console.log("UNBLOCKED: FINISHED WHILE LOOP");
                         res = this.currRes;
                         // reset the mailbox
                         this.currRes = undefined;
-                        // this.client.pause();
                         return [2 /*return*/, res];
                 }
             });
@@ -313,22 +318,46 @@ var RemoteProxyPlayer = /** @class */ (function () {
         });
     };
     RemoteProxyPlayer.prototype.placeWorkers = function (color, board) {
-        if (this.turn != 1) {
-            return this.commandsOutOfSequence();
-        }
-        var commandAndArgs = ["Place", color, board];
-        this.client.write(JSON.stringify(commandAndArgs));
-        var ans = this.receive();
-        return ans;
+        return __awaiter(this, void 0, void 0, function () {
+            var commandAndArgs, ans;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.turn != 1) {
+                            return [2 /*return*/, this.commandsOutOfSequence()];
+                        }
+                        commandAndArgs = ["Place", color, board];
+                        this.client.write(JSON.stringify(commandAndArgs));
+                        console.log('sending to server: ', commandAndArgs);
+                        return [4 /*yield*/, this.receive()];
+                    case 1:
+                        ans = _a.sent();
+                        console.log('receiving from server: ', ans);
+                        return [2 /*return*/, ans];
+                }
+            });
+        });
     };
     RemoteProxyPlayer.prototype.play = function (board) {
-        if (this.turn < 1) {
-            return this.commandsOutOfSequence();
-        }
-        var commandAndArgs = ["Play", board];
-        this.client.write(JSON.stringify(commandAndArgs));
-        var ans = this.receive();
-        return ans;
+        return __awaiter(this, void 0, void 0, function () {
+            var commandAndArgs, ans;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this.turn < 1) {
+                            return [2 /*return*/, this.commandsOutOfSequence()];
+                        }
+                        commandAndArgs = ["Play", board];
+                        this.client.write(JSON.stringify(commandAndArgs));
+                        console.log('sending to server: ', commandAndArgs);
+                        return [4 /*yield*/, this.receive()];
+                    case 1:
+                        ans = _a.sent();
+                        console.log('receiving from server: ', ans);
+                        return [2 /*return*/, ans];
+                }
+            });
+        });
     };
     /*
      * todo
@@ -344,11 +373,23 @@ var RemoteProxyPlayer = /** @class */ (function () {
         return ans;
     };
     RemoteProxyPlayer.prototype.gameOver = function (name) {
-        this.turn = -1;
-        var commandAndArgs = ["Game Over", name];
-        this.client.write(JSON.stringify(commandAndArgs));
-        var ans = this.receive();
-        return ans;
+        return __awaiter(this, void 0, void 0, function () {
+            var commandAndArgs, ans;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.turn = -1;
+                        commandAndArgs = ["Game Over", name];
+                        this.client.write(JSON.stringify(commandAndArgs));
+                        console.log('sending to server: ', commandAndArgs);
+                        return [4 /*yield*/, this.receive()];
+                    case 1:
+                        ans = _a.sent();
+                        console.log('receiving from server: ', ans);
+                        return [2 /*return*/, ans];
+                }
+            });
+        });
     };
     return RemoteProxyPlayer;
 }());

@@ -98,25 +98,10 @@ const proxy_test = function(port, host) {
             currReadString = '';
 
             if (isValidInput(maybeValidResponse)) {
-                let outputMessage = playerInstance.progressTurn(maybeValidResponse);
-
-                /*
-                let command = maybeValidResponse[0];
-                if (command === 'Place') {
-                    let color = maybeValidResponse[1];
-                    let initialBoard = maybeValidResponse[2];
-
-                    outputMessage = playerInstance.placeWorkers(color, initialBoard);
-                } else if (command === 'Play') {
-                    outputMessage = playerInstance.play(maybeValidResponse[1]);
-                } else if (command === 'Register') {
-                    outputMessage = playerInstance.register();
-                } else if (command === 'Game Over') {
-                    outputMessage = playerInstance.gameOver(maybeValidResponse[1]);
-                }
-                // return output from function call
-// */
-                console.log(JSON.stringify(outputMessage));
+                playerInstance.progressTurn(maybeValidResponse).then((outputMessage) => {
+                    console.log("line 119 proxy test output")
+                    console.log(JSON.stringify(outputMessage));
+                });
             }
         }
     });

@@ -82,7 +82,10 @@ var proxy_test = function (port, host) {
             // clear current read string and augment the valid, parsed JSON
             currReadString = '';
             if (isValidInput(maybeValidResponse)) {
-                var outputMessage = playerInstance.progressTurn(maybeValidResponse);
+                playerInstance.progressTurn(maybeValidResponse).then(function (outputMessage) {
+                    console.log("line 119 proxy test output");
+                    console.log(JSON.stringify(outputMessage));
+                });
                 /*
                 let command = maybeValidResponse[0];
                 if (command === 'Place') {
@@ -99,7 +102,6 @@ var proxy_test = function (port, host) {
                 }
                 // return output from function call
 // */
-                console.log(JSON.stringify(outputMessage));
             }
         }
     });

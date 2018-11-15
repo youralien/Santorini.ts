@@ -220,15 +220,20 @@ export class RemoteProxyPlayer implements PlayerInterface {
         console.log(command)
 
         if (command == 'Register') {
+            console.log("awaiting register")
             res = await this.register();
         } else if (command == 'Place') {
+            console.log("awaiting place")
             let color = commandInput[1];
             let board = commandInput[2];
             res = await this.placeWorkers(color, board);
+            console.log("got res for place")
         } else if (command == 'Play') {
+            console.log("awaiting play")
             let board = commandInput[1]
             res = await this.play(board);
         } else if (command == 'Game Over') {
+            console.log("awaiting game over")
             let name = commandInput[1]
             res = await this.gameOver(name);
         } else {
