@@ -36,6 +36,7 @@ export class Player implements PlayerInterface {
      */
     register(): string {
         this.name = this.randomPlayerName();
+        console.log("register called: ", this.name);
         return this.name;
     }
 
@@ -132,9 +133,6 @@ export class Player implements PlayerInterface {
 //   terminal: false
 // });
 
-// global variables
-let currReadString = '';  // stores current input from user (allows for multi-line JSON)
-
 
 /**
  * Reads lines as input to stdin is made.
@@ -177,12 +175,22 @@ export class RemoteProxyPlayer implements PlayerInterface {
     client;
     turn: number;
     commands: object;
+    currReadString: string;
+    currRes;
     x: number;
+
 
     constructor(host: string, port: number) {
 
         // track what command turn it is, starts on expecting register
         this.turn = 0;
+
+        // initialize current result read string
+        // stores current input from user (allows for multi-line JSON)
+        this.currReadString = '';
+
+        // initialize current result/response which is a mailbox that stores results of remote calls
+        this.currRes = undefined;
 
         // remote client
         const net = require('net');
@@ -190,6 +198,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         this.client.connect(port, host, function() {
             console.log('ProxyPlayer is connected to Remote Player.');
         });
+        // this.client.pause();
 
         this.commands = {
             "Register": this.register,
@@ -203,7 +212,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
      * Assume valid input commmand
      * @param commandInput
      */
-    progressTurn(commandInput: any[]) {
+    async progressTurn(commandInput: any[]) {
         let command = commandInput[0];
         let res = undefined;
 
@@ -211,7 +220,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         console.log(command)
 
         if (command == 'Register') {
-            res = this.register();
+            res = await this.register();
         } else if (command == 'Place') {
             let color = commandInput[1];
             let board = commandInput[2];
@@ -222,6 +231,9 @@ export class RemoteProxyPlayer implements PlayerInterface {
         } else if (command == 'Game Over') {
             let name = commandInput[1]
             res = this.gameOver(name);
+        } else {
+            // if its not one of the interfaces, just return and dont progress the turn successfully
+            return;
         }
         this.turn++;
         return res;
@@ -240,43 +252,58 @@ export class RemoteProxyPlayer implements PlayerInterface {
         //
     }
 
-    private receive() {
-        // global variables
-        let currReadString = '';  // stores current input from user (allows for multi-line JSON)
+    private async receive() {
+        let currReadString = '';
 
-        /**
-         * Reads lines as input to stdin is made.
-         */
         this.client.on('data', (data) => {
             let input = data.toString('utf-8');
 
             // add new input to current read in string (handling valid JSON across multiple lines)
             currReadString += input;
+
             // determine if JSON is valid
             let isValidResponse = maybeValidJson(currReadString);
-            console.log("received: ")
-            console.log(isValidResponse);
+            console.log("received: ", isValidResponse);
             if (isValidResponse !== undefined) {
                 // clear current read string and augment the valid, parsed JSON
                 currReadString = '';
 
-                return isValidResponse;
+                // write response to 'mailbox' that stores results of remote call
+                this.currRes = isValidResponse;
             }
         });
+
+        // block until we have the result
+        while (this.currRes === undefined) {
+            await this.sleep(1000);
+        }
+
+        // capture the result
+        let res = this.currRes;
+
+        // reset the mailbox
+        this.currRes = undefined;
+
+        return res;
     }
 
+    private sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     private commandsOutOfSequence() {
         return "Santorini is broken! Too many tourists in such a small place...";
     }
 
-    register() {
+    async register() {
         if (this.turn !== 0) {
             return this.commandsOutOfSequence();
         }
         let commandAndArgs = ["Register"];
         this.client.write(JSON.stringify(commandAndArgs));
-        let ans = this.receive();
+        console.log('sending to server: ', commandAndArgs);
+        let ans = await this.receive();
+        console.log('receiving from server: ', ans);
         return ans;
     }
 

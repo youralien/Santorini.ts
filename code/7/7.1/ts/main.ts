@@ -33,6 +33,7 @@ const playerComponent = function(port, host) {
                 // clear current read string and augment the valid, parsed JSON
 
                 if (isValidInput(maybeValidResponse)) {
+                    console.log('maybeValidresponse', maybeValidResponse);
                     let outputMessage = undefined;
 
                     let command = maybeValidResponse[0];
@@ -54,8 +55,9 @@ const playerComponent = function(port, host) {
                         outputMessage = playerInstance.gameOver(name);
                     }
 
-                    if (outputMessage) {
+                    if (outputMessage !== undefined) {
                         // send output from function call to client
+                        console.log('Writing to socket');
                         socket.write(JSON.stringify(outputMessage));
                     } else {
                         console.error(`Returned undefined output for command = ${command}`)
@@ -66,7 +68,7 @@ const playerComponent = function(port, host) {
 
     });
     server.listen(port, host);
-}
+};
 
 
 
@@ -81,7 +83,7 @@ const proxy_test = function(port, host) {
 
     // global variables
     let currReadString = '';  // stores current input from user (allows for multi-line JSON)
-    let playerInstance = new RemoteProxyPlayer('10.105.131.163', 8080);
+    let playerInstance = new RemoteProxyPlayer(host, port);
 
     /**
      * Reads lines as input to stdin is made.
@@ -127,9 +129,11 @@ const proxy_test = function(port, host) {
         // exit do nothing
     });
 
-}
+};
 
 proxy_test(8080, '10.105.131.163');
+// playerComponent(8080, '10.105.131.163');
+
 /**
  * Attempts to parse and return valid JSON object from string, returning undefined if it can't.
  * @param inputString {string} string to attempt to find valid JSON in.
