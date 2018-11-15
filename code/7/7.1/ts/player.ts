@@ -236,19 +236,6 @@ export class RemoteProxyPlayer implements PlayerInterface {
         }
         this.turn++;
         return res;
-        // if ((command == 'Register') && (this.turn != 0)) {
-        //     outputMessage = this.commandsOutOfSequence();
-        // }
-        // if (command == 'Register') {
-        //     if (this.turn != this.commands.indexOf(command)) {
-        //         outputMessage = this.commandsOutOfSequence();
-        //     } else {
-        //         outputMessage = this.register();
-        //     }
-        //
-        // } {
-        // }
-        //
     }
 
     private async receive() {
@@ -289,7 +276,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    private commandsOutOfSequence() {
+    commandsOutOfSequence() {
         return "Santorini is broken! Too many tourists in such a small place...";
     }
 
@@ -336,7 +323,6 @@ export class RemoteProxyPlayer implements PlayerInterface {
         return ans;
     }
     async gameOver(name: string) {
-        this.turn = -1;
         let commandAndArgs = ["Game Over", name]
         this.client.write(JSON.stringify(commandAndArgs))
         let ans = await this.receive();

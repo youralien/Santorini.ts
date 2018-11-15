@@ -118,10 +118,15 @@ const proxy_test = async function(port, host) {
         await playerInstance.sleep(1000);
     }
 
+    let tmp = await playerInstance.progressTurn(["Register"])
+
     for (let i in queue) {
         let maybeValidResponse = queue.shift();
         let outputMessage = await playerInstance.progressTurn(maybeValidResponse)
         console.log(JSON.stringify(outputMessage));
+        if (outputMessage === playerInstance.commandsOutOfSequence()) {
+            process.exit();
+        }
     }
     process.exit();
 };
