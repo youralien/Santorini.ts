@@ -97,9 +97,9 @@ var playerComponent = function (port, host) {
 };
 var proxy_test = function (port, host) {
     return __awaiter(this, void 0, void 0, function () {
-        var rl, currReadString, playerInstance, queue, maybeValidResponse, outputMessage;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var rl, currReadString, playerInstance, queue, did_close, _a, _b, _i, i, maybeValidResponse, outputMessage;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
                     rl = readline.createInterface({
                         input: process.stdin,
@@ -122,28 +122,39 @@ var proxy_test = function (port, host) {
                             }
                         }
                     });
-                    _a.label = 1;
-                case 1:
-                    if (!true) return [3 /*break*/, 5];
-                    return [4 /*yield*/, playerInstance.sleep(1000)];
-                case 2:
-                    _a.sent();
-                    if (!(queue.length > 0)) return [3 /*break*/, 4];
-                    maybeValidResponse = queue.shift();
-                    return [4 /*yield*/, playerInstance.progressTurn(maybeValidResponse)];
-                case 3:
-                    outputMessage = _a.sent();
-                    console.log(JSON.stringify(outputMessage));
-                    _a.label = 4;
-                case 4: return [3 /*break*/, 1];
-                case 5:
+                    did_close = false;
                     /**
                      * Detect when input stream is closed.
                      */
                     rl.on('close', function () {
-                        // exit do nothing
+                        did_close = true;
                     });
-                    return [2 /*return*/];
+                    _c.label = 1;
+                case 1:
+                    if (!!did_close) return [3 /*break*/, 3];
+                    return [4 /*yield*/, playerInstance.sleep(1000)];
+                case 2:
+                    _c.sent();
+                    return [3 /*break*/, 1];
+                case 3:
+                    _a = [];
+                    for (_b in queue)
+                        _a.push(_b);
+                    _i = 0;
+                    _c.label = 4;
+                case 4:
+                    if (!(_i < _a.length)) return [3 /*break*/, 7];
+                    i = _a[_i];
+                    maybeValidResponse = queue.shift();
+                    return [4 /*yield*/, playerInstance.progressTurn(maybeValidResponse)];
+                case 5:
+                    outputMessage = _c.sent();
+                    console.log(JSON.stringify(outputMessage));
+                    _c.label = 6;
+                case 6:
+                    _i++;
+                    return [3 /*break*/, 4];
+                case 7: return [2 /*return*/];
             }
         });
     });

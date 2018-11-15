@@ -105,22 +105,24 @@ const proxy_test = async function(port, host) {
         }
     });
 
-    while (true) {
-        await playerInstance.sleep(1000);
-        if (queue.length > 0) {
-            let maybeValidResponse = queue.shift();
-            let outputMessage = await playerInstance.progressTurn(maybeValidResponse)
-            console.log(JSON.stringify(outputMessage));
-        }
-    }
-
+    let did_close = false;
     /**
      * Detect when input stream is closed.
      */
     rl.on('close', () => {
-        // exit do nothing
+        did_close = true;
     });
 
+
+    while (!did_close) {
+        await playerInstance.sleep(1000);
+    }
+
+    for (let i in queue) {
+        let maybeValidResponse = queue.shift();
+        let outputMessage = await playerInstance.progressTurn(maybeValidResponse)
+        console.log(JSON.stringify(outputMessage));
+    }
 };
 
 proxy_test(8080, '10.105.131.163');
