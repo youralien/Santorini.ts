@@ -123,6 +123,7 @@ const proxy_test = async function(port, host) {
         let outputMessage = await playerInstance.progressTurn(maybeValidResponse)
         console.log(JSON.stringify(outputMessage));
     }
+    process.exit();
 };
 
 proxy_test(8080, '10.105.131.163');

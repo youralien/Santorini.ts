@@ -154,7 +154,9 @@ var proxy_test = function (port, host) {
                 case 6:
                     _i++;
                     return [3 /*break*/, 4];
-                case 7: return [2 /*return*/];
+                case 7:
+                    process.exit();
+                    return [2 /*return*/];
             }
         });
     });
