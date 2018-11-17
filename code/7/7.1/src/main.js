@@ -86,14 +86,18 @@ exports.playerDriverComponent = function (port, host) {
                         //console.log('Writing to socket');
                         socket.write(JSON.stringify(outputMessage));
                         // TODO: exit out of player component when the game is over
-                        // if (outputMessage === playerInstance.gameOverResponse) {
-                        //     process.exit();
-                        // }
+                        if (outputMessage === playerInstance.gameOverResponse) {
+                            server.close(function () {
+                                process.exit();
+                            });
+                        }
                     }
                     else {
                         console.error("Returned undefined output for command = " + command);
                         // TODO: undefined output for our monad/maybe structure means that we're propagating an error
-                        // process.exit();
+                        server.close(function () {
+                            process.exit();
+                        });
                     }
                 }
             }
@@ -159,6 +163,9 @@ exports.adminRemoteProxy = function (port, host) {
                     outputMessage = _c.sent();
                     console.log(JSON.stringify(outputMessage));
                     if (outputMessage === playerInstance.commandsOutOfSequence()) {
+                        // TODO should use other player name as the one who won, since this player used commands out of sequence
+                        // Send game over signal to player component, so it shuts down
+                        playerInstance.gameOver('otherPlayer');
                         process.exit();
                     }
                     _c.label = 7;

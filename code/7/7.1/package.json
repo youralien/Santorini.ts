@@ -6,7 +6,9 @@
   "scripts": {
     "t": "tsc && node src/test.js",
     "test": "tsc && mocha",
-    "start": "tsc && node src/main.js",
+    "start": "tsc && node src/player_driver.js & node src/admin_using_proxy.js",
+    "admin": "tsc && node src/admin_using_proxy.js",
+    "driver": "tsc && node src/player_driver.js",
     "build": "tsc && cp -R ./src/ ../../../Deliverables/7/7.1/lib && cp input* ../../../Deliverables/7/7.1/ && cp output* ../../../Deliverables/7/7.1/"
   },
   "repository": {
