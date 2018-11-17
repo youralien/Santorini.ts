@@ -1,5 +1,5 @@
 {
-  "name": "board-interface",
+  "name": "santorini-game",
   "version": "1.0.0",
   "description": "Board, Rule Checker, Referee, Remote and Proxy Player for Santorini",
   "main": "main.js",
