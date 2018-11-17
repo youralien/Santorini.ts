@@ -19,7 +19,7 @@ const isValidInput = function checkValidCommand(obj): boolean {
     return Array.isArray(obj) && (obj.length >= 1 && obj.length <= 3);
 };
 
-const playerComponent = function(port, host) {
+export const playerDriverComponent = function(port, host) {
     let playerInstance = new Player();
 
     const server = net.createServer(function(socket) {
@@ -59,8 +59,16 @@ const playerComponent = function(port, host) {
                         // send output from function call to client
                         //console.log('Writing to socket');
                         socket.write(JSON.stringify(outputMessage));
-                    } else {
-                        console.error(`Returned undefined output for command = ${command}`)
+
+                        // TODO: exit out of player component when the game is over
+                        // if (outputMessage === playerInstance.gameOverResponse) {
+                        //     process.exit();
+                        // }
+                    }
+                    else {
+                        console.error(`Returned undefined output for command = ${command}`);
+                        // TODO: undefined output for our monad/maybe structure means that we're propagating an error
+                        // process.exit();
                     }
                 }
             }
@@ -71,10 +79,8 @@ const playerComponent = function(port, host) {
 };
 
 
-
-
-const proxy_test = async function(port, host) {
-// create stdin interface
+export const adminRemoteProxy = async function(port, host) {
+    // create stdin interface
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -131,8 +137,6 @@ const proxy_test = async function(port, host) {
     process.exit();
 };
 
-proxy_test(8080, '10.105.131.163');
-// playerComponent(8080, '10.105.131.163');
 
 /**
  * Attempts to parse and return valid JSON object from string, returning undefined if it can't.

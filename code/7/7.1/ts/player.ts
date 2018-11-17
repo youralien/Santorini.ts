@@ -23,11 +23,13 @@ export class Player implements PlayerInterface {
     color: string;
     boardInstance: Board;
     look_ahead: number;
+    gameOverResponse: string;
 
     constructor() {
         this.color = undefined;
         this.boardInstance = undefined;
         this.look_ahead = fs.readFileSync('strategy.config', 'utf8');
+        this.gameOverResponse = 'OK';
     }
 
     /**
@@ -116,7 +118,7 @@ export class Player implements PlayerInterface {
 
     gameOver(name: string) : string {
         // TODO: maybe change the state
-        return 'ok';
+        return this.gameOverResponse;
     }
 }
 
