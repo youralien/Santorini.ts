@@ -2,8 +2,8 @@
 
 # if node command exists, use it
 if hash node 2>/dev/null; then
-    node lib/main.js
+    node lib/player_driver.js & node lib/admin_using_proxy.js
 # otherwise, on tlab machine so use scl
 else
-    scl enable rh-nodejs6 "node lib/main.js"
+    scl enable rh-nodejs6 "node lib/player_driver.js & node lib/admin_using_proxy.js" 
 fi

@@ -51,7 +51,7 @@ var isValidInput = function checkValidCommand(obj) {
     // check if array of either length 2 or 3
     return Array.isArray(obj) && (obj.length >= 1 && obj.length <= 3);
 };
-var playerComponent = function (port, host) {
+exports.playerDriverComponent = function (port, host) {
     var playerInstance = new player_1.Player();
     var server = net.createServer(function (socket) {
         socket.on('data', function (data) {
@@ -85,9 +85,19 @@ var playerComponent = function (port, host) {
                         // send output from function call to client
                         //console.log('Writing to socket');
                         socket.write(JSON.stringify(outputMessage));
+                        // TODO: exit out of player component when the game is over
+                        if (outputMessage === playerInstance.gameOverResponse) {
+                            server.close(function () {
+                                process.exit();
+                            });
+                        }
                     }
                     else {
                         console.error("Returned undefined output for command = " + command);
+                        // TODO: undefined output for our monad/maybe structure means that we're propagating an error
+                        server.close(function () {
+                            process.exit();
+                        });
                     }
                 }
             }
@@ -95,7 +105,7 @@ var playerComponent = function (port, host) {
     });
     server.listen(port, host);
 };
-var proxy_test = function (port, host) {
+exports.adminRemoteProxy = function (port, host) {
     return __awaiter(this, void 0, void 0, function () {
         var rl, currReadString, playerInstance, queue, did_close, tmp, _a, _b, _i, i, maybeValidResponse, outputMessage;
         return __generator(this, function (_c) {
@@ -153,6 +163,9 @@ var proxy_test = function (port, host) {
                     outputMessage = _c.sent();
                     console.log(JSON.stringify(outputMessage));
                     if (outputMessage === playerInstance.commandsOutOfSequence()) {
+                        // TODO should use other player name as the one who won, since this player used commands out of sequence
+                        // Send game over signal to player component, so it shuts down
+                        playerInstance.gameOver('otherPlayer');
                         process.exit();
                     }
                     _c.label = 7;
@@ -166,8 +179,6 @@ var proxy_test = function (port, host) {
         });
     });
 };
-proxy_test(8080, '10.105.131.163');
-// playerComponent(8080, '10.105.131.163');
 /**
  * Attempts to parse and return valid JSON object from string, returning undefined if it can't.
  * @param inputString {string} string to attempt to find valid JSON in.

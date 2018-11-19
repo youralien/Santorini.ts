@@ -47,6 +47,7 @@ var Player = /** @class */ (function () {
         this.color = undefined;
         this.boardInstance = undefined;
         this.look_ahead = fs.readFileSync('strategy.config', 'utf8');
+        this.gameOverResponse = 'OK';
     }
     /**
      *
@@ -123,7 +124,7 @@ var Player = /** @class */ (function () {
     };
     Player.prototype.gameOver = function (name) {
         // TODO: maybe change the state
-        return 'ok';
+        return this.gameOverResponse;
     };
     return Player;
 }());
