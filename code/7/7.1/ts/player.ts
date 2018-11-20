@@ -28,7 +28,10 @@ export class Player implements PlayerInterface {
     constructor() {
         this.color = undefined;
         this.boardInstance = undefined;
-        this.look_ahead = fs.readFileSync('strategy.config', 'utf8');
+
+        let buffer = fs.readFileSync(`${ __dirname }/../strategy.config`, 'utf8');
+        let parsed = JSON.parse(buffer.toString());
+        this.look_ahead = parsed['look-ahead'];
         this.gameOverResponse = 'OK';
     }
 

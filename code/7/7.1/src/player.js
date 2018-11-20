@@ -46,7 +46,9 @@ var Player = /** @class */ (function () {
     function Player() {
         this.color = undefined;
         this.boardInstance = undefined;
-        this.look_ahead = fs.readFileSync('strategy.config', 'utf8');
+        var buffer = fs.readFileSync(__dirname + "/../strategy.config", 'utf8');
+        var parsed = JSON.parse(buffer.toString());
+        this.look_ahead = parsed['look-ahead'];
         this.gameOverResponse = 'OK';
     }
     /**
