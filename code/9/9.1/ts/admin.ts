@@ -1,10 +1,24 @@
-var fs = require('fs')
-const net = require('net')
+/**
+ * Call this file like so
+ * Will have to compile tsc to src, and then run
+ * node src/admin.js --league 3
+ * node src/admin.js --cup 8
+ */
+
+let fs = require('fs');
+let assert = require('assert');
+const net = require('net');
 import {RemoteProxyPlayer} from "./player";
 
+enum TournamentType {
+    // RoundRobin
+    League = 0,
+    // Single Elimination
+    Cup = 1,
+}
 
 export class Admin {
-    tournament_type: string;
+    tournament_type: TournamentType;
     num_players: number;
     ip_address: string;
     port: number;
@@ -12,13 +26,13 @@ export class Admin {
     client;
     players;
 
-    constructor (tournament_type: string, num_players: number) {
+    constructor (tournament_type: TournamentType, num_players: number) {
         this.tournament_type = tournament_type;
-        this.num_players = num_players; 
+        this.num_players = num_players;
         let buffer = fs.readFileSync(`${ __dirname }/../santorini.config`, 'utf8');
         let parsed = JSON.parse(buffer.toString());
-        this.ip_address = parsed["IP"]
-        this.port = parsed["port"]
+        this.ip_address = parsed["IP"];
+        this.port = parsed["port"];
         this.players = [];
 
         this.server = net.createServer(function(client) {
@@ -29,4 +43,27 @@ export class Admin {
         this.server.listen(8000, '');
     }
 }
-let admin = new Admin("hello", 3);
+
+const main = function commandLine() {
+
+    // parse command line arguments
+    var myArgs = require('minimist')(process.argv.slice(2));
+    // e.g., { _: [], league: 3 }
+
+    assert(Object.keys(myArgs).length === 2, 'Admin takes two arguments, e.g., node src/admin.js --league 3');
+
+    if ('league' in myArgs) {
+        let n_players = myArgs['league'];
+        let admin = new Admin(TournamentType.League, n_players);
+    }
+    else if ('cup' in myArgs) {
+        let n_players = myArgs['cup'];
+        let admin = new Admin(TournamentType.Cup, n_players);
+    }
+    else {
+        console.error('Admin takes a tournament type of string "league" or "cup", e.g., node src/admin.js --league 3')
+    }
+
+};
+
+main();
