@@ -42,9 +42,17 @@ export class Admin {
         }.bind(this));
         this.server.listen(8000, '');
     }
+
+    isWaitingForPlayers() {
+        return this.players.length < this.num_players;
+    }
 }
 
-const main = function commandLine() {
+const sleep = function sleepForMilliseconds(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+const main = async function commandLine() {
 
     // parse command line arguments
     var myArgs = require('minimist')(process.argv.slice(2));
@@ -52,18 +60,26 @@ const main = function commandLine() {
 
     assert(Object.keys(myArgs).length === 2, 'Admin takes two arguments, e.g., node src/admin.js --league 3');
 
+    let n_players;
+    let admin;
     if ('league' in myArgs) {
-        let n_players = myArgs['league'];
-        let admin = new Admin(TournamentType.League, n_players);
+        n_players = myArgs['league'];
+        admin = new Admin(TournamentType.League, n_players);
     }
     else if ('cup' in myArgs) {
-        let n_players = myArgs['cup'];
-        let admin = new Admin(TournamentType.Cup, n_players);
+        n_players = myArgs['cup'];
+        admin = new Admin(TournamentType.Cup, n_players);
     }
     else {
         console.error('Admin takes a tournament type of string "league" or "cup", e.g., node src/admin.js --league 3')
     }
 
+    while (admin.isWaitingForPlayers()) {
+        console.log('Waiting for players to connect...');
+        await sleep(5000);
+    }
+
+    console.log('Found players')
 };
 
 main();
