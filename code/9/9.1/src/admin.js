@@ -53,13 +53,12 @@ var TournamentType;
     TournamentType[TournamentType["Cup"] = 1] = "Cup";
 })(TournamentType || (TournamentType = {}));
 var Admin = /** @class */ (function () {
-    function Admin(tournament_type, num_players) {
+    function Admin(tournament_type, num_players, ip_address, port, defaultPlayer) {
         this.tournament_type = tournament_type;
         this.num_players = num_players;
-        var buffer = fs.readFileSync(__dirname + "/../santorini.config", 'utf8');
-        var parsed = JSON.parse(buffer.toString());
-        this.ip_address = parsed["IP"];
-        this.port = parsed["port"];
+        this.ip_address = ip_address;
+        this.port = port;
+        this.defaultPlayer = defaultPlayer;
         this.players = [];
         this.server = net.createServer(function (client) {
             console.log(this.ip_address);
@@ -71,31 +70,50 @@ var Admin = /** @class */ (function () {
     Admin.prototype.isWaitingForPlayers = function () {
         return this.players.length < this.num_players;
     };
+    Admin.prototype.numDefaultPlayersNeeded = function () {
+        // TODO(rlouie): should compute the highest power of two. See npm install mathjs
+        return 1;
+    };
+    Admin.prototype.addDefaultPlayers = function () {
+        for (var i = 0; i < this.numDefaultPlayersNeeded(); i++) {
+            this.players.push(new this.defaultPlayer());
+        }
+    };
     return Admin;
 }());
 exports.Admin = Admin;
 var sleep = function sleepForMilliseconds(ms) {
     return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 };
+var PARENT_DIR = __dirname + "/../";
 var main = function commandLine() {
     return __awaiter(this, void 0, void 0, function () {
-        var myArgs, n_players, admin;
+        var buffer, parsed, ip_address, port, lib, defaultPlayer, myArgs, n_players, admin;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    buffer = fs.readFileSync(PARENT_DIR + '/santorini.config', 'utf8');
+                    parsed = JSON.parse(buffer.toString());
+                    ip_address = parsed["IP"];
+                    port = parsed["port"];
+                    lib = require(PARENT_DIR + parsed["default-player"]);
+                    assert(lib.__esModule, 'Module not found: Check "default-player" in santorini.config');
+                    assert('Player' in lib, 'Player class not found: The module should have an exported class named "Player"');
+                    defaultPlayer = lib.Player;
                     myArgs = require('minimist')(process.argv.slice(2));
                     // e.g., { _: [], league: 3 }
                     assert(Object.keys(myArgs).length === 2, 'Admin takes two arguments, e.g., node src/admin.js --league 3');
                     if ('league' in myArgs) {
                         n_players = myArgs['league'];
-                        admin = new Admin(TournamentType.League, n_players);
+                        admin = new Admin(TournamentType.League, n_players, ip_address, port, defaultPlayer);
                     }
                     else if ('cup' in myArgs) {
                         n_players = myArgs['cup'];
-                        admin = new Admin(TournamentType.Cup, n_players);
+                        admin = new Admin(TournamentType.Cup, n_players, ip_address, port, defaultPlayer);
                     }
                     else {
                         console.error('Admin takes a tournament type of string "league" or "cup", e.g., node src/admin.js --league 3');
+                        return [2 /*return*/];
                     }
                     _a.label = 1;
                 case 1:
@@ -106,7 +124,9 @@ var main = function commandLine() {
                     _a.sent();
                     return [3 /*break*/, 1];
                 case 3:
-                    console.log('Found players');
+                    console.log('Found connecting players');
+                    admin.addDefaultPlayers();
+                    console.log(admin.players.length);
                     return [2 /*return*/];
             }
         });
