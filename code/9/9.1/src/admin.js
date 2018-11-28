@@ -97,6 +97,7 @@ var main = function commandLine() {
                     ip_address = parsed["IP"];
                     port = parsed["port"];
                     lib = require(PARENT_DIR + parsed["default-player"]);
+                    // e.g., lib = { __esModule: true, Player: [Function: Player] }
                     assert(lib.__esModule, 'Module not found: Check "default-player" in santorini.config');
                     assert('Player' in lib, 'Player class not found: The module should have an exported class named "Player"');
                     defaultPlayer = lib.Player;
@@ -104,10 +105,12 @@ var main = function commandLine() {
                     // e.g., { _: [], league: 3 }
                     assert(Object.keys(myArgs).length === 2, 'Admin takes two arguments, e.g., node src/admin.js --league 3');
                     if ('league' in myArgs) {
+                        // e.g., myArgs = { _: [], league: 3 }
                         n_players = myArgs['league'];
                         admin = new Admin(TournamentType.League, n_players, ip_address, port, defaultPlayer);
                     }
                     else if ('cup' in myArgs) {
+                        // e.g., myArgs = { _: [], cup: 3 }
                         n_players = myArgs['cup'];
                         admin = new Admin(TournamentType.Cup, n_players, ip_address, port, defaultPlayer);
                     }

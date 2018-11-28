@@ -8,7 +8,7 @@
 let fs = require('fs');
 let assert = require('assert');
 const net = require('net');
-import {Player, RemoteProxyPlayer} from "./player";
+import {RemoteProxyPlayer} from "./player";
 import {RuleChecker} from "./rules";
 
 
@@ -27,7 +27,7 @@ export class Admin {
     port: number;
     server;
     client;
-    players: Player[];
+    players: any[];
     defaultPlayer;
 
     constructor (tournament_type: TournamentType, num_players: number, ip_address: string, port: number, defaultPlayer) {
@@ -76,27 +76,30 @@ const main = async function commandLine() {
     let ip_address = parsed["IP"];
     let port = parsed["port"];
     let lib = require(PARENT_DIR + parsed["default-player"]);
+    // e.g., lib = { __esModule: true, Player: [Function: Player] }
     assert(lib.__esModule, 'Module not found: Check "default-player" in santorini.config');
     assert('Player' in lib, 'Player class not found: The module should have an exported class named "Player"');
     let defaultPlayer = lib.Player;
 
     // parse command line arguments
-    var myArgs = require('minimist')(process.argv.slice(2));
+    let myArgs = require('minimist')(process.argv.slice(2));
     // e.g., { _: [], league: 3 }
     assert(Object.keys(myArgs).length === 2, 'Admin takes two arguments, e.g., node src/admin.js --league 3');
 
     let n_players;
     let admin;
     if ('league' in myArgs) {
+        // e.g., myArgs = { _: [], league: 3 }
         n_players = myArgs['league'];
         admin = new Admin(TournamentType.League, n_players, ip_address, port, defaultPlayer);
     }
     else if ('cup' in myArgs) {
+        // e.g., myArgs = { _: [], cup: 3 }
         n_players = myArgs['cup'];
         admin = new Admin(TournamentType.Cup, n_players, ip_address, port, defaultPlayer);
     }
     else {
-        console.error('Admin takes a tournament type of string "league" or "cup", e.g., node src/admin.js --league 3')
+        console.error('Admin takes a tournament type of string "league" or "cup", e.g., node src/admin.js --league 3');
         return;
     }
 
