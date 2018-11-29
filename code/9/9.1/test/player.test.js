@@ -1,5 +1,5 @@
 const Board = require('../src/board').Board;
-const Player = require('../src/player').Player;
+const Player = require('../src/basic_player').Player;
 const expect = require('chai').expect;
 
 // create input test boardInstance
@@ -38,69 +38,69 @@ const deepCloneInputBoard = function createDeepCloneOfBoard() {
 /**
  * TESTING MOVE AND BUILD WHERE MOVE AND BUILD VALID
  */
-describe('Player -- Testing Placement of Workers', () => {
-  it('empty board, so place at top two corners', function () {
-    let inputBoard = Board.createEmptyBoard(5, 5);
-
-    let playerInstance = new Player('white', inputBoard);
-    expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [0, 4]]);
-  });
-
-  it('blue is at top half', function () {
-    let inputBoard = Board.createEmptyBoard(5, 5);
-    inputBoard[0][0] = [0, 'blue1'];
-    inputBoard[0][4] = [0, 'blue2'];
-
-    let playerInstance = new Player('white', inputBoard);
-    expect(playerInstance.placeWorkers()).to.deep.equal([[4, 4], [4, 0]]);
-  });
-
-  it('blue is at bottom half', function () {
-    let inputBoard = Board.createEmptyBoard(5, 5);
-    inputBoard[4][0] = [0, 'blue1'];
-    inputBoard[4][4] = [0, 'blue2'];
-
-    let playerInstance = new Player('white', inputBoard);
-    expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [0, 4]]);
-  });
-
-  it('blue is at left half', function () {
-    let inputBoard = Board.createEmptyBoard(5, 5);
-    inputBoard[0][0] = [0, 'blue1'];
-    inputBoard[4][0] = [0, 'blue2'];
-
-    let playerInstance = new Player('white', inputBoard);
-    expect(playerInstance.placeWorkers()).to.deep.equal([[0, 4], [4, 4]]);
-  });
-
-  it('blue is at right half', function () {
-    let inputBoard = Board.createEmptyBoard(5, 5);
-    inputBoard[0][4] = [0, 'blue1'];
-    inputBoard[4][4] = [0, 'blue2'];
-
-    let playerInstance = new Player('white', inputBoard);
-    expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [4, 0]]);
-  });
-
-  it('blue is at top-left and bottom-right', function () {
-    let inputBoard = Board.createEmptyBoard(5, 5);
-    inputBoard[0][0] = [0, 'blue1'];
-    inputBoard[4][4] = [0, 'blue2'];
-
-    let playerInstance = new Player('white', inputBoard);
-    expect(playerInstance.placeWorkers()).to.deep.equal([[0, 4], [4, 0]]);
-  });
-
-  it('blue is at top-right and bottom-left', function () {
-    let inputBoard = Board.createEmptyBoard(5, 5);
-    inputBoard[0][4] = [0, 'blue1'];
-    inputBoard[4][0] = [0, 'blue2'];
-
-    let playerInstance = new Player('white', inputBoard);
-    expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [4, 4]]);
-  });
-});
-
-
-let playerInstance = new Player('white', inputBoard);
-console.log(JSON.stringify(playerInstance.determinePlays(new Board(inputBoard))));
+// describe('Player -- Testing Placement of Workers', () => {
+//   it('empty board, so place at top two corners', function () {
+//     let inputBoard = Board.createEmptyBoard(5, 5);
+//
+//     let playerInstance = new Player('white', inputBoard);
+//     expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [0, 4]]);
+//   });
+//
+//   it('blue is at top half', function () {
+//     let inputBoard = Board.createEmptyBoard(5, 5);
+//     inputBoard[0][0] = [0, 'blue1'];
+//     inputBoard[0][4] = [0, 'blue2'];
+//
+//     let playerInstance = new Player('white', inputBoard);
+//     expect(playerInstance.placeWorkers()).to.deep.equal([[4, 4], [4, 0]]);
+//   });
+//
+//   it('blue is at bottom half', function () {
+//     let inputBoard = Board.createEmptyBoard(5, 5);
+//     inputBoard[4][0] = [0, 'blue1'];
+//     inputBoard[4][4] = [0, 'blue2'];
+//
+//     let playerInstance = new Player('white', inputBoard);
+//     expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [0, 4]]);
+//   });
+//
+//   it('blue is at left half', function () {
+//     let inputBoard = Board.createEmptyBoard(5, 5);
+//     inputBoard[0][0] = [0, 'blue1'];
+//     inputBoard[4][0] = [0, 'blue2'];
+//
+//     let playerInstance = new Player('white', inputBoard);
+//     expect(playerInstance.placeWorkers()).to.deep.equal([[0, 4], [4, 4]]);
+//   });
+//
+//   it('blue is at right half', function () {
+//     let inputBoard = Board.createEmptyBoard(5, 5);
+//     inputBoard[0][4] = [0, 'blue1'];
+//     inputBoard[4][4] = [0, 'blue2'];
+//
+//     let playerInstance = new Player('white', inputBoard);
+//     expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [4, 0]]);
+//   });
+//
+//   it('blue is at top-left and bottom-right', function () {
+//     let inputBoard = Board.createEmptyBoard(5, 5);
+//     inputBoard[0][0] = [0, 'blue1'];
+//     inputBoard[4][4] = [0, 'blue2'];
+//
+//     let playerInstance = new Player('white', inputBoard);
+//     expect(playerInstance.placeWorkers()).to.deep.equal([[0, 4], [4, 0]]);
+//   });
+//
+//   it('blue is at top-right and bottom-left', function () {
+//     let inputBoard = Board.createEmptyBoard(5, 5);
+//     inputBoard[0][4] = [0, 'blue1'];
+//     inputBoard[4][0] = [0, 'blue2'];
+//
+//     let playerInstance = new Player('white', inputBoard);
+//     expect(playerInstance.placeWorkers()).to.deep.equal([[0, 0], [4, 4]]);
+//   });
+// });
+//
+//
+// let playerInstance = new Player('white', inputBoard);
+// console.log(JSON.stringify(playerInstance.determinePlays(new Board(inputBoard))));

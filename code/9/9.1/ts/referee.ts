@@ -19,6 +19,11 @@ export class Referee {
     // player1status: string;// won, loss, still playing
     // player2status: string;// won, loss, still playing
 
+    /**
+     *
+     * @param {PlayerInterface} player1 Already registered players
+     * @param {PlayerInterface} player2 Already registered players
+     */
     constructor(player1: PlayerInterface, player2: PlayerInterface) {
         this.boardInstance = new Board(Board.createEmptyBoard(5,5));
         this.player1 = player1;
@@ -139,8 +144,15 @@ export class Referee {
      * - player2status: if player2 won or lost, or still playing
      *
      */
-    main() {
+    async runGame() {
 
+        let placements1 = await this.player1.placeWorkers('blue', this.boardInstance.board);
+        this.placeWorkers(placements1);
+
+        let placements2 = await this.player1.placeWorkers('white', this.boardInstance.board);
+        this.placeWorkers(placements2);
+
+        console.log(this.boardInstance.board);
     }
 
     /** Checks if player has won

@@ -39,6 +39,7 @@ var fs = require('fs');
 var assert = require('assert');
 var net = require('net');
 var remote_proxy_player_1 = require("./remote_proxy_player");
+var referee_1 = require("./referee");
 var TournamentType;
 (function (TournamentType) {
     // RoundRobin
@@ -47,10 +48,11 @@ var TournamentType;
     TournamentType[TournamentType["Cup"] = 1] = "Cup";
 })(TournamentType || (TournamentType = {}));
 var Admin = /** @class */ (function () {
-    function Admin(tournament_type, num_players, ip_address, port, defaultPlayer) {
+    function Admin(tournament_type, num_remote_players, ip_address, port, defaultPlayer) {
         this.tournament_type = tournament_type;
-        this.num_players = num_players;
+        this.num_remote_players = num_remote_players;
         this.defaultPlayer = defaultPlayer;
+        this.num_total_players = this.numTotalPlayersNeeded();
         this.players = [];
         this.server = net.createServer(function (client) {
             this.players.push(new remote_proxy_player_1.RemoteProxyPlayer(client));
@@ -60,11 +62,17 @@ var Admin = /** @class */ (function () {
         this.server.listen(port, ip_address);
     }
     Admin.prototype.isWaitingForPlayers = function () {
-        return this.players.length < this.num_players;
+        return this.players.length < this.num_remote_players;
+    };
+    Admin.prototype.numTotalPlayersNeeded = function () {
+        var totalPlayers = 2;
+        while (totalPlayers < this.num_remote_players) {
+            totalPlayers *= 2;
+        }
+        return totalPlayers;
     };
     Admin.prototype.numDefaultPlayersNeeded = function () {
-        // TODO(rlouie): should compute the highest power of two. See npm install mathjs
-        return 1;
+        return this.num_total_players - this.num_remote_players;
     };
     Admin.prototype.addDefaultPlayers = function () {
         for (var i = 0; i < this.numDefaultPlayersNeeded(); i++) {
@@ -97,6 +105,35 @@ var Admin = /** @class */ (function () {
                 }
             });
         });
+    };
+    Admin.roundRobinGameList = function (num_total_players) {
+        var arr = [];
+        for (var i = 0; i < num_total_players - 1; i++) {
+            for (var j = i + 1; j < num_total_players; j++) {
+                arr.push([i, j]);
+            }
+        }
+        return arr;
+    };
+    Admin.prototype.runTournament = function () {
+        if (this.tournament_type == TournamentType.League) {
+            this.runRoundRobin();
+        }
+        else {
+            this.runSingleElimination();
+        }
+    };
+    Admin.prototype.runRoundRobin = function () {
+        var robinGameList = Admin.roundRobinGameList(this.num_total_players);
+        for (var i in robinGameList) {
+            var _a = robinGameList[i], player1idx = _a[0], player2idx = _a[1];
+            var referee = new referee_1.Referee(this.players[player1idx], this.players[player2idx]);
+            referee.runGame();
+            console.log('Game finished ', i);
+        }
+    };
+    Admin.prototype.runSingleElimination = function () {
+        console.log('HA nope');
     };
     return Admin;
 }());
@@ -149,6 +186,10 @@ var main = function commandLine() {
                     console.log('Found connecting players');
                     admin.addDefaultPlayers();
                     console.log('Adding additional players... Total number of players = ', admin.players.length);
+                    if (admin.players.length != admin.num_total_players) {
+                        console.error('Yikes, math should equal math. Count number of players again');
+                        return [2 /*return*/];
+                    }
                     return [4 /*yield*/, admin.registerAllPlayers()];
                 case 4:
                     _a.sent();
@@ -156,6 +197,7 @@ var main = function commandLine() {
                         console.log(admin.players[i].constructor.name);
                         console.log(admin.players[i].name);
                     }
+                    admin.runTournament();
                     return [2 /*return*/];
             }
         });

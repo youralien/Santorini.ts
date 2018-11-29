@@ -6,7 +6,7 @@ import {Board} from "./board";
 /**
  * Implements a Player component that can communicate with a game engine to play Santorini.
  */
-export class Player implements PlayerInterface {
+class BasicPlayer implements PlayerInterface {
     name: string;
     color: string;
     boardInstance: Board;
@@ -112,3 +112,5 @@ export class Player implements PlayerInterface {
         return this.gameOverResponse;
     }
 }
+
+export const Player = BasicPlayer;

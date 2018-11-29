@@ -11,6 +11,7 @@ let assert = require('assert');
 const net = require('net');
 import { RemoteProxyPlayer} from "./remote_proxy_player";
 import {RuleChecker} from "./rules";
+import {Referee} from "./referee";
 
 
 enum TournamentType {
@@ -23,16 +24,18 @@ enum TournamentType {
 
 export class Admin {
     tournament_type: TournamentType;
-    num_players: number;
+    num_total_players: number;
+    num_remote_players: number;
     server;
     client;
     players: any[];
     defaultPlayer;
 
-    constructor (tournament_type: TournamentType, num_players: number, ip_address: string, port: number, defaultPlayer) {
+    constructor (tournament_type: TournamentType, num_remote_players: number, ip_address: string, port: number, defaultPlayer) {
         this.tournament_type = tournament_type;
-        this.num_players = num_players;
+        this.num_remote_players = num_remote_players;
         this.defaultPlayer = defaultPlayer;
+        this.num_total_players = this.numTotalPlayersNeeded();
 
         this.players = [];
         this.server = net.createServer(function(client) {
@@ -44,12 +47,19 @@ export class Admin {
     }
 
     isWaitingForPlayers() : boolean {
-        return this.players.length < this.num_players;
+        return this.players.length < this.num_remote_players;
+    }
+
+    numTotalPlayersNeeded() : number {
+        let totalPlayers = 2;
+        while (totalPlayers < this.num_remote_players) {
+            totalPlayers *= 2;
+        }
+        return totalPlayers;
     }
 
     numDefaultPlayersNeeded() : number {
-        // TODO(rlouie): should compute the highest power of two. See npm install mathjs
-        return 1;
+        return this.num_total_players - this.num_remote_players;
     }
 
     addDefaultPlayers() {
@@ -63,6 +73,41 @@ export class Admin {
             let name = await this.players[i].register();
             console.log('got name: ', name);
         }
+    }
+
+    static roundRobinGameList(num_total_players) : Array<[number, number]>{
+        let arr = [];
+        for (let i = 0; i < num_total_players - 1; i++) {
+            for (let j = i + 1; j < num_total_players; j++) {
+                arr.push([i, j]);
+            }
+        }
+        return arr;
+    }
+
+    runTournament() {
+        if (this.tournament_type == TournamentType.League) {
+            this.runRoundRobin();
+        }
+        else {
+            this.runSingleElimination();
+        }
+
+    }
+
+    private runRoundRobin() {
+        let robinGameList = Admin.roundRobinGameList(this.num_total_players);
+
+        for (let i in robinGameList) {
+            let [player1idx, player2idx] = robinGameList[i];
+            let referee = new Referee(this.players[player1idx], this.players[player2idx]);
+            referee.runGame();
+            console.log('Game finished ', i);
+        }
+    }
+
+    private runSingleElimination() {
+        console.log('HA nope')
     }
 }
 
@@ -111,18 +156,24 @@ const main = async function commandLine() {
         console.log('Waiting for players to connect...');
         await sleep(5000);
     }
-
     console.log('Found connecting players');
+
     admin.addDefaultPlayers();
     console.log('Adding additional players... Total number of players = ', admin.players.length);
 
-    await admin.registerAllPlayers();
+    if (admin.players.length != admin.num_total_players) {
+        console.error('Yikes, math should equal math. Count number of players again');
+        return;
+    }
 
+    await admin.registerAllPlayers();
 
     for (let i in admin.players) {
         console.log(admin.players[i].constructor.name);
         console.log(admin.players[i].name);
     }
+
+    admin.runTournament();
 
 };
 
