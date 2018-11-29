@@ -1,3 +1,3 @@
 [[4,4],[4,0]]
-[]
+[["white1",["S","N"]],["white1",["S","S"]],["white1",["S","W"]],["white1",["S","NW"]],["white1",["S","SW"]],["white1",["W","S"]],["white1",["W","W"]],["white1",["W","E"]],["white1",["W","SW"]],["white1",["W","SE"]],["white1",["SW","N"]],["white1",["SW","S"]],["white1",["SW","W"]],["white1",["SW","E"]],["white1",["SW","NW"]],["white1",["SW","NE"]],["white1",["SW","SW"]],["white1",["SW","SE"]],["white2",["N","N"]],["white2",["N","S"]],["white2",["N","NW"]],["white2",["N","SW"]],["white2",["W","W"]],["white2",["W","E"]],["white2",["W","NW"]],["white2",["W","NE"]]]
 "Santorini is broken! Too many tourists in such a small place..."
