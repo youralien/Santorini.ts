@@ -36,7 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 // import necessary packages and modules
-var player_1 = require("./player");
+// import { RemoteProxyPlayer, Player } from "./player";
+var remote_proxy_player_1 = require("./remote_proxy_player");
+var basic_player_1 = require("./basic_player");
 var readline = require("readline");
 var net = require('net');
 /**
@@ -52,58 +54,62 @@ var isValidInput = function checkValidCommand(obj) {
     return Array.isArray(obj) && (obj.length >= 1 && obj.length <= 3);
 };
 exports.playerDriverComponent = function (port, host) {
-    var playerInstance = new player_1.Player();
-    var server = net.createServer(function (socket) {
-        socket.on('data', function (data) {
-            var textChunk = data.toString('utf8');
-            // console.log(textChunk);
-            var maybeValidResponse = exports.maybeValidJson(textChunk);
-            if (maybeValidResponse !== undefined) {
-                // clear current read string and augment the valid, parsed JSON
-                if (isValidInput(maybeValidResponse)) {
-                    //      console.log('maybeValidresponse', maybeValidResponse);
-                    var outputMessage = undefined;
-                    var command = maybeValidResponse[0];
-                    if (command === 'Place') {
-                        var color = maybeValidResponse[1];
-                        var initialBoard = maybeValidResponse[2];
-                        outputMessage = playerInstance.placeWorkers(color, initialBoard);
-                    }
-                    else if (command === 'Play') {
-                        var board = maybeValidResponse[1];
-                        // TODO: play? or playOptions?
-                        outputMessage = playerInstance.playOptionsNonLosing(board);
-                    }
-                    else if (command === 'Register') {
-                        outputMessage = playerInstance.register();
-                    }
-                    else if (command == 'Game Over') {
-                        var name_1 = maybeValidResponse[1];
-                        outputMessage = playerInstance.gameOver(name_1);
-                    }
-                    if (outputMessage !== undefined) {
-                        // send output from function call to client
-                        //console.log('Writing to socket');
-                        socket.write(JSON.stringify(outputMessage));
-                        // TODO: exit out of player component when the game is over
-                        if (outputMessage === playerInstance.gameOverResponse) {
-                            server.close(function () {
-                                process.exit();
-                            });
-                        }
-                    }
-                    else {
-                        console.error("Returned undefined output for command = " + command);
-                        // TODO: undefined output for our monad/maybe structure means that we're propagating an error
-                        server.close(function () {
+    var playerInstance = new basic_player_1.Player();
+    var socket = new net.Socket();
+    socket.connect(port, host, function () {
+        console.log("PDC connected");
+    });
+    socket.on('data', function (data) {
+        var textChunk = data.toString('utf8');
+        // console.log(textChunk);
+        var maybeValidResponse = exports.maybeValidJson(textChunk);
+        if (maybeValidResponse !== undefined) {
+            // clear current read string and augment the valid, parsed JSON
+            if (isValidInput(maybeValidResponse)) {
+                //      console.log('maybeValidresponse', maybeValidResponse);
+                var outputMessage = undefined;
+                var command = maybeValidResponse[0];
+                if (command === 'Place') {
+                    var color = maybeValidResponse[1];
+                    var initialBoard = maybeValidResponse[2];
+                    outputMessage = playerInstance.placeWorkers(color, initialBoard);
+                }
+                else if (command === 'Play') {
+                    var board = maybeValidResponse[1];
+                    // TODO: play? or playOptions?
+                    outputMessage = playerInstance.playOptionsNonLosing(board);
+                }
+                else if (command === 'Register') {
+                    outputMessage = playerInstance.register();
+                }
+                else if (command == 'Game Over') {
+                    var name_1 = maybeValidResponse[1];
+                    outputMessage = playerInstance.gameOver(name_1);
+                }
+                if (outputMessage !== undefined) {
+                    // send output from function call to client
+                    console.log(outputMessage);
+                    console.log('Writing to socket');
+                    console.log('##################');
+                    console.log(JSON.stringify(outputMessage));
+                    socket.write(JSON.stringify(outputMessage));
+                    // TODO: exit out of player component when the game is over
+                    if (outputMessage === playerInstance.gameOverResponse) {
+                        socket.close(function () {
                             process.exit();
                         });
                     }
                 }
+                else {
+                    console.error("Returned undefined output for command = " + command);
+                    // TODO: undefined output for our monad/maybe structure means that we're propagating an error
+                    socket.close(function () {
+                        process.exit();
+                    });
+                }
             }
-        });
+        }
     });
-    server.listen(port, host);
 };
 exports.adminRemoteProxy = function (port, host) {
     return __awaiter(this, void 0, void 0, function () {
@@ -119,7 +125,7 @@ exports.adminRemoteProxy = function (port, host) {
                     currReadString = '';
                     socket = new net.Socket();
                     socket.connect(port, host);
-                    playerInstance = new player_1.RemoteProxyPlayer(socket);
+                    playerInstance = new remote_proxy_player_1.RemoteProxyPlayer(socket);
                     queue = [];
                     rl.on('line', function (input) {
                         // add new input to current read in string (handling valid JSON across multiple lines)

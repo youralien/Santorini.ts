@@ -4,11 +4,12 @@
  * node src/admin.js --league 3
  * node src/admin.js --cup 8
  */
+import {PlayerInterface} from "./player_interface";
 
 let fs = require('fs');
 let assert = require('assert');
 const net = require('net');
-import {RemoteProxyPlayer} from "./player";
+import { RemoteProxyPlayer} from "./remote_proxy_player";
 import {RuleChecker} from "./rules";
 
 
@@ -23,8 +24,6 @@ enum TournamentType {
 export class Admin {
     tournament_type: TournamentType;
     num_players: number;
-    ip_address: string;
-    port: number;
     server;
     client;
     players: any[];
@@ -33,17 +32,15 @@ export class Admin {
     constructor (tournament_type: TournamentType, num_players: number, ip_address: string, port: number, defaultPlayer) {
         this.tournament_type = tournament_type;
         this.num_players = num_players;
-        this.ip_address = ip_address;
-        this.port = port;
         this.defaultPlayer = defaultPlayer;
 
         this.players = [];
         this.server = net.createServer(function(client) {
-            console.log(this.ip_address);
             this.players.push(new RemoteProxyPlayer(client));
             console.log(this.players.length);
         }.bind(this));
-        this.server.listen(8000, '');
+        console.log(`${ip_address} and ${port}`);
+        this.server.listen(port, ip_address);
     }
 
     isWaitingForPlayers() : boolean {
@@ -58,6 +55,13 @@ export class Admin {
     addDefaultPlayers() {
         for (let i = 0; i < this.numDefaultPlayersNeeded(); i++) {
             this.players.push(new this.defaultPlayer());
+        }
+    }
+
+    async registerAllPlayers() {
+        for (let i in this.players) {
+            let name = await this.players[i].register();
+            console.log('got name: ', name);
         }
     }
 }
@@ -110,7 +114,15 @@ const main = async function commandLine() {
 
     console.log('Found connecting players');
     admin.addDefaultPlayers();
-    console.log(admin.players.length);
+    console.log('Adding additional players... Total number of players = ', admin.players.length);
+
+    await admin.registerAllPlayers();
+
+
+    for (let i in admin.players) {
+        console.log(admin.players[i].constructor.name);
+        console.log(admin.players[i].name);
+    }
 
 };
 

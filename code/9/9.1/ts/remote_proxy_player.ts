@@ -3,6 +3,8 @@ import {maybeValidJson} from "./main";
 
 export class RemoteProxyPlayer implements PlayerInterface {
     client;
+    name: string;
+    color: string;
     turn: number;
     commands: object;
     currReadString: string;
@@ -42,9 +44,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         //console.log("progressing turn:");
         //console.log(command)
 
-        if (command == 'Register') {
-            res = await this.register();
-        } else if (command == 'Place') {
+        if (command == 'Place') {
             let color = commandInput[1];
             let board = commandInput[2];
             res = await this.placeWorkers(color, board);
@@ -111,6 +111,13 @@ export class RemoteProxyPlayer implements PlayerInterface {
         let commandAndArgs = ["Register"];
         this.client.write(JSON.stringify(commandAndArgs));
         let ans = await this.receive();
+
+        // set name
+        this.name = ans;
+
+        // increment turn, since this, since this
+        this.turn++;
+
         return ans;
     }
 
@@ -119,6 +126,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
             return this.commandsOutOfSequence();
         }
 
+        this.color = color;
         let commandAndArgs = ["Place", color, board];
         this.client.write(JSON.stringify(commandAndArgs));
         let ans = await this.receive();

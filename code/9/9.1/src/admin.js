@@ -1,10 +1,4 @@
 "use strict";
-/**
- * Call this file like so
- * Will have to compile tsc to src, and then run
- * node src/admin.js --league 3
- * node src/admin.js --cup 8
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -44,7 +38,7 @@ exports.__esModule = true;
 var fs = require('fs');
 var assert = require('assert');
 var net = require('net');
-var player_1 = require("./player");
+var remote_proxy_player_1 = require("./remote_proxy_player");
 var TournamentType;
 (function (TournamentType) {
     // RoundRobin
@@ -56,16 +50,14 @@ var Admin = /** @class */ (function () {
     function Admin(tournament_type, num_players, ip_address, port, defaultPlayer) {
         this.tournament_type = tournament_type;
         this.num_players = num_players;
-        this.ip_address = ip_address;
-        this.port = port;
         this.defaultPlayer = defaultPlayer;
         this.players = [];
         this.server = net.createServer(function (client) {
-            console.log(this.ip_address);
-            this.players.push(new player_1.RemoteProxyPlayer(client));
+            this.players.push(new remote_proxy_player_1.RemoteProxyPlayer(client));
             console.log(this.players.length);
         }.bind(this));
-        this.server.listen(8000, '');
+        console.log(ip_address + " and " + port);
+        this.server.listen(port, ip_address);
     }
     Admin.prototype.isWaitingForPlayers = function () {
         return this.players.length < this.num_players;
@@ -79,6 +71,33 @@ var Admin = /** @class */ (function () {
             this.players.push(new this.defaultPlayer());
         }
     };
+    Admin.prototype.registerAllPlayers = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b, _i, i, name_1;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _a = [];
+                        for (_b in this.players)
+                            _a.push(_b);
+                        _i = 0;
+                        _c.label = 1;
+                    case 1:
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        i = _a[_i];
+                        return [4 /*yield*/, this.players[i].register()];
+                    case 2:
+                        name_1 = _c.sent();
+                        console.log('got name: ', name_1);
+                        _c.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return Admin;
 }());
 exports.Admin = Admin;
@@ -88,7 +107,7 @@ var sleep = function sleepForMilliseconds(ms) {
 var PARENT_DIR = __dirname + "/../";
 var main = function commandLine() {
     return __awaiter(this, void 0, void 0, function () {
-        var buffer, parsed, ip_address, port, lib, defaultPlayer, myArgs, n_players, admin;
+        var buffer, parsed, ip_address, port, lib, defaultPlayer, myArgs, n_players, admin, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -129,7 +148,14 @@ var main = function commandLine() {
                 case 3:
                     console.log('Found connecting players');
                     admin.addDefaultPlayers();
-                    console.log(admin.players.length);
+                    console.log('Adding additional players... Total number of players = ', admin.players.length);
+                    return [4 /*yield*/, admin.registerAllPlayers()];
+                case 4:
+                    _a.sent();
+                    for (i in admin.players) {
+                        console.log(admin.players[i].constructor.name);
+                        console.log(admin.players[i].name);
+                    }
                     return [2 /*return*/];
             }
         });

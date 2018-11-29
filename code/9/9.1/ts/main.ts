@@ -1,5 +1,7 @@
 // import necessary packages and modules
-import { RemoteProxyPlayer, Player } from "./player";
+// import { RemoteProxyPlayer, Player } from "./player";
+import { RemoteProxyPlayer} from "./remote_proxy_player";
+import { Player } from "./basic_player";
 import * as readline from 'readline';
 
 const net = require('net');
@@ -22,64 +24,68 @@ const isValidInput = function checkValidCommand(obj): boolean {
 export const playerDriverComponent = function(port, host) {
     let playerInstance = new Player();
 
-    const server = net.createServer(function(socket) {
+    let socket = new net.Socket();
+    socket.connect(port, host, function() {
+        console.log("PDC connected");
+    });
 
-        socket.on('data', function(data) {
-            let textChunk = data.toString('utf8');
-            // console.log(textChunk);
+    socket.on('data', function(data) {
+        let textChunk = data.toString('utf8');
+        // console.log(textChunk);
 
-            let maybeValidResponse = maybeValidJson(textChunk);
-            if (maybeValidResponse !== undefined) {
-                // clear current read string and augment the valid, parsed JSON
+        let maybeValidResponse = maybeValidJson(textChunk);
+        if (maybeValidResponse !== undefined) {
+            // clear current read string and augment the valid, parsed JSON
 
-                if (isValidInput(maybeValidResponse)) {
-                    //      console.log('maybeValidresponse', maybeValidResponse);
-                    let outputMessage = undefined;
+            if (isValidInput(maybeValidResponse)) {
+                //      console.log('maybeValidresponse', maybeValidResponse);
+                let outputMessage = undefined;
 
-                    let command = maybeValidResponse[0];
-                    if (command === 'Place') {
-                        let color = maybeValidResponse[1];
-                        let initialBoard = maybeValidResponse[2];
+                let command = maybeValidResponse[0];
+                if (command === 'Place') {
+                    let color = maybeValidResponse[1];
+                    let initialBoard = maybeValidResponse[2];
 
-                        outputMessage = playerInstance.placeWorkers(color, initialBoard);
-                    } else if (command === 'Play') {
-                        let board = maybeValidResponse[1];
+                    outputMessage = playerInstance.placeWorkers(color, initialBoard);
+                } else if (command === 'Play') {
+                    let board = maybeValidResponse[1];
 
-                        // TODO: play? or playOptions?
-                        outputMessage = playerInstance.playOptionsNonLosing(board);
-                    } else if (command === 'Register') {
-                        outputMessage = playerInstance.register();
-                    } else if (command == 'Game Over') {
-                        let name = maybeValidResponse[1];
+                    // TODO: play? or playOptions?
+                    outputMessage = playerInstance.playOptionsNonLosing(board);
+                } else if (command === 'Register') {
+                    outputMessage = playerInstance.register();
+                } else if (command == 'Game Over') {
+                    let name = maybeValidResponse[1];
 
-                        outputMessage = playerInstance.gameOver(name);
-                    }
+                    outputMessage = playerInstance.gameOver(name);
+                }
 
-                    if (outputMessage !== undefined) {
-                        // send output from function call to client
-                        //console.log('Writing to socket');
-                        socket.write(JSON.stringify(outputMessage));
+                if (outputMessage !== undefined) {
+                    // send output from function call to client
+                    console.log(outputMessage);
+                    console.log('Writing to socket');
+                    console.log('##################');
+                    console.log(JSON.stringify(outputMessage));
+                    socket.write(JSON.stringify(outputMessage));
 
-                        // TODO: exit out of player component when the game is over
-                        if (outputMessage === playerInstance.gameOverResponse) {
-                            server.close(() => {
-                                process.exit();
-                            });
-                        }
-                    }
-                    else {
-                        console.error(`Returned undefined output for command = ${command}`);
-                        // TODO: undefined output for our monad/maybe structure means that we're propagating an error
-                        server.close(() => {
+                    // TODO: exit out of player component when the game is over
+                    if (outputMessage === playerInstance.gameOverResponse) {
+                        socket.close(() => {
                             process.exit();
                         });
                     }
                 }
+                else {
+                    console.error(`Returned undefined output for command = ${command}`);
+                    // TODO: undefined output for our monad/maybe structure means that we're propagating an error
+                    socket.close(() => {
+                        process.exit();
+                    });
+                }
             }
-        });
-
+        }
     });
-    server.listen(port, host);
+
 };
 
 

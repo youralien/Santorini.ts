@@ -65,37 +65,31 @@ var RemoteProxyPlayer = /** @class */ (function () {
                     case 0:
                         command = commandInput[0];
                         res = undefined;
-                        if (!(command == 'Register')) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.register()];
-                    case 1:
-                        res = _a.sent();
-                        return [3 /*break*/, 9];
-                    case 2:
-                        if (!(command == 'Place')) return [3 /*break*/, 4];
+                        if (!(command == 'Place')) return [3 /*break*/, 2];
                         color = commandInput[1];
                         board = commandInput[2];
                         return [4 /*yield*/, this.placeWorkers(color, board)];
-                    case 3:
+                    case 1:
                         res = _a.sent();
-                        return [3 /*break*/, 9];
-                    case 4:
-                        if (!(command == 'Play')) return [3 /*break*/, 6];
+                        return [3 /*break*/, 7];
+                    case 2:
+                        if (!(command == 'Play')) return [3 /*break*/, 4];
                         board = commandInput[1];
                         return [4 /*yield*/, this.play(board)];
-                    case 5:
+                    case 3:
                         res = _a.sent();
-                        return [3 /*break*/, 9];
-                    case 6:
-                        if (!(command == 'Game Over')) return [3 /*break*/, 8];
+                        return [3 /*break*/, 7];
+                    case 4:
+                        if (!(command == 'Game Over')) return [3 /*break*/, 6];
                         name_1 = commandInput[1];
                         return [4 /*yield*/, this.gameOver(name_1)];
-                    case 7:
+                    case 5:
                         res = _a.sent();
-                        return [3 /*break*/, 9];
-                    case 8: 
+                        return [3 /*break*/, 7];
+                    case 6: 
                     // if its not one of the interfaces, just return and dont progress the turn successfully
                     return [2 /*return*/];
-                    case 9:
+                    case 7:
                         this.turn++;
                         return [2 /*return*/, res];
                 }
@@ -159,6 +153,10 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         return [4 /*yield*/, this.receive()];
                     case 1:
                         ans = _a.sent();
+                        // set name
+                        this.name = ans;
+                        // increment turn, since this, since this
+                        this.turn++;
                         return [2 /*return*/, ans];
                 }
             });
@@ -173,6 +171,7 @@ var RemoteProxyPlayer = /** @class */ (function () {
                         if (this.turn != 1) {
                             return [2 /*return*/, this.commandsOutOfSequence()];
                         }
+                        this.color = color;
                         commandAndArgs = ["Place", color, board];
                         this.client.write(JSON.stringify(commandAndArgs));
                         return [4 /*yield*/, this.receive()];
