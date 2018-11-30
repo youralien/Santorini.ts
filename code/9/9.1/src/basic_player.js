@@ -6,8 +6,8 @@ var board_1 = require("./board");
 /**
  * Implements a Player component that can communicate with a game engine to play Santorini.
  */
-var Player = /** @class */ (function () {
-    function Player() {
+var BasicPlayer = /** @class */ (function () {
+    function BasicPlayer() {
         this.color = undefined;
         this.boardInstance = undefined;
         var buffer = fs.readFileSync(__dirname + "/../strategy.config", 'utf8');
@@ -19,18 +19,18 @@ var Player = /** @class */ (function () {
      *
      * @return {string} denotes name of player (their color)
      */
-    Player.prototype.register = function () {
+    BasicPlayer.prototype.register = function () {
         this.name = this.randomPlayerName();
         return this.name;
     };
-    Player.prototype.randomPlayerName = function () {
+    BasicPlayer.prototype.randomPlayerName = function () {
         var randomInt = Math.floor((Math.random() * 10) + 1);
         return "player-name-" + randomInt;
     };
     /**
      * Starts Remote Connection
      */
-    Player.prototype.startRemoteConnection = function () {
+    BasicPlayer.prototype.startRemoteConnection = function () {
         // communicates with game engine to set color, make moves, and update internal game state
     };
     /**
@@ -38,7 +38,7 @@ var Player = /** @class */ (function () {
      * from the top-leftmost corner of the boardInstance.
      * @return {[[number, number]]>} JSON list that contains two pairs of numbers, each between 0 and 4.
      */
-    Player.prototype.placeWorkers = function (color, board) {
+    BasicPlayer.prototype.placeWorkers = function (color, board) {
         if (this.color || this.boardInstance) {
             console.log("Place command should only be called once for player name " + this.color);
             return;
@@ -69,18 +69,18 @@ var Player = /** @class */ (function () {
      * @param {any[][]} board
      * @return {[string , [string , string]]}
      */
-    Player.prototype.play = function (board) {
+    BasicPlayer.prototype.play = function (board) {
         this.boardInstance = new board_1.Board(board);
         return this.pickNonLosingPlay(this.boardInstance);
     };
-    Player.prototype.pickNonLosingPlay = function (board) {
+    BasicPlayer.prototype.pickNonLosingPlay = function (board) {
         return strategy_1.Strategy.pickOneNonLosingPlay(board, this.color, this.look_ahead);
     };
-    Player.prototype.playOptionsNonLosing = function (board) {
+    BasicPlayer.prototype.playOptionsNonLosing = function (board) {
         this.boardInstance = new board_1.Board(board);
         return this.computeManyNonLosingPlays(this.boardInstance);
     };
-    Player.prototype.computeManyNonLosingPlays = function (board) {
+    BasicPlayer.prototype.computeManyNonLosingPlays = function (board) {
         if (this.look_ahead) {
             return strategy_1.Strategy.computeManyNonLosingPlays(board, this.color, this.look_ahead);
         }
@@ -88,10 +88,10 @@ var Player = /** @class */ (function () {
             console.log("look_ahead value not found");
         }
     };
-    Player.prototype.gameOver = function (name) {
+    BasicPlayer.prototype.gameOver = function (name) {
         // TODO: maybe change the state
         return this.gameOverResponse;
     };
-    return Player;
+    return BasicPlayer;
 }());
-exports.Player = Player;
+exports.Player = BasicPlayer;
