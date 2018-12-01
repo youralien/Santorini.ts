@@ -151,7 +151,6 @@ export class Strategy {
                 }
             });
         });
-
         return validPlays;
     }
 

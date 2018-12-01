@@ -1,5 +1,7 @@
 import { PlayerInterface} from "./player_interface";
 import {RuleChecker} from "./rules";
+import {Strategy}  from "./strategy";
+import {Board} from "./board";
 
 export class ValidationPlayerProxy implements PlayerInterface {
 
@@ -7,7 +9,7 @@ export class ValidationPlayerProxy implements PlayerInterface {
     name: string;
     color: string;
     turn: number;
-    rulecheck: RuleChecker;
+    prev_board: Board;
 
     constructor(wrapped_player: PlayerInterface) {
         this.wrapped_player = wrapped_player;
@@ -22,7 +24,7 @@ export class ValidationPlayerProxy implements PlayerInterface {
 
     async register() {// : string | Promise<string> {
         if (this.turn !== 0) {
-            return this.commandsOutOfSequence();
+            return ["turn_error", "register out of sequence, not turn 0. turn = " + this.turn];
         }
         this.turn++;
         return await this.wrapped_player.register();
@@ -39,18 +41,33 @@ export class ValidationPlayerProxy implements PlayerInterface {
      */
     async placeWorkers(color: string, board: any[][]) {
         if (this.turn != 1) {
-            return this.commandsOutOfSequence();
+            return ["turn_error", "placeworkers out of sequence, not turn 1. turn = " + this.turn];
         }
+        // todo check that board is valid
+
         this.turn++;
-        return await this.wrapped_player.placeWorkers(color, board);
+        let  placement_list = await this.wrapped_player.placeWorkers(color, board);
+        let  [[w1row, w1col], [w2row, w2col]] =  placement_list;
+        this.prev_board.setCellWithWorkerByCoords(color + "1", w1row, w1col);
+        this.prev_board.setCellWithWorkerByCoords(color + "2", w2row, w2col);
+        return placement_list;
     }
+
     async play(board: any[][]) {
         if (this.turn < 2) {
-            return this.commandsOutOfSequence();
+            return ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn];
         }
+        
+        
         this.turn++;
-        return await this.wrapped_player.play(board);
+        let play =  await this.wrapped_player.play(board);
+        let [worker, directions] = play;
+        let rule_checker = new RuleChecker(board, worker, directions);
+        rule_checker.executeTurn();
+        this.prev_board = rule_checker.boardInstance;
+        return play;
     }
+
     async gameOver(name: string) {
         this.turn++;
         return await this.wrapped_player.gameOver(name);
@@ -60,5 +77,4 @@ export class ValidationPlayerProxy implements PlayerInterface {
         this.turn = 1;
     }
 }
-
 export const Player = ValidationPlayerProxy;
