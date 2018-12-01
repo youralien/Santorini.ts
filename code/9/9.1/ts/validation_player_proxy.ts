@@ -58,7 +58,18 @@ export class ValidationPlayerProxy implements PlayerInterface {
             return ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn];
         }
         
-        
+        let other_player = this.get_other_player(this.color);
+        let valid_boards = Strategy.computeValidPlays(this.prev_board, other_player);
+        valid_boards = valid_boards.map((x) => {
+            let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = x;
+            return JSON.stringify(targetPlayerBoard.board);
+        });
+
+        let board_string = JSON.stringify(board); 
+        if (!(board_string in valid_boards)) {
+            return ["invalid_board_error", "board passed by admin is not one move away from last move"];
+        }
+
         this.turn++;
         let play =  await this.wrapped_player.play(board);
         let [worker, directions] = play;
@@ -75,6 +86,14 @@ export class ValidationPlayerProxy implements PlayerInterface {
 
     reset() {
         this.turn = 1;
+    }
+
+    get_other_player(color: string) {
+        if (color === "blue") {
+            return "white";
+        } else {
+            return "blue";
+        }
     }
 }
 export const Player = ValidationPlayerProxy;
