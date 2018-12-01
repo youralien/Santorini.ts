@@ -45,7 +45,7 @@ export class ValidationPlayerProxy implements PlayerInterface {
         return await this.wrapped_player.placeWorkers(color, board);
     }
     async play(board: any[][]) {
-        if (this.turn < 1) {
+        if (this.turn < 2) {
             return this.commandsOutOfSequence();
         }
         this.turn++;

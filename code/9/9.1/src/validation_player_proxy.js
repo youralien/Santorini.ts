@@ -88,7 +88,7 @@ var ValidationPlayerProxy = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (this.turn < 1) {
+                        if (this.turn < 2) {
                             return [2 /*return*/, this.commandsOutOfSequence()];
                         }
                         this.turn++;
