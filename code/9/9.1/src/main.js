@@ -54,61 +54,69 @@ var isValidInput = function checkValidCommand(obj) {
     return Array.isArray(obj) && (obj.length >= 1 && obj.length <= 3);
 };
 exports.playerDriverComponent = function (port, host) {
-    var playerInstance = new basic_player_1.Player();
-    var socket = new net.Socket();
-    socket.connect(port, host, function () {
-        console.log("PDC connected");
-    });
-    socket.on('data', function (data) {
-        var textChunk = data.toString('utf8');
-        // console.log(textChunk);
-        var maybeValidResponse = exports.maybeValidJson(textChunk);
-        if (maybeValidResponse !== undefined) {
-            // clear current read string and augment the valid, parsed JSON
-            if (isValidInput(maybeValidResponse)) {
-                //      console.log('maybeValidresponse', maybeValidResponse);
-                var outputMessage = undefined;
-                var command = maybeValidResponse[0];
-                if (command === 'Place') {
-                    var color = maybeValidResponse[1];
-                    var initialBoard = maybeValidResponse[2];
-                    outputMessage = playerInstance.placeWorkers(color, initialBoard);
-                }
-                else if (command === 'Play') {
-                    var board = maybeValidResponse[1];
-                    // TODO: play? or playOptions?
-                    outputMessage = playerInstance.playOptionsNonLosing(board);
-                }
-                else if (command === 'Register') {
-                    outputMessage = playerInstance.register();
-                }
-                else if (command == 'Game Over') {
-                    var name_1 = maybeValidResponse[1];
-                    outputMessage = playerInstance.gameOver(name_1);
-                }
-                if (outputMessage !== undefined) {
-                    // send output from function call to client
-                    console.log(outputMessage);
-                    console.log('Writing to socket');
-                    console.log('##################');
-                    console.log(JSON.stringify(outputMessage));
-                    socket.write(JSON.stringify(outputMessage));
-                    // TODO: exit out of player component when the game is over
-                    if (outputMessage === playerInstance.gameOverResponse) {
-                        socket.close(function () {
-                            process.exit();
-                        });
+    return __awaiter(this, void 0, void 0, function () {
+        var playerInstance, socket;
+        return __generator(this, function (_a) {
+            playerInstance = new basic_player_1.Player();
+            socket = new net.Socket();
+            socket.connect(port, host, function () {
+                console.log("PDC connected");
+            });
+            socket.on('data', function (data) {
+                var textChunk = data.toString('utf8');
+                // console.log(textChunk);
+                var maybeValidResponse = exports.maybeValidJson(textChunk);
+                if (maybeValidResponse !== undefined) {
+                    // clear current read string and augment the valid, parsed JSON
+                    if (isValidInput(maybeValidResponse)) {
+                        //      console.log('maybeValidresponse', maybeValidResponse);
+                        var outputMessage = undefined;
+                        var command = maybeValidResponse[0];
+                        if (command === 'Place') {
+                            var color = maybeValidResponse[1];
+                            var initialBoard = maybeValidResponse[2];
+                            outputMessage = playerInstance.placeWorkers(color, initialBoard);
+                        }
+                        else if (command === 'Play') {
+                            var board = maybeValidResponse[1];
+                            // TODO: play? or playOptions?
+                            console.log("PLAYING?!?");
+                            outputMessage = playerInstance.play(board);
+                            console.log("?!?");
+                        }
+                        else if (command === 'Register') {
+                            outputMessage = playerInstance.register();
+                        }
+                        else if (command == 'Game Over') {
+                            var name_1 = maybeValidResponse[1];
+                            outputMessage = playerInstance.gameOver(name_1);
+                        }
+                        if (outputMessage !== undefined) {
+                            // send output from function call to client
+                            console.log(outputMessage);
+                            console.log('Writing to socket');
+                            console.log('##################');
+                            console.log(JSON.stringify(outputMessage));
+                            socket.write(JSON.stringify(outputMessage));
+                            // TODO: exit out of player component when the game is over
+                            if (outputMessage === playerInstance.gameOverResponse) {
+                                socket.close(function () {
+                                    process.exit();
+                                });
+                            }
+                        }
+                        else {
+                            console.error("Returned undefined output for command = " + command);
+                            // TODO: undefined output for our monad/maybe structure means that we're propagating an error
+                            socket.close(function () {
+                                process.exit();
+                            });
+                        }
                     }
                 }
-                else {
-                    console.error("Returned undefined output for command = " + command);
-                    // TODO: undefined output for our monad/maybe structure means that we're propagating an error
-                    socket.close(function () {
-                        process.exit();
-                    });
-                }
-            }
-        }
+            });
+            return [2 /*return*/];
+        });
     });
 };
 exports.adminRemoteProxy = function (port, host) {
