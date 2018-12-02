@@ -166,6 +166,8 @@ const sleep = function sleepForMilliseconds(ms) {
 let PARENT_DIR = `${ __dirname }/../`;
 
 const main = async function commandLine() {
+    // MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 data listeners added. Use emitter.setMaxListeners() to increase limit
+    process.setMaxListeners(0);
 
     // read santorini admin config file
     let buffer = fs.readFileSync(PARENT_DIR + '/santorini.config', 'utf8');

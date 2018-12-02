@@ -8,10 +8,17 @@ var rules_1 = require("./rules");
 var Strategy = /** @class */ (function () {
     function Strategy() {
     }
+    /**
+     *
+     * @param {Board} board
+     * @param {string} targetPlayerColor
+     * @param {number} n
+     * @return {[string , string[]] | any[]}
+     */
     Strategy.pickOneNonLosingPlay = function (board, targetPlayerColor, n) {
         var manyPlays = Strategy.computeManyNonLosingPlays(board, targetPlayerColor, n);
         // TODO: choose something smarter from the options
-        return (manyPlays.length ? manyPlays[0] : undefined);
+        return (manyPlays.length ? manyPlays[0] : []);
     };
     Strategy.computeManyNonLosingPlays = function (board, targetPlayerColor, n) {
         var nonLosingPlays = Strategy.getNonLosingBoardsPlaysWinsAtDepth(board, targetPlayerColor, n);

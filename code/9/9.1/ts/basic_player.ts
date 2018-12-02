@@ -82,12 +82,17 @@ class BasicPlayer implements PlayerInterface {
      * @param {any[][]} board
      * @return {[string , [string , string]]} [worker, directions] e.g. ['blue1', ['W']] or ['white2', ['N', 'W']]
      */
-    play(board: any[][]): [string, string[] ] {
+    play(board: any[][]) {
         this.boardInstance = new Board(board);
         return this.pickNonLosingPlay(this.boardInstance);
     }
 
-    private pickNonLosingPlay(board: Board) : [string, string[]] {
+    /**
+     *
+     * @param {Board} board
+     * @return {[string , string[]] | any[]}
+     */
+    private pickNonLosingPlay(board: Board) {
         return Strategy.pickOneNonLosingPlay(board, this.color, this.look_ahead);
     }
 

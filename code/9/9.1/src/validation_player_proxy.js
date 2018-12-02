@@ -144,7 +144,7 @@ var ValidationPlayerProxy = /** @class */ (function () {
                         return [4 /*yield*/, this.wrapped_player.play(board)];
                     case 1:
                         play = _a.sent();
-                        if (play === undefined) {
+                        if (play === undefined || play.length === 0) {
                             // per assignment 9 spec: empty list means we have given up
                             return [2 /*return*/, []];
                         }

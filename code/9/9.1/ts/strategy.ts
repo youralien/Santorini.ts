@@ -11,10 +11,17 @@ export class Strategy {
     }
 
 
-    static pickOneNonLosingPlay(board: Board, targetPlayerColor: string, n: number) : [string, string[]] {
+    /**
+     *
+     * @param {Board} board
+     * @param {string} targetPlayerColor
+     * @param {number} n
+     * @return {[string , string[]] | any[]}
+     */
+    static pickOneNonLosingPlay(board: Board, targetPlayerColor: string, n: number) {
         let manyPlays = Strategy.computeManyNonLosingPlays(board, targetPlayerColor, n);
         // TODO: choose something smarter from the options
-        return (manyPlays.length ? manyPlays[0] : undefined);
+        return (manyPlays.length ? manyPlays[0] : []);
     }
 
     static computeManyNonLosingPlays(board : Board, targetPlayerColor : string, n : number) : Array<[string, string[]]> {

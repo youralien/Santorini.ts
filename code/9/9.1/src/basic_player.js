@@ -70,6 +70,11 @@ var BasicPlayer = /** @class */ (function () {
         this.boardInstance = new board_1.Board(board);
         return this.pickNonLosingPlay(this.boardInstance);
     };
+    /**
+     *
+     * @param {Board} board
+     * @return {[string , string[]] | any[]}
+     */
     BasicPlayer.prototype.pickNonLosingPlay = function (board) {
         return strategy_1.Strategy.pickOneNonLosingPlay(board, this.color, this.look_ahead);
     };

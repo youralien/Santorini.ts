@@ -217,6 +217,8 @@ var main = function commandLine() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    // MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 data listeners added. Use emitter.setMaxListeners() to increase limit
+                    process.setMaxListeners(0);
                     buffer = fs.readFileSync(PARENT_DIR + '/santorini.config', 'utf8');
                     parsed = JSON.parse(buffer.toString());
                     ip_address = parsed["IP"];
