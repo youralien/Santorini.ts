@@ -86,24 +86,26 @@ export class Admin {
         return arr;
     }
 
-    runTournament() {
+    async runTournament() {
         if (this.tournament_type == TournamentType.League) {
-            this.runRoundRobin();
+            await this.runRoundRobin();
         }
         else {
-            this.runSingleElimination();
+            await this.runSingleElimination();
         }
 
     }
 
-    private runRoundRobin() {
+    // todo, leaderboard, track winners and cheater
+    private async runRoundRobin() {
         let robinGameList = Admin.roundRobinGameList(this.num_total_players);
 
         for (let i in robinGameList) {
             let [player1idx, player2idx] = robinGameList[i];
             let referee = new Referee(this.players[player1idx], this.players[player2idx]);
-            referee.runGame();
+            let winner = await referee.runGame();
             console.log('Game finished ', i);
+            console.log(winner + " won");
         }
     }
 
