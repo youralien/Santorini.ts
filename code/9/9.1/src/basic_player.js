@@ -24,7 +24,7 @@ var BasicPlayer = /** @class */ (function () {
         return this.name;
     };
     BasicPlayer.prototype.randomPlayerName = function () {
-        var randomInt = Math.floor((Math.random() * 10) + 1);
+        var randomInt = Math.floor((Math.random() * 1000) + 1);
         return "player-name-" + randomInt;
     };
     /**

@@ -62,8 +62,8 @@ export const playerDriverComponent = async function(port, host) {
                 if (outputMessage !== undefined) {
                     // send output from function call to client
                     console.log(outputMessage);
-                    console.log('Writing to socket');
-                    console.log('##################');
+                    // console.log('Writing to socket');
+                    // console.log('##################');
                     console.log(JSON.stringify(outputMessage));
                     socket.write(JSON.stringify(outputMessage));
 
@@ -74,7 +74,7 @@ export const playerDriverComponent = async function(port, host) {
                 }
                 else {
                     socket.write(JSON.stringify([]));
-                    console.error(`Returned undefined output for command = ${command}`);
+                    console.error(`PLAYER DRIVER: Returned undefined output for command = ${command}`);
                     // TODO: undefined output for our monad/maybe structure means that we're propagating an error
                     // process.exit();
                 }

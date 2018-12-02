@@ -33,7 +33,7 @@ class BasicPlayer implements PlayerInterface {
     }
 
     private randomPlayerName(): string {
-        let randomInt = Math.floor((Math.random() * 10) + 1);
+        let randomInt = Math.floor((Math.random() * 1000) + 1);
         return `player-name-${randomInt}`;
     }
 
