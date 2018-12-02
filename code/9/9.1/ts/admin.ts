@@ -26,14 +26,19 @@ class RRLeaderboardItem {
     name: string;
     wins: number;
     losses: number;
+    cheated: boolean;
 
     constructor(name) {
         this.name = name;
         this.wins = 0;
         this.losses = 0
+        this.cheated = false;
     }
 
-    update
+    compareFunction(a, b) {
+        // highest score to the top
+        return (b.wins - b.losses) - (a.wins - a.losses);
+    }
 }
 
 
@@ -123,6 +128,10 @@ export class Admin {
             let winner_name = await referee.runGame();
             console.log(`Game #${i} finished between [${player1idx}, ${player2idx}]`);
             console.log(winner_name + " won");
+
+            // TODO: process the cheaters, make them at the bottom and given points
+            // TODO: and replace them with default players
+
             if (this.players[player1idx].name === winner_name) {
                 unrankedLeaderboard[player1idx].wins++;
                 unrankedLeaderboard[player2idx].losses++;
@@ -133,6 +142,12 @@ export class Admin {
         }
 
         console.log(unrankedLeaderboard)
+        unrankedLeaderboard.reverse();
+        console.log(unrankedLeaderboard)
+        unrankedLeaderboard.sort();
+        console.log(unrankedLeaderboard)
+
+
 
     }
 

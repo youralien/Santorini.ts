@@ -53,7 +53,12 @@ var RRLeaderboardItem = /** @class */ (function () {
         this.name = name;
         this.wins = 0;
         this.losses = 0;
+        this.cheated = false;
     }
+    RRLeaderboardItem.prototype.compareFunction = function (a, b) {
+        // highest score to the top
+        return (b.wins - b.losses) - (a.wins - a.losses);
+    };
     return RRLeaderboardItem;
 }());
 var Admin = /** @class */ (function () {
@@ -168,6 +173,8 @@ var Admin = /** @class */ (function () {
                         winner_name = _d.sent();
                         console.log("Game #" + i + " finished between [" + player1idx + ", " + player2idx + "]");
                         console.log(winner_name + " won");
+                        // TODO: process the cheaters, make them at the bottom and given points
+                        // TODO: and replace them with default players
                         if (this.players[player1idx].name === winner_name) {
                             unrankedLeaderboard[player1idx].wins++;
                             unrankedLeaderboard[player2idx].losses++;
@@ -181,6 +188,10 @@ var Admin = /** @class */ (function () {
                         _i++;
                         return [3 /*break*/, 1];
                     case 4:
+                        console.log(unrankedLeaderboard);
+                        unrankedLeaderboard.reverse();
+                        console.log(unrankedLeaderboard);
+                        unrankedLeaderboard.sort();
                         console.log(unrankedLeaderboard);
                         return [2 /*return*/];
                 }
