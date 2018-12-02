@@ -75,10 +75,12 @@ var Referee = /** @class */ (function () {
             return this.player1;
         }
     };
+    // todo if invalid placement kick the player
     Referee.prototype.placeWorkers = function (placementList) {
         var _a = placementList[0], w1row = _a[0], w1col = _a[1], _b = placementList[1], w2row = _b[0], w2col = _b[1];
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '1', w1row, w1col);
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '2', w2row, w2col);
+        this.whoseTurnIdx++;
         return this.boardInstance.board;
     };
     Referee.prototype.playTurn = function (workerdirections) {
@@ -102,6 +104,7 @@ var Referee = /** @class */ (function () {
         }
         // Keep Playing - update our board
         this.boardInstance.board = rulecheck.boardInstance.board;
+        this.whoseTurnIdx++;
         return this.boardInstance.board;
     };
     /**
@@ -135,7 +138,7 @@ var Referee = /** @class */ (function () {
             result = this.playTurn(parsedJson);
         }
         // increment turn
-        this.whoseTurnIdx++;
+        //this.whoseTurnIdx++;
         return result;
     };
     /**
@@ -152,19 +155,32 @@ var Referee = /** @class */ (function () {
      */
     Referee.prototype.runGame = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var placements1, placements2;
+            var placements1, placements2, curr_player, play, new_board;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.player1.placeWorkers('blue', this.boardInstance.board)];
+                    case 0:
+                        this.player1.reset();
+                        this.player2.reset();
+                        return [4 /*yield*/, this.player1.placeWorkers('blue', this.boardInstance.board)];
                     case 1:
                         placements1 = _a.sent();
                         this.placeWorkers(placements1);
-                        return [4 /*yield*/, this.player1.placeWorkers('white', this.boardInstance.board)];
+                        return [4 /*yield*/, this.player2.placeWorkers('white', this.boardInstance.board)];
                     case 2:
                         placements2 = _a.sent();
                         this.placeWorkers(placements2);
-                        console.log(this.boardInstance.board);
-                        return [2 /*return*/];
+                        _a.label = 3;
+                    case 3:
+                        if (!(this.winner === undefined)) return [3 /*break*/, 5];
+                        console.log("turn: " + this.whoseTurnIdx);
+                        curr_player = this.whoseTurnIsIt();
+                        return [4 /*yield*/, curr_player.play(this.boardInstance.board)];
+                    case 4:
+                        play = _a.sent();
+                        console.log(play);
+                        new_board = this.playTurn(play);
+                        return [3 /*break*/, 3];
+                    case 5: return [2 /*return*/, this.winner];
                 }
             });
         });
