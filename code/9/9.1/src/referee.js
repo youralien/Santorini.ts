@@ -78,6 +78,7 @@ var Referee = /** @class */ (function () {
     // todo if invalid placement kick the player
     Referee.prototype.placeWorkers = function (placementList) {
         var _a = placementList[0], w1row = _a[0], w1col = _a[1], _b = placementList[1], w2row = _b[0], w2col = _b[1];
+        console.log("Referee says placing for this guy", this.whoseTurnIsIt().color);
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '1', w1row, w1col);
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '2', w2row, w2col);
         return this.boardInstance.board;

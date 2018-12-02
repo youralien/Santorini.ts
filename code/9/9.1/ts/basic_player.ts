@@ -55,6 +55,7 @@ class BasicPlayer implements PlayerInterface {
 
         const potentialPlacements = [[0, 0], [0, 4], [4, 4], [4, 0]];
         let workersToPlace = [`${ this.color }1`, `${ this.color }2`];
+        console.log('workers to place', workersToPlace);
         let workerPlacements = [];
 
         // add workers clockwise on corners

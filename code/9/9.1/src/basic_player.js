@@ -43,6 +43,7 @@ var BasicPlayer = /** @class */ (function () {
         this.boardInstance = new board_1.Board(board);
         var potentialPlacements = [[0, 0], [0, 4], [4, 4], [4, 0]];
         var workersToPlace = [this.color + "1", this.color + "2"];
+        console.log('workers to place', workersToPlace);
         var workerPlacements = [];
         // add workers clockwise on corners
         for (var placementCandidate in potentialPlacements) {
