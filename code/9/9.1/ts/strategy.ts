@@ -136,20 +136,15 @@ export class Strategy {
     static computeValidPlays(board: Board, targetPlayerColor: string) {
         let allPlayCombos = Strategy.computeAllPlays(board.directions);
         let targetWorkers = [`${ targetPlayerColor }1`, `${ targetPlayerColor }2`];
-        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-        console.log(targetWorkers);
 
         // loop over workers and plays
         let validPlays = [];
         targetWorkers.forEach((currWorker) => {
             allPlayCombos.forEach((currDirections) => {
                 // create a new rule checker instance given the current worker and possible move
-                console.log("curr_worker: " + currWorker);
-                console.log("this is the board for strategy")
-                console.log(board.board)
+
                 let ruleCheckerInstance = new RuleChecker(JSON.parse(JSON.stringify(board.board)), currWorker, currDirections);
                 let isTurnValid = ruleCheckerInstance.executeTurn() === 'yes';
-                console.log("isTurnValid: " + isTurnValid);
 
                 // keep only valid plays
                 if (isTurnValid) {
@@ -157,7 +152,6 @@ export class Strategy {
                 }
             });
         });
-        console.log(validPlays)
         return validPlays;
     }
 

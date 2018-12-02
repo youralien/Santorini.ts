@@ -72,7 +72,6 @@ export class Admin {
     async registerAllPlayers() {
         for (let i in this.players) {
             let name = await this.players[i].register();
-            console.log('got name: ', name);
         }
     }
 
@@ -168,16 +167,12 @@ const main = async function commandLine() {
         console.error('Yikes, math should equal math. Count number of players again');
         return;
     }
-
     await admin.registerAllPlayers();
 
     for (let i in admin.players) {
         console.log("Constructor Name", admin.players[i].constructor.name);
         console.log("Valid Proxy Player Name", admin.players[i].name);
     }
-
     admin.runTournament();
-
 };
-
 main();

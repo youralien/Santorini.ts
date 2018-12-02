@@ -171,6 +171,8 @@ var Referee = /** @class */ (function () {
                         placements2 = _a.sent();
                         this.placeWorkers(placements2);
                         console.log("second step: " + this.boardInstance.board);
+                        this.player1.prev_board = this.boardInstance;
+                        this.player2.prev_board = this.boardInstance;
                         _a.label = 3;
                     case 3:
                         if (!(this.winner === undefined)) return [3 /*break*/, 5];
@@ -181,6 +183,7 @@ var Referee = /** @class */ (function () {
                         return [4 /*yield*/, curr_player.play(this.boardInstance.board)];
                     case 4:
                         play = _a.sent();
+                        console.log("play:");
                         console.log(play);
                         new_board = this.playTurn(play);
                         return [3 /*break*/, 3];

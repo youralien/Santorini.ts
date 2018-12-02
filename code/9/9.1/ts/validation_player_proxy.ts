@@ -62,6 +62,7 @@ export class ValidationPlayerProxy implements PlayerInterface {
         }
 
         this.turn++;
+
         let  placement_list = await this.wrapped_player.placeWorkers(color, board);
         let  [[w1row, w1col], [w2row, w2col]] =  placement_list;
         this.prev_board.setCellWithWorkerByCoords(color + "1", w1row, w1col);
@@ -73,33 +74,36 @@ export class ValidationPlayerProxy implements PlayerInterface {
         if (this.turn < 2) {
             return ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn];
         }
-
-        console.log("line 77 play of validation_proxy")
-        console.log(board);
         
         let other_player = this.get_other_player(this.color);
-        let valid_plays = Strategy.computeValidPlays(new Board(board), other_player);
-        console.log(valid_plays);
+
+
+        let valid_plays = Strategy.computeValidPlays(new Board(this.prev_board.board), other_player);
+
+
         let valid_boards = valid_plays.map((x) => {
             let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = x;
             return JSON.stringify(targetPlayerBoard.board);
         });
 
         let board_string = JSON.stringify(board);
-
         let contains = false;
+
         for (let i in valid_boards) {
             if (valid_boards[i] === board_string) {
                 contains = true;
             }
         }
 
-        if (!contains) {
+        if (!contains && this.turn != 2) {
             return ["invalid_board_error", "board passed by admin is not one move away from last move"];
         }
 
+
+
         this.turn++;
         let play =  await this.wrapped_player.play(board);
+
         let [worker, directions] = play;
         let rule_checker = new RuleChecker(board, worker, directions);
         rule_checker.executeTurn();
