@@ -49,6 +49,7 @@ var ValidationPlayerProxy = /** @class */ (function () {
     };
     ValidationPlayerProxy.prototype.register = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var name;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -57,7 +58,10 @@ var ValidationPlayerProxy = /** @class */ (function () {
                         }
                         this.turn++;
                         return [4 /*yield*/, this.wrapped_player.register()];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 1:
+                        name = _a.sent();
+                        this.name = name;
+                        return [2 /*return*/, name];
                 }
             });
         });

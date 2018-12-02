@@ -40,6 +40,7 @@ var assert = require('assert');
 var net = require('net');
 var remote_proxy_player_1 = require("./remote_proxy_player");
 var referee_1 = require("./referee");
+var validation_player_proxy_1 = require("./validation_player_proxy");
 var TournamentType;
 (function (TournamentType) {
     // RoundRobin
@@ -55,7 +56,7 @@ var Admin = /** @class */ (function () {
         this.num_total_players = this.numTotalPlayersNeeded();
         this.players = [];
         this.server = net.createServer(function (client) {
-            this.players.push(new remote_proxy_player_1.RemoteProxyPlayer(client));
+            this.players.push(new validation_player_proxy_1.ValidationPlayerProxy(new remote_proxy_player_1.RemoteProxyPlayer(client)));
             console.log(this.players.length);
         }.bind(this));
         console.log(ip_address + " and " + port);
@@ -76,7 +77,7 @@ var Admin = /** @class */ (function () {
     };
     Admin.prototype.addDefaultPlayers = function () {
         for (var i = 0; i < this.numDefaultPlayersNeeded(); i++) {
-            this.players.push(new this.defaultPlayer());
+            this.players.push(new validation_player_proxy_1.ValidationPlayerProxy(new this.defaultPlayer()));
         }
     };
     Admin.prototype.registerAllPlayers = function () {
@@ -194,8 +195,8 @@ var main = function commandLine() {
                 case 4:
                     _a.sent();
                     for (i in admin.players) {
-                        console.log(admin.players[i].constructor.name);
-                        console.log(admin.players[i].name);
+                        console.log("Constructor Name", admin.players[i].constructor.name);
+                        console.log("Valid Proxy Player Name", admin.players[i].name);
                     }
                     admin.runTournament();
                     return [2 /*return*/];

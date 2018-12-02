@@ -12,6 +12,7 @@ const net = require('net');
 import { RemoteProxyPlayer} from "./remote_proxy_player";
 import {RuleChecker} from "./rules";
 import {Referee} from "./referee";
+import {ValidationPlayerProxy} from "./validation_player_proxy";
 
 
 enum TournamentType {
@@ -39,7 +40,7 @@ export class Admin {
 
         this.players = [];
         this.server = net.createServer(function(client) {
-            this.players.push(new RemoteProxyPlayer(client));
+            this.players.push(new ValidationPlayerProxy(new RemoteProxyPlayer(client)));
             console.log(this.players.length);
         }.bind(this));
         console.log(`${ip_address} and ${port}`);
@@ -64,7 +65,7 @@ export class Admin {
 
     addDefaultPlayers() {
         for (let i = 0; i < this.numDefaultPlayersNeeded(); i++) {
-            this.players.push(new this.defaultPlayer());
+            this.players.push(new ValidationPlayerProxy(new this.defaultPlayer()));
         }
     }
 
@@ -169,8 +170,8 @@ const main = async function commandLine() {
     await admin.registerAllPlayers();
 
     for (let i in admin.players) {
-        console.log(admin.players[i].constructor.name);
-        console.log(admin.players[i].name);
+        console.log("Constructor Name", admin.players[i].constructor.name);
+        console.log("Valid Proxy Player Name", admin.players[i].name);
     }
 
     admin.runTournament();

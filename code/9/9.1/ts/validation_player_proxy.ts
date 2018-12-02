@@ -28,7 +28,9 @@ export class ValidationPlayerProxy implements PlayerInterface {
             return ["turn_error", "register out of sequence, not turn 0. turn = " + this.turn];
         }
         this.turn++;
-        return await this.wrapped_player.register();
+        let name = await this.wrapped_player.register();
+        this.name = name;
+        return name;
     }
 
     /**
