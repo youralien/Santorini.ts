@@ -133,6 +133,7 @@ var ValidationPlayerProxy = /** @class */ (function () {
                             return [2 /*return*/, ["invalid_board_error", "board passed by admin is not one move away from last move"]];
                         }
                         this.turn++;
+                        console.log();
                         return [4 /*yield*/, this.wrapped_player.play(board)];
                     case 1:
                         play = _a.sent();

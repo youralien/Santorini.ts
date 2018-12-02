@@ -106,6 +106,7 @@ describe('Validation wrapped Default Player -- Valid Boards for Place', function
     // board that has blue
     var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
     res = await p.placeWorkers('blue', testBoard);
+    console.log(res);
     expect(res[0]).to.equal(cmdError);
 
   });
@@ -115,8 +116,18 @@ describe('Validation wrapped Default Player -- Valid Boards for Place', function
 
     // board that has blue
     var testBoard = [[[0, 'blue1'],[3, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-    res = await p.placeWorkers('blue', testBoard);
+    res = await p.placeWorkers('white', testBoard);
+    console.log(res);
     expect(res[0]).to.equal(cmdError);
+
+  });
+
+  it('should be able to place as second player (white)', async function() {
+
+    // board that has blue
+    var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+    res = await p.placeWorkers('white', testBoard);
+    console.table(p.prev_board.board);
 
   });
 

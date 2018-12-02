@@ -21,7 +21,7 @@ const isValidInput = function checkValidCommand(obj): boolean {
     return Array.isArray(obj) && (obj.length >= 1 && obj.length <= 3);
 };
 
-export const playerDriverComponent = function(port, host) {
+export const playerDriverComponent = async function(port, host) {
     let playerInstance = new Player();
 
     let socket = new net.Socket();
@@ -51,7 +51,9 @@ export const playerDriverComponent = function(port, host) {
                     let board = maybeValidResponse[1];
 
                     // TODO: play? or playOptions?
-                    outputMessage = playerInstance.playOptionsNonLosing(board);
+                    console.log("PLAYING?!?")
+                    outputMessage = playerInstance.play(board);
+                    console.log("?!?")
                 } else if (command === 'Register') {
                     outputMessage = playerInstance.register();
                 } else if (command == 'Game Over') {
