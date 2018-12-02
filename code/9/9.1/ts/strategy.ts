@@ -14,6 +14,7 @@ export class Strategy {
     static pickOneNonLosingPlay(board: Board, targetPlayerColor: string, n: number) : [string, string[]] {
         let manyPlays = Strategy.computeManyNonLosingPlays(board, targetPlayerColor, n);
         // TODO: choose something smarter from the options
+        console.log(manyPlays);
         return (manyPlays.length ? manyPlays[0] : undefined);
     }
 

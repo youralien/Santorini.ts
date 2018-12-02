@@ -35,6 +35,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var rules_1 = require("./rules");
+var strategy_1 = require("./strategy");
+var board_1 = require("./board");
 var ValidationPlayerProxy = /** @class */ (function () {
     function ValidationPlayerProxy(wrapped_player) {
         this.wrapped_player = wrapped_player;
@@ -50,7 +53,7 @@ var ValidationPlayerProxy = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (this.turn !== 0) {
-                            return [2 /*return*/, this.commandsOutOfSequence()];
+                            return [2 /*return*/, ["turn_error", "register out of sequence, not turn 0. turn = " + this.turn]];
                         }
                         this.turn++;
                         return [4 /*yield*/, this.wrapped_player.register()];
@@ -70,30 +73,66 @@ var ValidationPlayerProxy = /** @class */ (function () {
      */
     ValidationPlayerProxy.prototype.placeWorkers = function (color, board) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var placement_list, _a, w1row, w1col, _b, w2row, w2col;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         if (this.turn != 1) {
-                            return [2 /*return*/, this.commandsOutOfSequence()];
+                            return [2 /*return*/, ["turn_error", "placeworkers out of sequence, not turn 1. turn = " + this.turn]];
                         }
+                        // todo check that board is valid
+                        // previous board we are seeing now
+                        this.prev_board = new board_1.Board(board);
+                        this.color = color;
                         this.turn++;
                         return [4 /*yield*/, this.wrapped_player.placeWorkers(color, board)];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 1:
+                        placement_list = _c.sent();
+                        console.log(placement_list);
+                        _a = placement_list[0], w1row = _a[0], w1col = _a[1], _b = placement_list[1], w2row = _b[0], w2col = _b[1];
+                        this.prev_board.setCellWithWorkerByCoords(color + "1", w1row, w1col);
+                        this.prev_board.setCellWithWorkerByCoords(color + "2", w2row, w2col);
+                        console.log('does it get here');
+                        return [2 /*return*/, placement_list];
                 }
             });
         });
     };
     ValidationPlayerProxy.prototype.play = function (board) {
         return __awaiter(this, void 0, void 0, function () {
+            var other_player, valid_plays, valid_boards, board_string, contains, i, play, worker, directions, rule_checker;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        console.log('PLAY COLOOOR', this.color);
                         if (this.turn < 2) {
-                            return [2 /*return*/, this.commandsOutOfSequence()];
+                            return [2 /*return*/, ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn]];
+                        }
+                        other_player = this.get_other_player(this.color);
+                        valid_plays = strategy_1.Strategy.computeValidPlays(this.prev_board, other_player);
+                        valid_boards = valid_plays.map(function (x) {
+                            var targetPlayerBoard = x[0], _a = x[1], targetPlayerWorker = _a[0], targetPlayerDirections = _a[1], targetPlayerDidWin = x[2];
+                            return JSON.stringify(targetPlayerBoard.board);
+                        });
+                        board_string = JSON.stringify(board);
+                        contains = false;
+                        for (i in valid_boards) {
+                            if (valid_boards[i] === board_string) {
+                                contains = true;
+                            }
+                        }
+                        if (!contains) {
+                            return [2 /*return*/, ["invalid_board_error", "board passed by admin is not one move away from last move"]];
                         }
                         this.turn++;
                         return [4 /*yield*/, this.wrapped_player.play(board)];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 1:
+                        play = _a.sent();
+                        worker = play[0], directions = play[1];
+                        rule_checker = new rules_1.RuleChecker(board, worker, directions);
+                        rule_checker.executeTurn();
+                        this.prev_board = rule_checker.boardInstance;
+                        return [2 /*return*/, play];
                 }
             });
         });
@@ -112,6 +151,14 @@ var ValidationPlayerProxy = /** @class */ (function () {
     };
     ValidationPlayerProxy.prototype.reset = function () {
         this.turn = 1;
+    };
+    ValidationPlayerProxy.prototype.get_other_player = function (color) {
+        if (color === "blue") {
+            return "white";
+        }
+        else {
+            return "blue";
+        }
     };
     return ValidationPlayerProxy;
 }());

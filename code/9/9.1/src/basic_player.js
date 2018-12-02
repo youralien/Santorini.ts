@@ -39,10 +39,6 @@ var BasicPlayer = /** @class */ (function () {
      * @return {[[number, number]]>} JSON list that contains two pairs of numbers, each between 0 and 4.
      */
     BasicPlayer.prototype.placeWorkers = function (color, board) {
-        if (this.color || this.boardInstance) {
-            console.log("Place command should only be called once for player name " + this.color);
-            return;
-        }
         this.color = color;
         this.boardInstance = new board_1.Board(board);
         var potentialPlacements = [[0, 0], [0, 4], [4, 4], [4, 0]];
@@ -67,10 +63,12 @@ var BasicPlayer = /** @class */ (function () {
     /**
      * Chooses a single play. Currently is dumb, and chooses the first play
      * @param {any[][]} board
-     * @return {[string , [string , string]]}
+     * @return {[string , [string , string]]} [worker, directions] e.g. ['blue1', ['W']] or ['white2', ['N', 'W']]
      */
     BasicPlayer.prototype.play = function (board) {
         this.boardInstance = new board_1.Board(board);
+        console.table(board);
+        // console.log(this.boardInstance);
         return this.pickNonLosingPlay(this.boardInstance);
     };
     BasicPlayer.prototype.pickNonLosingPlay = function (board) {

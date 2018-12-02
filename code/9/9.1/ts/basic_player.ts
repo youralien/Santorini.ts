@@ -50,13 +50,9 @@ class BasicPlayer implements PlayerInterface {
      * @return {[[number, number]]>} JSON list that contains two pairs of numbers, each between 0 and 4.
      */
     placeWorkers(color: string, board: any[][]) : number[][] {
-        if (this.color || this.boardInstance) {
-            console.log(`Place command should only be called once for player name ${this.color}`);
-            return;
-        }
-
         this.color = color;
         this.boardInstance = new Board(board);
+
         const potentialPlacements = [[0, 0], [0, 4], [4, 4], [4, 0]];
         let workersToPlace = [`${ this.color }1`, `${ this.color }2`];
         let workerPlacements = [];
@@ -83,7 +79,7 @@ class BasicPlayer implements PlayerInterface {
     /**
      * Chooses a single play. Currently is dumb, and chooses the first play
      * @param {any[][]} board
-     * @return {[string , [string , string]]}
+     * @return {[string , [string , string]]} [worker, directions] e.g. ['blue1', ['W']] or ['white2', ['N', 'W']]
      */
     play(board: any[][]): [string, string[] ] {
         this.boardInstance = new Board(board);

@@ -11,6 +11,7 @@ var Strategy = /** @class */ (function () {
     Strategy.pickOneNonLosingPlay = function (board, targetPlayerColor, n) {
         var manyPlays = Strategy.computeManyNonLosingPlays(board, targetPlayerColor, n);
         // TODO: choose something smarter from the options
+        console.log(manyPlays);
         return (manyPlays.length ? manyPlays[0] : undefined);
     };
     Strategy.computeManyNonLosingPlays = function (board, targetPlayerColor, n) {

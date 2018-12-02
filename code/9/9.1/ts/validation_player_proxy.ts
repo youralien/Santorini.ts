@@ -16,6 +16,7 @@ export class ValidationPlayerProxy implements PlayerInterface {
 
         // track what command turn it is, starts on expecting register
         this.turn = 0;
+
     }
 
     commandsOutOfSequence() {
@@ -45,28 +46,43 @@ export class ValidationPlayerProxy implements PlayerInterface {
         }
         // todo check that board is valid
 
+        // previous board we are seeing now
+        this.prev_board = new Board(board);
+        this.color = color;
+
         this.turn++;
         let  placement_list = await this.wrapped_player.placeWorkers(color, board);
+        console.log(placement_list)
         let  [[w1row, w1col], [w2row, w2col]] =  placement_list;
         this.prev_board.setCellWithWorkerByCoords(color + "1", w1row, w1col);
         this.prev_board.setCellWithWorkerByCoords(color + "2", w2row, w2col);
+        console.log('does it get here')
         return placement_list;
     }
 
     async play(board: any[][]) {
+        console.log('PLAY COLOOOR', this.color);
         if (this.turn < 2) {
             return ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn];
         }
         
         let other_player = this.get_other_player(this.color);
-        let valid_boards = Strategy.computeValidPlays(this.prev_board, other_player);
-        valid_boards = valid_boards.map((x) => {
+        let valid_plays = Strategy.computeValidPlays(this.prev_board, other_player);
+        let valid_boards = valid_plays.map((x) => {
             let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = x;
             return JSON.stringify(targetPlayerBoard.board);
         });
 
-        let board_string = JSON.stringify(board); 
-        if (!(board_string in valid_boards)) {
+        let board_string = JSON.stringify(board);
+
+        let contains = false;
+        for (let i in valid_boards) {
+            if (valid_boards[i] === board_string) {
+                contains = true;
+            }
+        }
+
+        if (!contains) {
             return ["invalid_board_error", "board passed by admin is not one move away from last move"];
         }
 

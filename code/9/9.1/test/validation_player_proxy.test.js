@@ -36,11 +36,11 @@ const expect = require('chai').expect;
 //   return JSON.parse(JSON.stringify(inputBoard));
 // };
 
-
 describe('Validation wrapping Default Player -- Ordering' , function() {
 
 
-  var cmdError = "Santorini is broken! Too many tourists in such a small place...";
+  var cmdError = 'turn_error';
+  // var cmdError = ['error', 'some error'];
 
   var p;
   var testBoard = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
@@ -55,7 +55,7 @@ describe('Validation wrapping Default Player -- Ordering' , function() {
     await p.register();
     res = await p.register();
 
-    expect(res).to.equal(cmdError);
+    expect(res[0]).to.equal(cmdError);
 
   });
 
@@ -68,7 +68,8 @@ describe('Validation wrapping Default Player -- Ordering' , function() {
 
     // placing on blue a second time is allowed with reset
     res = await p.placeWorkers('blue', testBoard);
-    expect(res).to.equal(cmdError);
+    console.log("###################3", res);
+    expect(res[0]).to.equal(cmdError);
 
   });
 
@@ -78,16 +79,107 @@ describe('Validation wrapping Default Player -- Ordering' , function() {
     // no place
 
     res = await p.play(testBoard);
-    expect(res).to.equal(cmdError);
+    expect(res[0]).to.equal(cmdError);
 
   });
+
+});
+
+// describe('Validation wrapped Default Player -- Valid Boards for Place', function() {
+//
+//   var cmdError = 'turn_error';
+//   // var cmdError = ['error', 'some error'];
+//
+//   var p;
+//   // var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+//   // var testBoard1 = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+//   beforeEach(async function() {
+//
+//     var _p = new Player();
+//     p = new ValidationPlayerProxy(_p);
+//     await p.register();
+//
+//   });
+//
+//   it('should not be able to place with same color', async function() {
+//
+//     // board that has blue
+//     var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+//     res = await p.place('blue', testBoard);
+//     expect(res[0]).to.equal(cmdError);
+//
+//   });
+//
+// });
+
+describe('Validation wrapped Default Player -- N+1 valid board', function() {
+
+  var cmdError = "Santorini is broken! Too many tourists in such a small place...";
+  // var cmdError = ['error', 'some error'];
+
+  var p;
+  var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+  var prevBoard;
+  beforeEach(async function() {
+
+    var _p = new Player();
+    p = new ValidationPlayerProxy(_p);
+    await p.register();
+    // blue has already placed
+
+    console.table(testBoard);
+    await p.placeWorkers('white', testBoard);
+
+    // VERY USEFUL TO DEEP COPY - aliasing errors made us cry
+    prevBoard = JSON.parse(JSON.stringify(p.prev_board));
+  });
+
+  it('VALID play on the start board (4 workers, 0 height)', async function() {
+
+    // console.log('PREV BOARD');
+    console.table(prevBoard.board);
+
+    // blue1 moved south, and built north
+    prevBoard.board[1][0] = [0, 'blue1'];
+    prevBoard.board[0][0] = 1;
+
+    // console.log('BEFORE play');
+    console.table(prevBoard.board);
+
+    let res = await p.play(prevBoard.board);
+
+    // console.log("AFTER play", res);
+
+    expect(res[0]).to.not.equal('invalid_board_error');
+
+  });
+
+  it('INVALID play on start board', async function() {
+    // console.log('PREV BOARD');
+    console.table(prevBoard.board);
+
+    // blue1 moved south, and built north
+    prevBoard.board[1][0] = [0, 'blue1'];
+    // building to height 2 is cheating
+    prevBoard.board[0][0] = 2;
+
+    // console.log('BEFORE play');
+    console.table(prevBoard.board);
+
+    let res = await p.play(prevBoard.board);
+
+    // console.log("AFTER play", res);
+
+    expect(res[0]).to.equal('invalid_board_error');
+
+  })
 
 });
 
 describe('Validation wrapping Default Player -- Resetting' , function() {
 
 
-  var cmdError = "Santorini is broken! Too many tourists in such a small place...";
+  var cmdError = "turn_error";
 
   var p;
   var testBoard = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
@@ -107,10 +199,26 @@ describe('Validation wrapping Default Player -- Resetting' , function() {
 
     // placing on blue a second time is allowed with reset
     res = await p.placeWorkers('blue', testBoard);
-    expect(res).to.not.equal(cmdError);
+    // console.log(res);
+    // expect(typeof(res)).to.not.equal(Array);
+    // expect(res[0]).to.not.equal(cmdError);
 
   });
 
 
 });
 
+
+describe('ValidationPlayerProxy helper methods', function() {
+
+  it('Other player color', async function() {
+
+    var _p = new Player();
+    p = new ValidationPlayerProxy(_p);
+    let color1 = 'blue';
+    res = p.get_other_player(color1);
+    expect(res).to.equal('white');
+
+  });
+
+});
