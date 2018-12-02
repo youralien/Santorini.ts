@@ -73,17 +73,24 @@ var ValidationPlayerProxy = /** @class */ (function () {
      */
     ValidationPlayerProxy.prototype.placeWorkers = function (color, board) {
         return __awaiter(this, void 0, void 0, function () {
-            var placement_list, _a, w1row, w1col, _b, w2row, w2col;
+            var size, workers, placement_list, _a, w1row, w1col, _b, w2row, w2col;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         if (this.turn != 1) {
                             return [2 /*return*/, ["turn_error", "placeworkers out of sequence, not turn 1. turn = " + this.turn]];
                         }
-                        // todo check that board is valid
                         // previous board we are seeing now
                         this.prev_board = new board_1.Board(board);
+                        size = 5;
                         this.color = color;
+                        workers = this.color == 'blue' ? [] : ['blue1', 'blue2'];
+                        // todo check that board is valid
+                        // 1. no one has won
+                        // 2. If its asking me to place white, there shouldn't be white players already on there
+                        if (!board_1.Board.isValidBoard(board, size, workers)) {
+                            return [2 /*return*/, ["invalid_board_error", "told to place on invalid board"]];
+                        }
                         this.turn++;
                         return [4 /*yield*/, this.wrapped_player.placeWorkers(color, board)];
                     case 1:

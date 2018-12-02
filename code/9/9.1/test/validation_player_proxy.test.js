@@ -85,32 +85,42 @@ describe('Validation wrapping Default Player -- Ordering' , function() {
 
 });
 
-// describe('Validation wrapped Default Player -- Valid Boards for Place', function() {
-//
-//   var cmdError = 'turn_error';
-//   // var cmdError = ['error', 'some error'];
-//
-//   var p;
-//   // var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-//   // var testBoard1 = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-//   beforeEach(async function() {
-//
-//     var _p = new Player();
-//     p = new ValidationPlayerProxy(_p);
-//     await p.register();
-//
-//   });
-//
-//   it('should not be able to place with same color', async function() {
-//
-//     // board that has blue
-//     var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-//     res = await p.place('blue', testBoard);
-//     expect(res[0]).to.equal(cmdError);
-//
-//   });
-//
-// });
+describe('Validation wrapped Default Player -- Valid Boards for Place', function() {
+
+  var cmdError = 'invalid_board_error';
+  // var cmdError = ['error', 'some error'];
+
+  var p;
+  // var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+  // var testBoard1 = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+  beforeEach(async function() {
+
+    var _p = new Player();
+    p = new ValidationPlayerProxy(_p);
+    await p.register();
+
+  });
+
+  it('should not be able to place with same color', async function() {
+
+    // board that has blue
+    var testBoard = [[[0, 'blue1'],[0, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+    res = await p.placeWorkers('blue', testBoard);
+    expect(res[0]).to.equal(cmdError);
+
+  });
+
+
+  it('should not be able to place on already winning board', async function() {
+
+    // board that has blue
+    var testBoard = [[[0, 'blue1'],[3, 'blue2'],0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+    res = await p.placeWorkers('blue', testBoard);
+    expect(res[0]).to.equal(cmdError);
+
+  });
+
+});
 
 describe('Validation wrapped Default Player -- N+1 valid board', function() {
 
@@ -127,7 +137,6 @@ describe('Validation wrapped Default Player -- N+1 valid board', function() {
     await p.register();
     // blue has already placed
 
-    console.table(testBoard);
     await p.placeWorkers('white', testBoard);
 
     // VERY USEFUL TO DEEP COPY - aliasing errors made us cry
@@ -137,14 +146,14 @@ describe('Validation wrapped Default Player -- N+1 valid board', function() {
   it('VALID play on the start board (4 workers, 0 height)', async function() {
 
     // console.log('PREV BOARD');
-    console.table(prevBoard.board);
+    // console.table(prevBoard.board);
 
     // blue1 moved south, and built north
     prevBoard.board[1][0] = [0, 'blue1'];
     prevBoard.board[0][0] = 1;
 
     // console.log('BEFORE play');
-    console.table(prevBoard.board);
+    // console.table(prevBoard.board);
 
     let res = await p.play(prevBoard.board);
 
@@ -156,7 +165,7 @@ describe('Validation wrapped Default Player -- N+1 valid board', function() {
 
   it('INVALID play on start board', async function() {
     // console.log('PREV BOARD');
-    console.table(prevBoard.board);
+    // console.table(prevBoard.board);
 
     // blue1 moved south, and built north
     prevBoard.board[1][0] = [0, 'blue1'];
@@ -164,7 +173,7 @@ describe('Validation wrapped Default Player -- N+1 valid board', function() {
     prevBoard.board[0][0] = 2;
 
     // console.log('BEFORE play');
-    console.table(prevBoard.board);
+    // console.table(prevBoard.board);
 
     let res = await p.play(prevBoard.board);
 

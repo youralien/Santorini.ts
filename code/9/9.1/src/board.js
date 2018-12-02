@@ -26,7 +26,7 @@ var Board = /** @class */ (function () {
     /**
      * Returns true if input boardInstance is a valid boardInstance.
      *  A valid boardInstance (1) has same number of rows and columns, (2) has all rows as arrays,
-     *  and contains 1 of each valid worker.
+     *  contains 1 of each valid worker, and (3) and no winning workers.
      * @param board {Array<Array<any>>} boardInstance as a 2-D array.
      * @param size {number} number of rows and cols in a boardInstance.
      * @param workers {Array<string>} list of valid validWorkers to be found on the boardInstance.
@@ -43,12 +43,16 @@ var Board = /** @class */ (function () {
                 return false;
             }
         }
-        // check if all validWorkers are there
         var workerSet = new Set(workers);
         for (var row in board) {
             if (Array.isArray(board[row])) {
                 for (var col in board[row]) {
                     if (Array.isArray(board[row][col])) {
+                        var currWorkerHeight = board[row][col][1];
+                        if (currWorkerHeight >= 3) {
+                            return false;
+                        }
+                        // check if all validWorkers are there
                         var currWorker = board[row][col][1];
                         if (!workerSet.has(currWorker)) {
                             return false;

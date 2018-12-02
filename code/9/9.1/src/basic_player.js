@@ -67,8 +67,6 @@ var BasicPlayer = /** @class */ (function () {
      */
     BasicPlayer.prototype.play = function (board) {
         this.boardInstance = new board_1.Board(board);
-        console.table(board);
-        // console.log(this.boardInstance);
         return this.pickNonLosingPlay(this.boardInstance);
     };
     BasicPlayer.prototype.pickNonLosingPlay = function (board) {

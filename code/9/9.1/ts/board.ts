@@ -31,7 +31,7 @@ export class Board {
     /**
      * Returns true if input boardInstance is a valid boardInstance.
      *  A valid boardInstance (1) has same number of rows and columns, (2) has all rows as arrays,
-     *  and contains 1 of each valid worker.
+     *  contains 1 of each valid worker, and (3) and no winning workers.
      * @param board {Array<Array<any>>} boardInstance as a 2-D array.
      * @param size {number} number of rows and cols in a boardInstance.
      * @param workers {Array<string>} list of valid validWorkers to be found on the boardInstance.
@@ -50,12 +50,16 @@ export class Board {
             }
         }
 
-        // check if all validWorkers are there
         let workerSet = new Set(workers);
         for (let row in board) {
             if (Array.isArray(board[row])) {
                 for (let col in board[row]) {
                     if (Array.isArray(board[row][col])) {
+                        let currWorkerHeight = board[row][col][1];
+                        if (currWorkerHeight >= 3) {
+                            return false;
+                        }
+                        // check if all validWorkers are there
                         let currWorker = board[row][col][1];
                         if (!workerSet.has(currWorker)) {
                             return false;
