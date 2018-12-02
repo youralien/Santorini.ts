@@ -61,16 +61,13 @@ export class ValidationPlayerProxy implements PlayerInterface {
 
         this.turn++;
         let  placement_list = await this.wrapped_player.placeWorkers(color, board);
-        console.log(placement_list)
         let  [[w1row, w1col], [w2row, w2col]] =  placement_list;
         this.prev_board.setCellWithWorkerByCoords(color + "1", w1row, w1col);
         this.prev_board.setCellWithWorkerByCoords(color + "2", w2row, w2col);
-        console.log('does it get here')
         return placement_list;
     }
 
     async play(board: any[][]) {
-        console.log('PLAY COLOOOR', this.color);
         if (this.turn < 2) {
             return ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn];
         }

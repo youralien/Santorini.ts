@@ -95,11 +95,9 @@ var ValidationPlayerProxy = /** @class */ (function () {
                         return [4 /*yield*/, this.wrapped_player.placeWorkers(color, board)];
                     case 1:
                         placement_list = _c.sent();
-                        console.log(placement_list);
                         _a = placement_list[0], w1row = _a[0], w1col = _a[1], _b = placement_list[1], w2row = _b[0], w2col = _b[1];
                         this.prev_board.setCellWithWorkerByCoords(color + "1", w1row, w1col);
                         this.prev_board.setCellWithWorkerByCoords(color + "2", w2row, w2col);
-                        console.log('does it get here');
                         return [2 /*return*/, placement_list];
                 }
             });
@@ -111,7 +109,6 @@ var ValidationPlayerProxy = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log('PLAY COLOOOR', this.color);
                         if (this.turn < 2) {
                             return [2 /*return*/, ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn]];
                         }

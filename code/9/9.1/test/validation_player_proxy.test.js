@@ -207,10 +207,12 @@ describe('Validation wrapping Default Player -- Resetting' , function() {
     await p.reset();
 
     // placing on blue a second time is allowed with reset
-    res = await p.placeWorkers('blue', testBoard);
+    let maybePlacementList = await p.placeWorkers('blue', testBoard);
+
+    expect(maybePlacementList.length).to.equal(2);
     // console.log(res);
     // expect(typeof(res)).to.not.equal(Array);
-    // expect(res[0]).to.not.equal(cmdError);
+    expect(maybePlacementList[0]).to.not.equal(cmdError);
 
   });
 
