@@ -152,9 +152,11 @@ export class Referee {
         this.player2.reset();
         let placements1 = await this.player1.placeWorkers('blue', this.boardInstance.board);
         this.placeWorkers(placements1);
+        console.log("first step: " + this.boardInstance.board);
 
         let placements2 = await this.player2.placeWorkers('white', this.boardInstance.board);
         this.placeWorkers(placements2);
+        console.log("second step: " + this.boardInstance.board);
 
         while (this.winner === undefined) {
             console.log("turn: " + this.whoseTurnIdx);
