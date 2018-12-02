@@ -81,6 +81,7 @@ var Referee = /** @class */ (function () {
         console.log("Referee says placing for this guy", this.whoseTurnIsIt().color);
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '1', w1row, w1col);
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '2', w2row, w2col);
+        this.whoseTurnIdx++;
         return this.boardInstance.board;
     };
     Referee.prototype.playTurn = function (workerdirections) {
@@ -104,6 +105,7 @@ var Referee = /** @class */ (function () {
         }
         // Keep Playing - update our board
         this.boardInstance.board = rulecheck.boardInstance.board;
+        this.whoseTurnIdx++;
         return this.boardInstance.board;
     };
     /**
@@ -157,7 +159,10 @@ var Referee = /** @class */ (function () {
             var placements1, placements2, curr_player, play, new_board;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.player1.placeWorkers('blue', this.boardInstance.board)];
+                    case 0:
+                        this.player1.reset();
+                        this.player2.reset();
+                        return [4 /*yield*/, this.player1.placeWorkers('blue', this.boardInstance.board)];
                     case 1:
                         placements1 = _a.sent();
                         this.placeWorkers(placements1);
@@ -168,13 +173,13 @@ var Referee = /** @class */ (function () {
                         _a.label = 3;
                     case 3:
                         if (!(this.winner === undefined)) return [3 /*break*/, 5];
+                        console.log("turn: " + this.whoseTurnIdx);
                         curr_player = this.whoseTurnIsIt();
                         return [4 /*yield*/, curr_player.play(this.boardInstance.board)];
                     case 4:
                         play = _a.sent();
+                        console.log(play);
                         new_board = this.playTurn(play);
-                        console.table(this.boardInstance.board);
-                        this.whoseTurnIdx++;
                         return [3 /*break*/, 3];
                     case 5: return [2 /*return*/, this.winner];
                 }

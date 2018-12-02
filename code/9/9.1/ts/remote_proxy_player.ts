@@ -132,6 +132,7 @@ export class RemoteProxyPlayer implements PlayerInterface {
         let ans = await this.receive();
         return ans;
     }
+
     async play(board: any[][])  {
         if (this.turn < 1) {
             return this.commandsOutOfSequence();

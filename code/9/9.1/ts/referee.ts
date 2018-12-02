@@ -12,8 +12,8 @@ export class Referee {
      The referee has to be able to receive two instances of your player component that implements the interface for players you have designed and manage a game of Santorini between these two players.
      */
     boardInstance: Board;
-    player1: PlayerInterface;
-    player2: PlayerInterface;
+    player1;
+    player2;
     whoseTurnIdx: number;
     winner: string;
     // player1status: string;// won, loss, still playing
@@ -24,7 +24,7 @@ export class Referee {
      * @param {PlayerInterface} player1 Already registered players
      * @param {PlayerInterface} player2 Already registered players
      */
-    constructor(player1: PlayerInterface, player2: PlayerInterface) {
+    constructor(player1, player2) {
         this.boardInstance = new Board(Board.createEmptyBoard(5,5));
         this.player1 = player1;
         this.player2 = player2;
@@ -63,6 +63,7 @@ export class Referee {
         let [[w1row, w1col], [w2row, w2col]] = placementList;
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '1', w1row, w1col);
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '2', w2row, w2col);
+        this.whoseTurnIdx++;
         return this.boardInstance.board;
     }
 
@@ -92,6 +93,7 @@ export class Referee {
 
         // Keep Playing - update our board
         this.boardInstance.board = rulecheck.boardInstance.board;
+        this.whoseTurnIdx++;
         return this.boardInstance.board;
     }
 
@@ -146,6 +148,8 @@ export class Referee {
      *
      */
     async runGame() {
+        this.player1.reset();
+        this.player2.reset();
         let placements1 = await this.player1.placeWorkers('blue', this.boardInstance.board);
         this.placeWorkers(placements1);
 
@@ -153,13 +157,13 @@ export class Referee {
         this.placeWorkers(placements2);
 
         while (this.winner === undefined) {
+            console.log("turn: " + this.whoseTurnIdx);
             let curr_player = this.whoseTurnIsIt();
             let play = await curr_player.play(this.boardInstance.board);
+            console.log(play);
             
             // todo play validation 
             let new_board = this.playTurn(play);
-            console.table(this.boardInstance.board);
-            this.whoseTurnIdx++;
         }
         return this.winner;
     }
