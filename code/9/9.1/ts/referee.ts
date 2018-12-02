@@ -58,6 +58,7 @@ export class Referee {
         }
     }
 
+    // todo if invalid placement kick the player
     placeWorkers(placementList: Array<Array<number>>) {
         let [[w1row, w1col], [w2row, w2col]] = placementList;
         this.boardInstance.setCellWithWorkerByCoords(this.whoseTurnIsIt().color + '1', w1row, w1col);
@@ -127,7 +128,7 @@ export class Referee {
         }
 
         // increment turn
-        this.whoseTurnIdx++;
+        //this.whoseTurnIdx++;
 
         return result;
     }
@@ -145,14 +146,20 @@ export class Referee {
      *
      */
     async runGame() {
-
         let placements1 = await this.player1.placeWorkers('blue', this.boardInstance.board);
         this.placeWorkers(placements1);
 
         let placements2 = await this.player1.placeWorkers('white', this.boardInstance.board);
         this.placeWorkers(placements2);
 
-        console.log(this.boardInstance.board);
+        while (this.winner === undefined) {
+            let curr_player = this.whoseTurnIsIt();
+            let play = await curr_player.play(this.boardInstance.board);
+            
+            // todo play validation 
+            let new_board = this.playTurn(play);
+        }
+        return this.winner;
     }
 
     /** Checks if player has won
@@ -167,5 +174,4 @@ export class Referee {
     status(playerColor: string) {
 
     }
-
 }
