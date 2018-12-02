@@ -55,7 +55,7 @@ export class Board {
             if (Array.isArray(board[row])) {
                 for (let col in board[row]) {
                     if (Array.isArray(board[row][col])) {
-                        let currWorkerHeight = board[row][col][1];
+                        let currWorkerHeight = board[row][col][0];
                         if (currWorkerHeight >= 3) {
                             return false;
                         }
@@ -72,6 +72,40 @@ export class Board {
         }
 
         return workerSet.size === 0;
+    }
+
+    /**
+     * Checks for valid "start" board (4 players, 0 height) everywhere
+     */
+    static isValidStartToPlayBoard(board: any[][]) {
+        let size = 5;
+        let workers = ['blue1', 'blue2', 'white1', 'white2'];
+
+        let contains_nonzero_height = false;
+        for (let row in board) {
+            if (Array.isArray(board[row])) {
+                for (let col in board[row]) {
+                    // if worker is on it
+                    if (Array.isArray(board[row][col])) {
+                        let currWorkerHeight = board[row][col][0];
+                        if (currWorkerHeight != 0) {
+                            contains_nonzero_height = true;
+                        }
+                    }
+                    else {
+                        if (board[row][col] != 0) {
+                            contains_nonzero_height = true;
+                        }
+                    }
+
+                }
+            }
+        }
+        return (
+            Board.isValidBoard(board, size, workers) &&
+            (!contains_nonzero_height)
+        );
+
     }
 
     /**

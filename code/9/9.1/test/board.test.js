@@ -145,3 +145,19 @@ describe('Board -- Testing move', () => {
     expect(gameBoard.move('white2', 'W')).to.deep.equal(successfulMoveExpectedOutput);
   });
 });
+
+
+describe('Board -- Valid Board methods', function() {
+  it('it should say a board with 4 workers and 0 height is valid', function () {
+    let board = Board.createEmptyBoard(5,5);
+    board[0][0] = [0, 'blue1'];
+    board[0][4] = [0, 'blue2'];
+    board[4][4] = [0, 'white1'];
+    board[4][0] = [0, 'white2'];
+
+    let res = Board.isValidStartToPlayBoard(board);
+
+    expect(res).to.deep.equal(true);
+  });
+
+});
