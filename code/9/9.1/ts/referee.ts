@@ -148,16 +148,22 @@ export class Referee {
     async runGame() {
         let placements1 = await this.player1.placeWorkers('blue', this.boardInstance.board);
         this.placeWorkers(placements1);
+        console.log(this.boardInstance.board);
+
 
         let placements2 = await this.player1.placeWorkers('white', this.boardInstance.board);
         this.placeWorkers(placements2);
+        console.log(this.boardInstance.board);
 
         while (this.winner === undefined) {
+            console.log(this.whoseTurnIdx);
             let curr_player = this.whoseTurnIsIt();
             let play = await curr_player.play(this.boardInstance.board);
+            console.log(play);
             
             // todo play validation 
             let new_board = this.playTurn(play);
+            this.whoseTurnIdx++;
         }
         return this.winner;
     }
