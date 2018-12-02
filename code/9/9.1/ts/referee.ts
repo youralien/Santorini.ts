@@ -149,7 +149,7 @@ export class Referee {
         let placements1 = await this.player1.placeWorkers('blue', this.boardInstance.board);
         this.placeWorkers(placements1);
 
-        let placements2 = await this.player1.placeWorkers('white', this.boardInstance.board);
+        let placements2 = await this.player2.placeWorkers('white', this.boardInstance.board);
         this.placeWorkers(placements2);
 
         while (this.winner === undefined) {
@@ -158,6 +158,8 @@ export class Referee {
             
             // todo play validation 
             let new_board = this.playTurn(play);
+            console.table(this.boardInstance.board);
+            this.whoseTurnIdx++;
         }
         return this.winner;
     }

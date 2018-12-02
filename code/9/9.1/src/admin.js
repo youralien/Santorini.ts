@@ -117,21 +117,55 @@ var Admin = /** @class */ (function () {
         return arr;
     };
     Admin.prototype.runTournament = function () {
-        if (this.tournament_type == TournamentType.League) {
-            this.runRoundRobin();
-        }
-        else {
-            this.runSingleElimination();
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(this.tournament_type == TournamentType.League)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.runRoundRobin()];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, this.runSingleElimination()];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
     };
+    // todo, leaderboard, track winners and cheater
     Admin.prototype.runRoundRobin = function () {
-        var robinGameList = Admin.roundRobinGameList(this.num_total_players);
-        for (var i in robinGameList) {
-            var _a = robinGameList[i], player1idx = _a[0], player2idx = _a[1];
-            var referee = new referee_1.Referee(this.players[player1idx], this.players[player2idx]);
-            referee.runGame();
-            console.log('Game finished ', i);
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            var robinGameList, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        robinGameList = Admin.roundRobinGameList(this.num_total_players);
+                        _a = [];
+                        for (_b in robinGameList)
+                            _a.push(_b);
+                        _i = 0;
+                        _d.label = 1;
+                    case 1:
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        i = _a[_i];
+                        _c = robinGameList[i], player1idx = _c[0], player2idx = _c[1];
+                        referee = new referee_1.Referee(this.players[player1idx], this.players[player2idx]);
+                        return [4 /*yield*/, referee.runGame()];
+                    case 2:
+                        winner = _d.sent();
+                        console.log('Game finished ', i);
+                        console.log(winner + " won");
+                        _d.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
     };
     Admin.prototype.runSingleElimination = function () {
         console.log('HA nope');
