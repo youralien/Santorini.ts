@@ -136,7 +136,7 @@ var ValidationPlayerProxy = /** @class */ (function () {
                                 return [2 /*return*/, ["invalid_board_error", "board passed by admin is not valid start to play"]];
                             }
                         }
-                        // FIXME: it should be !checkStartToPlay (i.e. turn = 2, color = white)
+                        // FIXME: logically, it should be !checkStartToPlay (i.e. turn = 2, color = white), but it errors
                         if (!contains && this.turn != 2) {
                             return [2 /*return*/, ["invalid_board_error", "board passed by admin is not one move away from last move"]];
                         }

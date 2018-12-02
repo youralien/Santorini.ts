@@ -169,6 +169,8 @@ var Referee = /** @class */ (function () {
                     case 2:
                         placements2 = _a.sent();
                         this.placeWorkers(placements2);
+                        // We can set this, because players are ValidationPlayerProxy's that have this interface
+                        // TODO: Why do we need to do this? Doesn't the ValidationPlayerProxy handle this setting?
                         this.player1.prev_board = this.boardInstance;
                         this.player2.prev_board = this.boardInstance;
                         _a.label = 3;

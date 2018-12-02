@@ -1,6 +1,7 @@
 import {RuleChecker} from "./rules";
 import {Board} from "./board";
 import {PlayerInterface} from "./player_interface";
+import {ValidationPlayerProxy} from "./validation_player_proxy";
 
 export class Referee {
 
@@ -12,8 +13,8 @@ export class Referee {
      The referee has to be able to receive two instances of your player component that implements the interface for players you have designed and manage a game of Santorini between these two players.
      */
     boardInstance: Board;
-    player1;
-    player2;
+    player1: ValidationPlayerProxy;
+    player2: ValidationPlayerProxy;
     whoseTurnIdx: number;
     winner: string;
     // player1status: string;// won, loss, still playing
@@ -24,7 +25,7 @@ export class Referee {
      * @param {PlayerInterface} player1 Already registered players
      * @param {PlayerInterface} player2 Already registered players
      */
-    constructor(player1, player2) {
+    constructor(player1: ValidationPlayerProxy, player2: ValidationPlayerProxy) {
         this.boardInstance = new Board(Board.createEmptyBoard(5,5));
         this.player1 = player1;
         this.player2 = player2;
@@ -156,8 +157,10 @@ export class Referee {
         let placements2 = await this.player2.placeWorkers('white', this.boardInstance.board);
         this.placeWorkers(placements2);
 
+        // We can set this, because players are ValidationPlayerProxy's that have this interface
+        // TODO: Why do we need to do this? Doesn't the ValidationPlayerProxy handle this setting?
         this.player1.prev_board = this.boardInstance;
-        this.player2.prev_board = this.boardInstance; 
+        this.player2.prev_board = this.boardInstance;
 
         while (this.winner === undefined) {
             let curr_player = this.whoseTurnIsIt();
