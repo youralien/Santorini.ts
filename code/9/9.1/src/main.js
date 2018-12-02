@@ -79,10 +79,7 @@ exports.playerDriverComponent = function (port, host) {
                         }
                         else if (command === 'Play') {
                             var board = maybeValidResponse[1];
-                            // TODO: play? or playOptions?
-                            console.log("PLAYING?!?");
                             outputMessage = playerInstance.play(board);
-                            console.log("?!?");
                         }
                         else if (command === 'Register') {
                             outputMessage = playerInstance.register();
@@ -100,17 +97,14 @@ exports.playerDriverComponent = function (port, host) {
                             socket.write(JSON.stringify(outputMessage));
                             // TODO: exit out of player component when the game is over
                             if (outputMessage === playerInstance.gameOverResponse) {
-                                socket.close(function () {
-                                    process.exit();
-                                });
+                                process.exit();
                             }
                         }
                         else {
+                            socket.write(JSON.stringify([]));
                             console.error("Returned undefined output for command = " + command);
                             // TODO: undefined output for our monad/maybe structure means that we're propagating an error
-                            socket.close(function () {
-                                process.exit();
-                            });
+                            // process.exit();
                         }
                     }
                 }

@@ -22,6 +22,20 @@ enum TournamentType {
     Cup = 1,
 }
 
+class RRLeaderboardItem {
+    name: string;
+    wins: number;
+    losses: number;
+
+    constructor(name) {
+        this.name = name;
+        this.wins = 0;
+        this.losses = 0
+    }
+
+    update
+}
+
 
 export class Admin {
     tournament_type: TournamentType;
@@ -99,13 +113,45 @@ export class Admin {
     private async runRoundRobin() {
         let robinGameList = Admin.roundRobinGameList(this.num_total_players);
 
+        let unrankedLeaderboard = this.players.map((player) => {
+            return new RRLeaderboardItem(player.name);
+        });
+
         for (let i in robinGameList) {
             let [player1idx, player2idx] = robinGameList[i];
             let referee = new Referee(this.players[player1idx], this.players[player2idx]);
-            let winner = await referee.runGame();
-            console.log('Game finished ', i);
-            console.log(winner + " won");
+            let winner_name = await referee.runGame();
+            console.log(`Game #${i} finished between [${player1idx}, ${player2idx}]`);
+            console.log(winner_name + " won");
+            if (this.players[player1idx].name === winner_name) {
+                unrankedLeaderboard[player1idx].wins++;
+                unrankedLeaderboard[player2idx].losses++;
+            } else {
+                unrankedLeaderboard[player1idx].losses++;
+                unrankedLeaderboard[player2idx].wins++;
+            }
         }
+
+        console.log(unrankedLeaderboard)
+
+    }
+
+    static indexOfMax(arr) {
+        if (arr.length === 0) {
+            return -1;
+        }
+
+        let max = arr[0];
+        let maxIndex = 0;
+
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i] > max) {
+                maxIndex = i;
+                max = arr[i];
+            }
+        }
+
+        return maxIndex;
     }
 
     private runSingleElimination() {

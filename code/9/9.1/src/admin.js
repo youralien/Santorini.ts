@@ -48,6 +48,14 @@ var TournamentType;
     // Single Elimination
     TournamentType[TournamentType["Cup"] = 1] = "Cup";
 })(TournamentType || (TournamentType = {}));
+var RRLeaderboardItem = /** @class */ (function () {
+    function RRLeaderboardItem(name) {
+        this.name = name;
+        this.wins = 0;
+        this.losses = 0;
+    }
+    return RRLeaderboardItem;
+}());
 var Admin = /** @class */ (function () {
     function Admin(tournament_type, num_remote_players, ip_address, port, defaultPlayer) {
         this.tournament_type = tournament_type;
@@ -137,11 +145,14 @@ var Admin = /** @class */ (function () {
     // todo, leaderboard, track winners and cheater
     Admin.prototype.runRoundRobin = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var robinGameList, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner;
+            var robinGameList, unrankedLeaderboard, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner_name;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         robinGameList = Admin.roundRobinGameList(this.num_total_players);
+                        unrankedLeaderboard = this.players.map(function (player) {
+                            return new RRLeaderboardItem(player.name);
+                        });
                         _a = [];
                         for (_b in robinGameList)
                             _a.push(_b);
@@ -154,17 +165,41 @@ var Admin = /** @class */ (function () {
                         referee = new referee_1.Referee(this.players[player1idx], this.players[player2idx]);
                         return [4 /*yield*/, referee.runGame()];
                     case 2:
-                        winner = _d.sent();
-                        console.log('Game finished ', i);
-                        console.log(winner + " won");
+                        winner_name = _d.sent();
+                        console.log("Game #" + i + " finished between [" + player1idx + ", " + player2idx + "]");
+                        console.log(winner_name + " won");
+                        if (this.players[player1idx].name === winner_name) {
+                            unrankedLeaderboard[player1idx].wins++;
+                            unrankedLeaderboard[player2idx].losses++;
+                        }
+                        else {
+                            unrankedLeaderboard[player1idx].losses++;
+                            unrankedLeaderboard[player2idx].wins++;
+                        }
                         _d.label = 3;
                     case 3:
                         _i++;
                         return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/];
+                    case 4:
+                        console.log(unrankedLeaderboard);
+                        return [2 /*return*/];
                 }
             });
         });
+    };
+    Admin.indexOfMax = function (arr) {
+        if (arr.length === 0) {
+            return -1;
+        }
+        var max = arr[0];
+        var maxIndex = 0;
+        for (var i = 1; i < arr.length; i++) {
+            if (arr[i] > max) {
+                maxIndex = i;
+                max = arr[i];
+            }
+        }
+        return maxIndex;
     };
     Admin.prototype.runSingleElimination = function () {
         console.log('HA nope');
