@@ -48,7 +48,7 @@ var Board = /** @class */ (function () {
             if (Array.isArray(board[row])) {
                 for (var col in board[row]) {
                     if (Array.isArray(board[row][col])) {
-                        var currWorkerHeight = board[row][col][1];
+                        var currWorkerHeight = board[row][col][0];
                         if (currWorkerHeight >= 3) {
                             return false;
                         }
@@ -65,6 +65,34 @@ var Board = /** @class */ (function () {
             }
         }
         return workerSet.size === 0;
+    };
+    /**
+     * Checks for valid "start" board (4 players, 0 height) everywhere
+     */
+    Board.isValidStartToPlayBoard = function (board) {
+        var size = 5;
+        var workers = ['blue1', 'blue2', 'white1', 'white2'];
+        var contains_nonzero_height = false;
+        for (var row in board) {
+            if (Array.isArray(board[row])) {
+                for (var col in board[row]) {
+                    // if worker is on it
+                    if (Array.isArray(board[row][col])) {
+                        var currWorkerHeight = board[row][col][0];
+                        if (currWorkerHeight != 0) {
+                            contains_nonzero_height = true;
+                        }
+                    }
+                    else {
+                        if (board[row][col] != 0) {
+                            contains_nonzero_height = true;
+                        }
+                    }
+                }
+            }
+        }
+        return (Board.isValidBoard(board, size, workers) &&
+            (!contains_nonzero_height));
     };
     /**
      * Verifies whether a cell neighboring the worker in the direction exists.
