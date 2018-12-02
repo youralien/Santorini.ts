@@ -73,9 +73,13 @@ export class ValidationPlayerProxy implements PlayerInterface {
         if (this.turn < 2) {
             return ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn];
         }
+
+        console.log("line 77 play of validation_proxy")
+        console.log(board);
         
         let other_player = this.get_other_player(this.color);
-        let valid_plays = Strategy.computeValidPlays(this.prev_board, other_player);
+        let valid_plays = Strategy.computeValidPlays(new Board(board), other_player);
+        console.log(valid_plays);
         let valid_boards = valid_plays.map((x) => {
             let [targetPlayerBoard, [targetPlayerWorker, targetPlayerDirections], targetPlayerDidWin] = x;
             return JSON.stringify(targetPlayerBoard.board);

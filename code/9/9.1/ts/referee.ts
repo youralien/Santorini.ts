@@ -161,9 +161,11 @@ export class Referee {
         while (this.winner === undefined) {
             console.log("turn: " + this.whoseTurnIdx);
             let curr_player = this.whoseTurnIsIt();
+            console.log("board for play")
+
+            console.log(this.boardInstance.board);
             let play = await curr_player.play(this.boardInstance.board);
             console.log(play);
-            
             // todo play validation 
             let new_board = this.playTurn(play);
         }

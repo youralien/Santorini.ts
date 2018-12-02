@@ -165,15 +165,19 @@ var Referee = /** @class */ (function () {
                     case 1:
                         placements1 = _a.sent();
                         this.placeWorkers(placements1);
+                        console.log("first step: " + this.boardInstance.board);
                         return [4 /*yield*/, this.player2.placeWorkers('white', this.boardInstance.board)];
                     case 2:
                         placements2 = _a.sent();
                         this.placeWorkers(placements2);
+                        console.log("second step: " + this.boardInstance.board);
                         _a.label = 3;
                     case 3:
                         if (!(this.winner === undefined)) return [3 /*break*/, 5];
                         console.log("turn: " + this.whoseTurnIdx);
                         curr_player = this.whoseTurnIsIt();
+                        console.log("board for play");
+                        console.log(this.boardInstance.board);
                         return [4 /*yield*/, curr_player.play(this.boardInstance.board)];
                     case 4:
                         play = _a.sent();

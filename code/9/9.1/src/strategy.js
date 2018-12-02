@@ -111,19 +111,26 @@ var Strategy = /** @class */ (function () {
     Strategy.computeValidPlays = function (board, targetPlayerColor) {
         var allPlayCombos = Strategy.computeAllPlays(board.directions);
         var targetWorkers = [targetPlayerColor + "1", targetPlayerColor + "2"];
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        console.log(targetWorkers);
         // loop over workers and plays
         var validPlays = [];
         targetWorkers.forEach(function (currWorker) {
             allPlayCombos.forEach(function (currDirections) {
                 // create a new rule checker instance given the current worker and possible move
+                console.log("curr_worker: " + currWorker);
+                console.log("this is the board for strategy");
+                console.log(board.board);
                 var ruleCheckerInstance = new rules_1.RuleChecker(JSON.parse(JSON.stringify(board.board)), currWorker, currDirections);
                 var isTurnValid = ruleCheckerInstance.executeTurn() === 'yes';
+                console.log("isTurnValid: " + isTurnValid);
                 // keep only valid plays
                 if (isTurnValid) {
                     validPlays.push([ruleCheckerInstance.boardInstance, [currWorker, currDirections], ruleCheckerInstance.didPlayerWin()]);
                 }
             });
         });
+        console.log(validPlays);
         return validPlays;
     };
     /**

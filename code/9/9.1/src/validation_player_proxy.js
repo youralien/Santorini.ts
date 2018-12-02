@@ -116,8 +116,11 @@ var ValidationPlayerProxy = /** @class */ (function () {
                         if (this.turn < 2) {
                             return [2 /*return*/, ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn]];
                         }
+                        console.log("line 77 play of validation_proxy");
+                        console.log(board);
                         other_player = this.get_other_player(this.color);
-                        valid_plays = strategy_1.Strategy.computeValidPlays(this.prev_board, other_player);
+                        valid_plays = strategy_1.Strategy.computeValidPlays(new board_1.Board(board), other_player);
+                        console.log(valid_plays);
                         valid_boards = valid_plays.map(function (x) {
                             var targetPlayerBoard = x[0], _a = x[1], targetPlayerWorker = _a[0], targetPlayerDirections = _a[1], targetPlayerDidWin = x[2];
                             return JSON.stringify(targetPlayerBoard.board);
@@ -133,7 +136,6 @@ var ValidationPlayerProxy = /** @class */ (function () {
                             return [2 /*return*/, ["invalid_board_error", "board passed by admin is not one move away from last move"]];
                         }
                         this.turn++;
-                        console.log();
                         return [4 /*yield*/, this.wrapped_player.play(board)];
                     case 1:
                         play = _a.sent();
