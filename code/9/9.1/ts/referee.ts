@@ -164,8 +164,17 @@ export class Referee {
 
             let play = await curr_player.play(this.boardInstance.board);
 
-            // todo play validation 
-            let new_board = this.playTurn(play);
+            // TODO: validation of invalid plays
+
+            // curr_player has admitted defeat
+            if (JSON.stringify(play) === '[]') {
+                this.winner = this.whoseTurnIsItNot().name;
+            }
+            else {
+                // register the play
+                let new_board = this.playTurn(play);
+            }
+
         }
         return this.winner;
     }

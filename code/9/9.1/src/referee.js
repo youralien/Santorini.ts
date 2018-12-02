@@ -165,27 +165,27 @@ var Referee = /** @class */ (function () {
                     case 1:
                         placements1 = _a.sent();
                         this.placeWorkers(placements1);
-                        console.log("first step: " + this.boardInstance.board);
                         return [4 /*yield*/, this.player2.placeWorkers('white', this.boardInstance.board)];
                     case 2:
                         placements2 = _a.sent();
                         this.placeWorkers(placements2);
-                        console.log("second step: " + this.boardInstance.board);
                         this.player1.prev_board = this.boardInstance;
                         this.player2.prev_board = this.boardInstance;
                         _a.label = 3;
                     case 3:
                         if (!(this.winner === undefined)) return [3 /*break*/, 5];
-                        console.log("turn: " + this.whoseTurnIdx);
                         curr_player = this.whoseTurnIsIt();
-                        console.log("board for play");
-                        console.log(this.boardInstance.board);
                         return [4 /*yield*/, curr_player.play(this.boardInstance.board)];
                     case 4:
                         play = _a.sent();
-                        console.log("play:");
-                        console.log(play);
-                        new_board = this.playTurn(play);
+                        // TODO: validation of invalid plays
+                        // curr_player has admitted defeat
+                        if (JSON.stringify(play) === '[]') {
+                            this.winner = this.whoseTurnIsItNot().name;
+                        }
+                        else {
+                            new_board = this.playTurn(play);
+                        }
                         return [3 /*break*/, 3];
                     case 5: return [2 /*return*/, this.winner];
                 }

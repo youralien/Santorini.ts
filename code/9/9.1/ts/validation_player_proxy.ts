@@ -74,7 +74,7 @@ export class ValidationPlayerProxy implements PlayerInterface {
         if (this.turn < 2) {
             return ["turn_error", "play out of sequence, turn less than 2. turn = " + this.turn];
         }
-        
+
         let other_player = this.get_other_player(this.color);
 
 
@@ -95,14 +95,27 @@ export class ValidationPlayerProxy implements PlayerInterface {
             }
         }
 
+        // special turn where validation is based on a start to play board, not on compute valid plays
+        let checkStartToPlay = this.turn == 2 && this.color == 'blue';
+        if (checkStartToPlay) {
+            if (!(Board.isValidStartToPlayBoard(board))) {
+                console.error('invalid start to play');
+                return ["invalid_board_error", "board passed by admin is not valid start to play"];
+            }
+        }
+
+        // FIXME: it should be !checkStartToPlay (i.e. turn = 2, color = white)
         if (!contains && this.turn != 2) {
             return ["invalid_board_error", "board passed by admin is not one move away from last move"];
         }
 
-
-
         this.turn++;
         let play =  await this.wrapped_player.play(board);
+
+        if (play === undefined) {
+            // per assignment 9 spec: empty list means we have given up
+            return [];
+        }
 
         let [worker, directions] = play;
         let rule_checker = new RuleChecker(board, worker, directions);

@@ -97,7 +97,6 @@ var Admin = /** @class */ (function () {
                         return [4 /*yield*/, this.players[i].register()];
                     case 2:
                         name_1 = _c.sent();
-                        console.log('got name: ', name_1);
                         _c.label = 3;
                     case 3:
                         _i++;
