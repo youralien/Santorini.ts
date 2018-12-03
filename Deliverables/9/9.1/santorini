@@ -1,0 +1,12 @@
+#!/bin/sh
+export tournament=$1
+export num_players=$2
+
+# if node command exists, use it
+if hash node 2>/dev/null; then
+   node lib/admin.js $@
+# otherwise, on tlab machine so use scl
+else
+   scl enable rh-nodejs6 "node lib/admin.js $tournament $num_players"
+   #scl enable rh-nodejs6 "node lib/admin.js --league 1"
+fi
