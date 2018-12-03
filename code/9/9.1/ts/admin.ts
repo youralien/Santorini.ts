@@ -117,7 +117,6 @@ export class Admin {
     // todo, leaderboard, track winners and cheater
     private async runRoundRobin() {
         let robinGameList = Admin.roundRobinGameList(this.num_total_players);
-
         let unrankedLeaderboard = this.players.map((player) => {
             return new RRLeaderboardItem(player.name);
         });
@@ -174,8 +173,39 @@ export class Admin {
         // TODO: write ranking (i.e. 1: name, 2: name)
     }
 
-    private runSingleElimination() {
-        console.log('HA nope')
+    private async runSingleElimination() {
+        let winners = []
+        for (let i = 0; i < this.players.length; i++) {
+            winners.push(i);
+        }
+
+        let round = Admin.generate_pairs(winners);
+        let next_round_indices = []
+
+        for (let i in round) {
+            let [player1idx, player2idx] = round[i];
+            let referee = new Referee(this.players[player1idx], this.players[player2idx]);
+            let winner_name = await referee.runGame();
+
+            console.log(`Game #${i} finished between [${player1idx}, ${player2idx}]`);
+            console.log(winner_name + " won");
+
+            if (this.players[player1idx].name === winner_name) {
+                next_round_indices.push(player1idx);
+            } else {
+                next_round_indices.push(player2idx);
+            }
+        }
+        round = next_round_indices;
+        console.log(next_round_indices);
+    }
+
+    private static generate_pairs(player_list_indices) {
+        let res = [];
+        for (let i = 0; i < player_list_indices.length; i += 2) {
+            res.push([player_list_indices[i], player_list_indices[i + 1]]);
+        }
+        return res;
     }
 }
 
