@@ -174,6 +174,14 @@ var Admin = /** @class */ (function () {
                         console.log("Game #" + i + " finished between [" + player1idx + ", " + player2idx + "]");
                         console.log(winner_name + " won");
                         if (referee.cheater !== undefined) {
+                            if (this.players[player1idx].name === winner_name) {
+                                unrankedLeaderboard[player1idx].wins.push(this.players[player2idx].name);
+                                unrankedLeaderboard[player2idx].losses.push(this.players[player1idx].name);
+                            }
+                            else {
+                                unrankedLeaderboard[player1idx].losses.push(this.players[player2idx].name);
+                                unrankedLeaderboard[player2idx].wins.push(this.players[player1idx].name);
+                            }
                             // Handle math for cheater
                             for (i_1 in unrankedLeaderboard) {
                                 record = unrankedLeaderboard[i_1];

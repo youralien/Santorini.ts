@@ -130,6 +130,13 @@ export class Admin {
 
             if (referee.cheater !== undefined) {
 
+                if (this.players[player1idx].name === winner_name) {
+                    unrankedLeaderboard[player1idx].wins.push(this.players[player2idx].name);
+                    unrankedLeaderboard[player2idx].losses.push(this.players[player1idx].name);
+                } else {
+                    unrankedLeaderboard[player1idx].losses.push(this.players[player2idx].name);
+                    unrankedLeaderboard[player2idx].wins.push(this.players[player1idx].name);
+                }
                 // Handle math for cheater
                 for (let i in unrankedLeaderboard) {
                     let record = unrankedLeaderboard[i];
