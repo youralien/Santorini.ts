@@ -51,13 +51,13 @@ var TournamentType;
 var RRLeaderboardItem = /** @class */ (function () {
     function RRLeaderboardItem(name) {
         this.name = name;
-        this.wins = 0;
-        this.losses = 0;
+        this.wins = [];
+        this.losses = [];
         this.cheated = false;
     }
     RRLeaderboardItem.prototype.compareFunction = function (a, b) {
         // highest score to the top
-        return (b.wins - b.losses) - (a.wins - a.losses);
+        return (b.wins.length - b.losses.length) - (a.wins.length - a.losses.length);
     };
     return RRLeaderboardItem;
 }());
@@ -150,7 +150,7 @@ var Admin = /** @class */ (function () {
     // todo, leaderboard, track winners and cheater
     Admin.prototype.runRoundRobin = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var robinGameList, unrankedLeaderboard, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner_name;
+            var robinGameList, unrankedLeaderboard, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner_name, i_1, record, loss2cheater, newLosses, j, cheater_idx;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -173,44 +173,51 @@ var Admin = /** @class */ (function () {
                         winner_name = _d.sent();
                         console.log("Game #" + i + " finished between [" + player1idx + ", " + player2idx + "]");
                         console.log(winner_name + " won");
-                        // TODO: process the cheaters, make them at the bottom and given points
-                        // TODO: and replace them with default players
-                        if (this.players[player1idx].name === winner_name) {
-                            unrankedLeaderboard[player1idx].wins++;
-                            unrankedLeaderboard[player2idx].losses++;
+                        if (referee.cheater !== undefined) {
+                            // Handle math for cheater
+                            for (i_1 in unrankedLeaderboard) {
+                                record = unrankedLeaderboard[i_1];
+                                loss2cheater = false;
+                                newLosses = [];
+                                for (j in record.losses) {
+                                    if (referee.cheater === record.losses[j]) {
+                                        loss2cheater = true;
+                                    }
+                                    else {
+                                        newLosses.push(record.losses[j]);
+                                    }
+                                }
+                                if (loss2cheater) {
+                                    record.wins.push(referee.cheater);
+                                    record.losses = newLosses;
+                                }
+                            }
+                            cheater_idx = this.players[player1idx].name === referee.cheater ? player1idx : player2idx;
+                            this.players[cheater_idx] = new validation_player_proxy_1.ValidationPlayerProxy(new this.defaultPlayer());
+                            // update cheater on record list
+                            unrankedLeaderboard[cheater_idx].cheated = true;
                         }
                         else {
-                            unrankedLeaderboard[player1idx].losses++;
-                            unrankedLeaderboard[player2idx].wins++;
+                            if (this.players[player1idx].name === winner_name) {
+                                unrankedLeaderboard[player1idx].wins.push(this.players[player2idx].name);
+                                unrankedLeaderboard[player2idx].losses.push(this.players[player1idx].name);
+                            }
+                            else {
+                                unrankedLeaderboard[player1idx].losses.push(this.players[player2idx].name);
+                                unrankedLeaderboard[player2idx].wins.push(this.players[player1idx].name);
+                            }
                         }
                         _d.label = 3;
                     case 3:
                         _i++;
                         return [3 /*break*/, 1];
                     case 4:
-                        console.log(unrankedLeaderboard);
-                        unrankedLeaderboard.reverse();
-                        console.log(unrankedLeaderboard);
                         unrankedLeaderboard.sort();
                         console.log(unrankedLeaderboard);
                         return [2 /*return*/];
                 }
             });
         });
-    };
-    Admin.indexOfMax = function (arr) {
-        if (arr.length === 0) {
-            return -1;
-        }
-        var max = arr[0];
-        var maxIndex = 0;
-        for (var i = 1; i < arr.length; i++) {
-            if (arr[i] > max) {
-                maxIndex = i;
-                max = arr[i];
-            }
-        }
-        return maxIndex;
     };
     Admin.prototype.runSingleElimination = function () {
         console.log('HA nope');

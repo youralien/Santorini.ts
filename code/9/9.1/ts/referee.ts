@@ -17,6 +17,7 @@ export class Referee {
     player2: ValidationPlayerProxy;
     whoseTurnIdx: number;
     winner: string;
+    cheater: string;
     // player1status: string;// won, loss, still playing
     // player2status: string;// won, loss, still playing
 
@@ -31,6 +32,7 @@ export class Referee {
         this.player2 = player2;
         this.whoseTurnIdx = 0;
         this.winner = undefined; // not set until theres a winner
+        this.cheater = undefined; // not set until theres a winner
     }
 
     initializeName(name: string) {
@@ -85,6 +87,7 @@ export class Referee {
             this.winner = this.whoseTurnIsIt().name;
         }
         else if (validplay == 'no') {
+            this.cheater = this.whoseTurnIsIt().name;
             this.winner = this.whoseTurnIsItNot().name;
         }
 

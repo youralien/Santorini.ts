@@ -24,20 +24,20 @@ enum TournamentType {
 
 class RRLeaderboardItem {
     name: string;
-    wins: number;
-    losses: number;
+    wins: string[];
+    losses: string[];
     cheated: boolean;
 
     constructor(name) {
         this.name = name;
-        this.wins = 0;
-        this.losses = 0
+        this.wins = [];
+        this.losses = [];
         this.cheated = false;
     }
 
     compareFunction(a, b) {
         // highest score to the top
-        return (b.wins - b.losses) - (a.wins - a.losses);
+        return (b.wins.length - b.losses.length) - (a.wins.length - a.losses.length);
     }
 }
 
@@ -129,44 +129,49 @@ export class Admin {
             console.log(`Game #${i} finished between [${player1idx}, ${player2idx}]`);
             console.log(winner_name + " won");
 
-            // TODO: process the cheaters, make them at the bottom and given points
-            // TODO: and replace them with default players
+            if (referee.cheater !== undefined) {
 
-            if (this.players[player1idx].name === winner_name) {
-                unrankedLeaderboard[player1idx].wins++;
-                unrankedLeaderboard[player2idx].losses++;
-            } else {
-                unrankedLeaderboard[player1idx].losses++;
-                unrankedLeaderboard[player2idx].wins++;
+                // Handle math for cheater
+                for (let i in unrankedLeaderboard) {
+                    let record = unrankedLeaderboard[i];
+                    // give people who
+                    let loss2cheater = false;
+                    let newLosses = [];
+                    for (let j in record.losses) {
+                        if (referee.cheater === record.losses[j]) {
+                            loss2cheater = true;
+                        } else {
+                            newLosses.push(record.losses[j]);
+                        }
+                    }
+                    if (loss2cheater) {
+                        record.wins.push(referee.cheater);
+                        record.losses = newLosses;
+                    }
+                }
+
+                // replace with default player
+                let cheater_idx = this.players[player1idx].name === referee.cheater ? player1idx : player2idx;
+                this.players[cheater_idx] = new ValidationPlayerProxy(new this.defaultPlayer());
+
+                // update cheater on record list
+                unrankedLeaderboard[cheater_idx].cheated = true;
             }
+            else {
+                if (this.players[player1idx].name === winner_name) {
+                    unrankedLeaderboard[player1idx].wins.push(this.players[player2idx].name);
+                    unrankedLeaderboard[player2idx].losses.push(this.players[player1idx].name);
+                } else {
+                    unrankedLeaderboard[player1idx].losses.push(this.players[player2idx].name);
+                    unrankedLeaderboard[player2idx].wins.push(this.players[player1idx].name);
+                }
+            }
+
         }
 
-        console.log(unrankedLeaderboard)
-        unrankedLeaderboard.reverse();
-        console.log(unrankedLeaderboard)
         unrankedLeaderboard.sort();
-        console.log(unrankedLeaderboard)
-
-
-
-    }
-
-    static indexOfMax(arr) {
-        if (arr.length === 0) {
-            return -1;
-        }
-
-        let max = arr[0];
-        let maxIndex = 0;
-
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i] > max) {
-                maxIndex = i;
-                max = arr[i];
-            }
-        }
-
-        return maxIndex;
+        console.log(unrankedLeaderboard);
+        // TODO: write ranking (i.e. 1: name, 2: name)
     }
 
     private runSingleElimination() {

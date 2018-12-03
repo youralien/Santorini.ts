@@ -51,6 +51,7 @@ var Referee = /** @class */ (function () {
         this.player2 = player2;
         this.whoseTurnIdx = 0;
         this.winner = undefined; // not set until theres a winner
+        this.cheater = undefined; // not set until theres a winner
     }
     Referee.prototype.initializeName = function (name) {
         var player = this.whoseTurnIsIt();
@@ -97,6 +98,7 @@ var Referee = /** @class */ (function () {
             this.winner = this.whoseTurnIsIt().name;
         }
         else if (validplay == 'no') {
+            this.cheater = this.whoseTurnIsIt().name;
             this.winner = this.whoseTurnIsItNot().name;
         }
         if (this.winner !== undefined) {
