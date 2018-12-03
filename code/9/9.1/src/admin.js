@@ -150,7 +150,7 @@ var Admin = /** @class */ (function () {
     // todo, leaderboard, track winners and cheater
     Admin.prototype.runRoundRobin = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var robinGameList, unrankedLeaderboard, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner_name, i_1, record, loss2cheater, newLosses, j, cheater_idx;
+            var robinGameList, unrankedLeaderboard, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner_name, i_1, record, loss2cheater, newLosses, j, cheater_idx, i, rank, name_2;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -214,13 +214,109 @@ var Admin = /** @class */ (function () {
                     case 4:
                         unrankedLeaderboard.sort();
                         console.log(unrankedLeaderboard);
+                        for (i = 0; i < unrankedLeaderboard.length; i++) {
+                            rank = i + 1;
+                            name_2 = unrankedLeaderboard[i].name;
+                            console.log(name_2 + " is ranked #" + rank);
+                        }
                         return [2 /*return*/];
                 }
             });
         });
     };
     Admin.prototype.runSingleElimination = function () {
-        console.log('HA nope');
+        return __awaiter(this, void 0, void 0, function () {
+            var winners, i, bracket_results, round, next_round_indices, this_round_losers, _a, _b, _i, i, _c, player1idx, player2idx, referee, winner_name, i, rank, player_idxs_for_round, j, playeridx, name_3;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        winners = [];
+                        for (i = 0; i < this.players.length; i++) {
+                            winners.push(i);
+                        }
+                        bracket_results = [];
+                        round = Admin.generate_pairs(winners);
+                        _d.label = 1;
+                    case 1:
+                        if (!(round.length >= 1)) return [3 /*break*/, 6];
+                        next_round_indices = [];
+                        this_round_losers = [];
+                        _a = [];
+                        for (_b in round)
+                            _a.push(_b);
+                        _i = 0;
+                        _d.label = 2;
+                    case 2:
+                        if (!(_i < _a.length)) return [3 /*break*/, 5];
+                        i = _a[_i];
+                        _c = round[i], player1idx = _c[0], player2idx = _c[1];
+                        console.log("before the failure: ", round[i]);
+                        referee = new referee_1.Referee(this.players[player1idx], this.players[player2idx]);
+                        return [4 /*yield*/, referee.runGame()];
+                    case 3:
+                        winner_name = _d.sent();
+                        console.log("Game #" + i + " finished between [" + player1idx + ", " + player2idx + "]");
+                        console.log(winner_name + " won");
+                        if (this.players[player1idx].name === winner_name) {
+                            next_round_indices.push(player1idx);
+                            if (bracket_results.length && referee.cheater !== undefined) {
+                                // push only to the bottom bracket if there is a bottom bracket in the first place
+                                bracket_results[bracket_results.length - 1].push(player2idx);
+                            }
+                            else {
+                                //
+                                this_round_losers.push(player2idx);
+                            }
+                        }
+                        else {
+                            next_round_indices.push(player2idx);
+                            if (bracket_results.length && referee.cheater !== undefined) {
+                                // push only to the bottom bracket if there is a bottom bracket in the first place
+                                bracket_results[bracket_results.length - 1].push(player1idx);
+                            }
+                            else {
+                                this_round_losers.push(player1idx);
+                            }
+                        }
+                        _d.label = 4;
+                    case 4:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 5:
+                        // this round is pushed to the overall bracket
+                        bracket_results.unshift(this_round_losers);
+                        if (next_round_indices.length == 1) {
+                            console.log(bracket_results);
+                            bracket_results.unshift(next_round_indices);
+                            return [3 /*break*/, 6];
+                        }
+                        round = Admin.generate_pairs(next_round_indices);
+                        console.log("Next round to be played");
+                        console.log(next_round_indices);
+                        console.log(bracket_results);
+                        return [3 /*break*/, 1];
+                    case 6:
+                        console.log("Winner is: ", this.players[round[0][0]].name);
+                        for (i = 0; i < bracket_results.length; i++) {
+                            rank = i + 1;
+                            player_idxs_for_round = bracket_results[i];
+                            for (j in player_idxs_for_round) {
+                                playeridx = player_idxs_for_round[j];
+                                name_3 = this.players[playeridx].name;
+                                console.log(name_3 + " is ranked #" + rank);
+                            }
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Admin.generate_pairs = function (player_list_indices) {
+        var res = [];
+        for (var i = 0; i < player_list_indices.length; i += 2) {
+            res.push([player_list_indices[i], player_list_indices[i + 1]]);
+        }
+        return res;
     };
     return Admin;
 }());

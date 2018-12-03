@@ -182,6 +182,7 @@ export class Referee {
             }
 
         }
+
         return this.winner;
     }
 

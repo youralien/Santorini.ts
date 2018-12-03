@@ -170,37 +170,88 @@ export class Admin {
 
         unrankedLeaderboard.sort();
         console.log(unrankedLeaderboard);
+
+        for (let i = 0; i < unrankedLeaderboard.length; i++) {
+            let rank = i+1;
+            let name = unrankedLeaderboard[i].name;
+            console.log(`${name} is ranked #${rank}`);
+        }
         // TODO: write ranking (i.e. 1: name, 2: name)
     }
 
     private async runSingleElimination() {
-        let winners = []
+        let winners = [];
         for (let i = 0; i < this.players.length; i++) {
             winners.push(i);
         }
 
+        let bracket_results = []
+
         let round = Admin.generate_pairs(winners);
-        let next_round_indices = []
+        while (round.length >= 1) {
 
-        for (let i in round) {
-            let [player1idx, player2idx] = round[i];
-            let referee = new Referee(this.players[player1idx], this.players[player2idx]);
-            let winner_name = await referee.runGame();
+            let next_round_indices = [];
+            let this_round_losers = [];
 
-            console.log(`Game #${i} finished between [${player1idx}, ${player2idx}]`);
-            console.log(winner_name + " won");
+            for (let i in round) {
+                let [player1idx, player2idx] = round[i];
+                console.log("before the failure: ", round[i]);
+                let referee = new Referee(this.players[player1idx], this.players[player2idx]);
+                let winner_name = await referee.runGame();
 
-            if (this.players[player1idx].name === winner_name) {
-                next_round_indices.push(player1idx);
-            } else {
-                next_round_indices.push(player2idx);
+                console.log(`Game #${i} finished between [${player1idx}, ${player2idx}]`);
+                console.log(winner_name + " won");
+
+                if (this.players[player1idx].name === winner_name) {
+                    next_round_indices.push(player1idx);
+                    if (bracket_results.length && referee.cheater !== undefined) {
+                        // push only to the bottom bracket if there is a bottom bracket in the first place
+                        bracket_results[bracket_results.length-1].push(player2idx);
+                    } else {
+                        //
+                        this_round_losers.push(player2idx);
+                    }
+                } else {
+                    next_round_indices.push(player2idx);
+                    if (bracket_results.length && referee.cheater !== undefined) {
+                        // push only to the bottom bracket if there is a bottom bracket in the first place
+                        bracket_results[bracket_results.length-1].push(player1idx);
+                    } else {
+                        this_round_losers.push(player1idx);
+                    }
+                }
+            }
+
+            // this round is pushed to the overall bracket
+            bracket_results.unshift(this_round_losers);
+
+            if (next_round_indices.length == 1) {
+                console.log(bracket_results);
+                bracket_results.unshift(next_round_indices);
+                break;
+            }
+
+            round = Admin.generate_pairs(next_round_indices);
+            console.log("Next round to be played");
+            console.log(next_round_indices);
+            console.log(bracket_results);
+        }
+
+        console.log("Winner is: ", this.players[round[0][0]].name)
+
+        for (let i = 0; i < bracket_results.length; i++) {
+            let rank = i+1; // 0-indexing
+            let player_idxs_for_round = bracket_results[i];
+            for (let j in player_idxs_for_round) {
+                let playeridx = player_idxs_for_round[j];
+                let name = this.players[playeridx].name;
+                console.log(`${name} is ranked #${rank}`);
             }
         }
-        round = next_round_indices;
-        console.log(next_round_indices);
+
     }
 
-    private static generate_pairs(player_list_indices) {
+    static generate_pairs(player_list_indices) {
         let res = [];
         for (let i = 0; i < player_list_indices.length; i += 2) {
             res.push([player_list_indices[i], player_list_indices[i + 1]]);
@@ -227,8 +278,7 @@ const main = async function commandLine() {
     let lib = require(PARENT_DIR + parsed["default-player"]);
     // e.g., lib = { __esModule: true, Player: [Function: Player] }
     assert(lib.__esModule, 'Module not found: Check "default-player" in santorini.config');
-    assert('Player' in lib, 'Player class not found: The module should have an exported class named "Player"');
-    let defaultPlayer = lib.Player;
+    assert('Player' in lib, 'Player class not found: The module should have an exported class named "Player"'); let defaultPlayer = lib.Player;
 
     // parse command line arguments
     let myArgs = require('minimist')(process.argv.slice(2));
