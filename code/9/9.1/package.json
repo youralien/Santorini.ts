@@ -11,7 +11,7 @@
     "fourcup": "tsc && node src/admin.js --cup 3 & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js)",
     "admin": "tsc && node src/admin_using_proxy.js",
     "driver": "tsc && node src/player_driver.js",
-    "build": "tsc && cp -R ./src/ ../../../Deliverables/7/7.1/lib && cp input* ../../../Deliverables/7/7.1/ && cp output* ../../../Deliverables/7/7.1/",
+    "build": "tsc && cp -R ./src/ ../../../Deliverables/9/9.1/lib && cp -R ./node_modules/ ../../../Deliverables/9/9.1/node_modules && cp *.config ../../../Deliverables/9/9.1/ && cp input* ../../../Deliverables/9/9.1/ && cp output* ../../../Deliverables/9/9.1/",
     "eight": "tsc && node src/admin.js --league 6 & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js)& (sleep 5 && node src/player_driver.js)",
     "eightcup": "tsc && node src/admin.js --cup 6 & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js) & (sleep 5 && node src/player_driver.js)& (sleep 5 && node src/player_driver.js)"
   },
