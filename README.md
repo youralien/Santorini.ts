@@ -1,4 +1,4 @@
-# Team 20 (forked from Team 7 code)
+# Team 20 (forked from Team 7 code, written with @kgarg2017)
 ### Ryan Louie, Richard Huang
 
 ## Directory Structure
